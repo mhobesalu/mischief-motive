@@ -125,7 +125,7 @@ table.ans select{width:100%;min-width:0;padding:6px 2px;border-radius:8px;border
 .row .tbtn{flex:1;justify-content:center}
 label.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
 .stamp{display:inline-block;border:3px solid var(--bad);color:var(--bad);font-weight:900;letter-spacing:2px;padding:4px 12px;border-radius:6px;transform:rotate(-6deg);font-size:22px;margin:6px 0 12px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;font-size:12px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:6px;text-align:center;font-size:12px;color:var(--muted)}
 .stats b{display:block;font-size:17px;color:var(--ink)}
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translateX(-50%) translateY(-20px);opacity:0;z-index:60;background:var(--ink);color:var(--paper);
   padding:10px 16px;border-radius:12px;font-weight:600;transition:.2s;pointer-events:none;max-width:90vw;text-align:center}
@@ -138,7 +138,6 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
 <body>
 <header class="top">
   <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M19.5 19.5 28 28" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M9.5 13.5l2.5 2.5 5-5.5" fill="none" stroke="#e0a526" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Mischief &amp; Motive</span></div>
-  <span class="timer" id="timer">0:00</span>
   <button class="hbtn" id="btnNew">New case</button>
   <button class="hbtn" id="btnMenu" aria-label="Settings">⚙︎</button>
 </header>
@@ -1308,16 +1307,16 @@ function showWin(){
   const name = PZ.cats[0].items[PZ.ent[PZ.question]].l;
   $('#winTitle').textContent = `It was ${name}!`;
   const flair = S.hints===0 && S.checks===0 ? 'No hints, no checks. Flawless detective work.' : `Solved with ${S.hints} hint${S.hints===1?'':'s'} and ${S.checks} check${S.checks===1?'':'s'}.`;
-  $('#winText').textContent = `Time: ${fmtTime(S.elapsed)}. ${flair}`;
+  $('#winText').textContent = flair;
   const st = stats[S.level] || {};
-  $('#winStats').innerHTML = `<div><b>${st.solved||0}</b>${LEVEL_INFO[S.level].name} solved</div><div><b>${st.best!=null?fmtTime(st.best):'–'}</b>best time</div><div><b>${st.solved?fmtTime(st.total/st.solved):'–'}</b>average</div><div><b>${st.clean||0}</b>flawless</div>`;
+  $('#winStats').innerHTML = `<div><b>${st.solved||0}</b>${LEVEL_INFO[S.level].name} solved</div><div><b>${st.clean||0}</b>flawless</div>`;
   open('#mWin');
 }
 $('#btnWinNext').onclick = () => { close('#mWin'); startPuzzle(S.level, S.wantTheme, null, false); };
 
 /* ---------- timer ---------- */
 let lastTick = Date.now();
-function updateTimer(){ $('#timer').textContent = S ? fmtTime(S.elapsed) : '0:00'; }
+function updateTimer(){}
 setInterval(() => {
   const now = Date.now(), dt = (now - lastTick)/1000; lastTick = now;
   if(S && !S.solved && document.visibilityState === 'visible' && dt < 5){ S.elapsed += dt; updateTimer(); if(Math.floor(S.elapsed) % 5 === 0) save(); }
@@ -1340,7 +1339,7 @@ $('#btnStart').onclick = () => { close('#mNew'); store.set('lastLevel', pickLeve
 $('#btnDaily').onclick = () => { close('#mNew'); startPuzzle(pickLevel, null, todaySeed(pickLevel), true); };
 $('#btnMenu').onclick = () => {
   $('#setAuto').checked = settings.auto; $('#setTickFirst').checked = settings.tickFirst;
-  $('#statsBox').innerHTML = Object.entries(LEVEL_INFO).map(([k,v]) => { const s = stats[k]||{}; return `<div><b>${s.solved||0}</b>${v.name}<br>${s.best!=null?'best '+fmtTime(s.best):''}</div>`; }).join('');
+  $('#statsBox').innerHTML = Object.entries(LEVEL_INFO).map(([k,v]) => { const s = stats[k]||{}; return `<div><b>${s.solved||0}</b>${v.name}</div>`; }).join('');
   open('#mMenu');
 };
 $('#setAuto').onchange = e => { settings.auto = e.target.checked; store.set('settings', settings); };
