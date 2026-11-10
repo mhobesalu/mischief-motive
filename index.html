@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f2a44">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mischief">
+<title>Mischief &amp; Motive</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){})})}</script>
+
+<style>
+:root{
+  --ink:#1f2a44; --paper:#f7f5ef; --card:#ffffff; --line:#c9cfdb; --thick:#1f2a44;
+  --accent:#e0a526; --accent2:#2f7d6d; --bad:#c8463d; --muted:#6b7280; --hl:#fff1c9; --x:#7b8496; --tick:#2f7d6d;
+  --cs:30px; --lw:120px; --hh:110px;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#e8ebf2; --paper:#12161f; --card:#1b2130; --line:#384155; --thick:#c9d1e3;
+    --muted:#9aa3b5; --hl:#3a3420; --x:#8c95a8; --tick:#5ec2a8; }
+}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden;margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+button,select{font:inherit;color:inherit}
+header.top{position:sticky;top:0;z-index:20;background:var(--ink);color:var(--paper);display:flex;align-items:center;gap:10px;
+  padding:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 12px) 8px calc(env(safe-area-inset-left) + 12px)}
+@media (prefers-color-scheme: dark){ header.top{background:#0b0e15;color:var(--ink)} }
+.brand{font-weight:800;letter-spacing:.3px;font-size:17px;display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.brand svg{width:26px;height:26px;flex:none}
+.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.timer{font-variant-numeric:tabular-nums;opacity:.85;font-size:14px}
+.hbtn{background:rgba(255,255,255,.12);border:0;border-radius:10px;padding:7px 11px;cursor:pointer;color:inherit}
+.hbtn:hover{background:rgba(255,255,255,.2)}
+main{max-width:1320px;margin:0 auto;padding:14px calc(env(safe-area-inset-right) + 12px) 110px calc(env(safe-area-inset-left) + 12px);
+  display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:18px;align-items:start}
+@media (max-width:899px){ main{grid-template-columns:1fr;padding-bottom:120px} }
+@media (max-width:600px){ main{padding-left:calc(env(safe-area-inset-left) + 6px);padding-right:calc(env(safe-area-inset-right) + 6px);gap:12px} .card{padding:12px} .board>.card:first-child{padding:8px 3px !important} th.rgroup{width:16px;min-width:16px} th.rlab{font-size:12px;padding:0 4px !important} }
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.case-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.case-head svg{width:40px;height:40px;flex:none}
+.case-title{font-size:19px;font-weight:800;line-height:1.2;margin:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.chip{font-size:12px;border-radius:99px;padding:1px 8px;background:var(--hl);color:var(--ink);border:1px solid var(--line)}
+.story{margin:8px 0 0;color:var(--ink)}
+.task{margin:10px 0 0;font-weight:600}
+.question{margin-top:12px;padding:10px 12px;border-left:4px solid var(--accent);background:var(--hl);border-radius:8px;font-weight:700}
+.side{display:flex;flex-direction:column;gap:14px;position:sticky;top:64px;max-height:calc(100vh - 80px);overflow:auto}
+@media (max-width:899px){ .side{display:contents} #caseCard{order:1} .board{order:2} #clueCard{order:3} }
+h3{margin:0 0 8px;font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+ol.clues{margin:0;padding:0;list-style:none;counter-reset:c}
+ol.clues li{counter-increment:c;position:relative;padding:8px 8px 8px 34px;border-radius:9px;cursor:pointer;user-select:none;-webkit-user-select:none}
+ol.clues li::before{content:counter(c);position:absolute;left:6px;top:8px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:12px;font-weight:700;display:grid;place-items:center}
+ol.clues li:hover{background:var(--hl)}
+ol.clues li.done{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1.5px}
+ol.clues li.done::before{background:var(--muted)}
+ol.clues li.flash{background:var(--hl);outline:2px solid var(--accent)}
+.hint-note{font-size:13px;color:var(--muted);margin-top:6px}
+/* grid */
+.board{display:flex;flex-direction:column;gap:14px;min-width:0}
+.gridwrap{overflow:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+table.grid{border-collapse:collapse;touch-action:manipulation;user-select:none;-webkit-user-select:none;margin:0 auto}
+table.grid td,table.grid th{padding:0}
+.corner{vertical-align:middle;text-align:center}
+.corner svg{width:64px;height:64px;opacity:.9}
+th.cgroup{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;text-align:center;height:22px;border-left:2px solid var(--thick);border-right:2px solid var(--thick);border-top:2px solid var(--thick);background:var(--card)}
+th.clab{height:var(--hh);width:var(--cs);min-width:var(--cs);vertical-align:bottom;border-left:1px solid var(--line);background:var(--card)}
+th.clab div{writing-mode:vertical-rl;transform:rotate(180deg);font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:calc(var(--hh) - 6px);margin:0 auto 4px;line-height:var(--cs)}
+th.rgroup{width:20px;min-width:20px;border-top:2px solid var(--thick);border-left:2px solid var(--thick);border-bottom:2px solid var(--thick);background:var(--card)}
+th.rgroup div{writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;margin:auto}
+th.rlab{width:var(--lw);max-width:var(--lw);height:var(--cs);text-align:right;font-size:12.5px;font-weight:500;padding:0 6px !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-top:1px solid var(--line);background:var(--card)}
+th.hl{background:var(--hl) !important;color:var(--ink)}
+td.cell{width:var(--cs);height:var(--cs);min-width:var(--cs);border:1px solid var(--line);background:var(--card);text-align:center;vertical-align:middle;cursor:pointer;position:relative}
+td.cell.bl{border-left:2px solid var(--thick)}
+td.cell.br{border-right:2px solid var(--thick)}
+td.cell.bt{border-top:2px solid var(--thick)}
+td.cell.bb{border-bottom:2px solid var(--thick)}
+td.cell.cross{background:color-mix(in srgb,var(--hl) 55%,var(--card))}
+td.cell svg{width:72%;height:72%;display:block;margin:auto;pointer-events:none}
+td.cell.wrong{background:color-mix(in srgb,var(--bad) 30%,var(--card))}
+td.cell.hint{outline:3px solid var(--accent);outline-offset:-3px}
+td.cell.auto svg{opacity:.55}
+td.empty{border:0;background:transparent}
+.status{font-size:13px;color:var(--muted);text-align:center;min-height:20px}
+/* answers */
+table.ans{width:100%;border-collapse:collapse;font-size:14px}
+table.ans th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:6px 6px;border-bottom:2px solid var(--thick)}
+table.ans td{padding:4px 6px;border-bottom:1px solid var(--line)}
+table.ans td:first-child{font-weight:700;white-space:nowrap}
+table.ans{table-layout:fixed}
+table.ans td:first-child,table.ans th:first-child{width:28%;overflow:hidden;text-overflow:ellipsis}
+table.ans select{width:100%;min-width:0;padding:6px 2px;border-radius:8px;border:1px solid var(--line);background:var(--paper);font-size:16px}
+@media (max-width:600px){table.ans{font-size:13px} table.ans td{padding:4px 2px} table.ans select{font-size:16px;padding:5px 0}}
+.who{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.who select{font-size:16px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--paper);min-width:150px}
+/* toolbar */
+.toolbar{position:fixed;left:0;right:0;bottom:0;z-index:25;display:flex;justify-content:center;gap:8px;
+  padding:10px calc(env(safe-area-inset-right) + 10px) calc(env(safe-area-inset-bottom) + 10px) calc(env(safe-area-inset-left) + 10px);
+  background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line)}
+.tbtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:9px 14px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px}
+.tbtn.primary{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.tbtn:disabled{opacity:.45}
+.tbtn.clues-btn{display:none}
+@media (max-width:899px){ .tbtn{padding:9px 10px;font-size:14px} .tbtn.clues-btn{display:flex} }
+/* clue sheet on phone */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:2px solid var(--thick);border-radius:16px 16px 0 0;
+  max-height:46vh;overflow:auto;padding:8px 14px calc(env(safe-area-inset-bottom) + 70px);transform:translateY(105%);transition:transform .22s ease;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.sheet{visibility:hidden}
+.sheet.open{transform:none;visibility:visible}
+.sheet .grab{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-8px;background:var(--card);padding:6px 0}
+/* modal */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(10,14,24,.55);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex}
+.dialog{background:var(--card);color:var(--ink);border-radius:18px;max-width:440px;width:100%;padding:20px;max-height:90vh;overflow:auto}
+.dialog h2{margin:0 0 6px;font-size:21px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.opt{border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--paper);cursor:pointer;text-align:left}
+.opt b{display:block}
+.opt small{color:var(--muted)}
+.opt.sel{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 12%,var(--paper))}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.row .tbtn{flex:1;justify-content:center}
+label.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.stamp{display:inline-block;border:3px solid var(--bad);color:var(--bad);font-weight:900;letter-spacing:2px;padding:4px 12px;border-radius:6px;transform:rotate(-6deg);font-size:22px;margin:6px 0 12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;font-size:12px;color:var(--muted)}
+.stats b{display:block;font-size:17px;color:var(--ink)}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translateX(-50%) translateY(-20px);opacity:0;z-index:60;background:var(--ink);color:var(--paper);
+  padding:10px 16px;border-radius:12px;font-weight:600;transition:.2s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.loading{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(10,14,24,.4);color:#fff;font-weight:700;font-size:17px}
+.loading.open{display:flex}
+select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M19.5 19.5 28 28" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M9.5 13.5l2.5 2.5 5-5.5" fill="none" stroke="#e0a526" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Mischief &amp; Motive</span></div>
+  <span class="timer" id="timer">0:00</span>
+  <button class="hbtn" id="btnNew">New case</button>
+  <button class="hbtn" id="btnMenu" aria-label="Settings">⚙︎</button>
+</header>
+
+<main>
+  <section class="side">
+    <div class="card" id="caseCard"></div>
+    <div class="card" id="clueCard"><h3>Clues <span style="text-transform:none;letter-spacing:0;font-weight:400">· tap a clue to cross it off</span></h3><ol class="clues" id="clues"></ol></div>
+  </section>
+  <section class="board">
+    <div class="card" style="padding:10px 8px">
+      <div class="gridwrap" id="gridwrap"></div>
+      <div class="status" id="status">Tap a square: once for ✕, twice for ✓, three times to clear.</div>
+    </div>
+    <div class="card">
+      <h3>Case notes</h3>
+      <div id="answers"></div>
+      <div class="who"><b id="whoQ">Who was it?</b><select id="whoSel"></select></div>
+    </div>
+  </section>
+</main>
+
+<div class="toolbar">
+  <button class="tbtn clues-btn" id="btnClues">📝 Clues</button>
+  <button class="tbtn" id="btnUndo">↶ Undo</button>
+  <button class="tbtn" id="btnHint">💡 Hint</button>
+  <button class="tbtn primary" id="btnCheck">✓ Check</button>
+</div>
+
+<div class="sheet" id="sheet">
+  <div class="grab"><h3 style="margin:0">Clues</h3><button class="tbtn" id="btnSheetClose">Close</button></div>
+  <ol class="clues" id="clues2"></ol>
+</div>
+
+<div class="modal" id="mNew"><div class="dialog">
+  <h2>Open a new case</h2>
+  <div style="color:var(--muted);font-size:14px">Every case is freshly made up, with exactly one solution.</div>
+  <h3 style="margin-top:14px">Difficulty</h3>
+  <div class="opts" id="levelOpts"></div>
+  <h3 style="margin-top:6px">Story</h3>
+  <div class="opts" id="themeOpts"></div>
+  <div class="row"><button class="tbtn" data-close>Cancel</button><button class="tbtn" id="btnDaily">📅 Today's case</button><button class="tbtn primary" id="btnStart">Start</button></div>
+</div></div>
+
+<div class="modal" id="mMenu"><div class="dialog">
+  <h2>Settings</h2>
+  <label class="set"><span>Auto-✕ the rest of the row and column when you place a ✓</span><input type="checkbox" id="setAuto"></label>
+  <label class="set"><span>First tap places a ✓ instead of ✕</span><input type="checkbox" id="setTickFirst"></label>
+  <h3 style="margin-top:14px">Your record</h3>
+  <div class="stats" id="statsBox"></div>
+  <div class="row"><button class="tbtn" id="btnRestart">Clear this grid</button><button class="tbtn" id="btnHow">How to play</button><button class="tbtn primary" data-close>Done</button></div>
+</div></div>
+
+<div class="modal" id="mHow"><div class="dialog">
+  <h2>How to play</h2>
+  <p>Each suspect matches exactly one thing from every column, and no two suspects share one.</p>
+  <p>Read the clues and mark the grid: <b>✕</b> means "definitely not", <b>✓</b> means "this is it". When one square in a row of a box is ✓, the rest of that row and column must be ✕. When only one square is left without ✕, it must be ✓.</p>
+  <p>The small boxes lower down link the other columns to each other, so you can chain facts: if Biscuit struck in the kitchen and Biscuit blamed the squirrel, then whoever struck in the kitchen blamed the squirrel.</p>
+  <p>"Either A or B – but not both" means exactly one of the two is true. Fill in the case notes, answer the question, and press Check.</p>
+  <p style="color:var(--muted);font-size:13px">Hint first points you to a useful clue; press it again to reveal a square.</p>
+  <div class="row"><button class="tbtn primary" data-close>Got it</button></div>
+</div></div>
+
+<div class="modal" id="mWin"><div class="dialog" style="text-align:center">
+  <div class="stamp">CASE CLOSED</div>
+  <h2 id="winTitle">Solved!</h2>
+  <p id="winText"></p>
+  <div class="stats" id="winStats"></div>
+  <div class="row"><button class="tbtn" data-close>Admire grid</button><button class="tbtn primary" id="btnWinNext">Next case</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+<div class="loading" id="loading">🔍 Gathering evidence…</div>
+
+<script>
+/* Logic grid puzzle engine: generator + deductive solver. Works in browser and node. */
+(function (root) {
+  'use strict';
+
+  function rngFrom(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const pick = (r, arr) => arr[Math.floor(r() * arr.length)];
+  function shuffle(r, arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+
+  const LEVELS = {
+    easy:   { n: 3, k: 3, trial: false, types: { diff: 2, same: 0.6, either: 3, eitherSame: 1.2, pair: 0.6 } },
+    medium: { n: 4, k: 3, trial: false, types: { diff: 2, same: 0.3, either: 3, eitherSame: 1, pair: 1, less: 2.5 } },
+    hard:   { n: 4, k: 4, trial: false, types: { diff: 1.5, same: 0.15, either: 3, eitherSame: 1, pair: 1.5, less: 2.5, step: 1.5 } },
+    expert: { n: 5, k: 4, trial: true,  types: { diff: 1.2, same: 0.1, either: 3, eitherSame: 1, pair: 2, less: 2.5, step: 2 } }
+  };
+
+  /* ---------- Solver ---------- */
+  // P = { n, k, ord: [cat -> array of numbers or null], clues: [...] }
+  class Contradiction extends Error {}
+
+  function makeState(P) {
+    const N = P.n * P.k;
+    return { N, rel: new Int8Array(N * N) };
+  }
+  function cloneState(s) { return { N: s.N, rel: s.rel.slice() }; }
+
+  function solve(P, opts) {
+    opts = opts || {};
+    const n = P.n, k = P.k, N = n * k;
+    const st = opts.state ? cloneState(opts.state) : makeState(P);
+    const rel = st.rel;
+    const catOf = g => Math.floor(g / n);
+    let changed = false;
+    function set(a, b, v) {
+      if (catOf(a) === catOf(b)) { if (v === 1 && a !== b) throw new Contradiction(); if (v === -1 && a === b) throw new Contradiction(); return; }
+      const cur = rel[a * N + b];
+      if (cur === v) return;
+      if (cur !== 0) throw new Contradiction();
+      rel[a * N + b] = v; rel[b * N + a] = v; changed = true;
+    }
+    const get = (a, b) => {
+      if (catOf(a) === catOf(b)) return a === b ? 1 : -1;
+      return rel[a * N + b];
+    };
+
+    function blockPass() {
+      for (let c = 0; c < k; c++) for (let d = 0; d < k; d++) {
+        if (c === d) continue;
+        for (let i = 0; i < n; i++) {
+          const a = c * n + i; let yes = 0, no = 0, last = -1;
+          for (let j = 0; j < n; j++) {
+            const v = rel[a * N + d * n + j];
+            if (v === 1) yes++; else if (v === -1) no++; else last = d * n + j;
+          }
+          if (yes > 1 || no === n) throw new Contradiction();
+          if (yes === 1 && yes + no < n) {
+            for (let j = 0; j < n; j++) if (rel[a * N + d * n + j] === 0) set(a, d * n + j, -1);
+          } else if (yes === 0 && no === n - 1) set(a, last, 1);
+        }
+      }
+    }
+    function transPass() {
+      for (let a = 0; a < N; a++) for (let b = a + 1; b < N; b++) {
+        if (catOf(a) === catOf(b)) continue;
+        const v = rel[a * N + b];
+        if (v === 1) {
+          for (let x = 0; x < N; x++) {
+            const cx = catOf(x); if (cx === catOf(a) || cx === catOf(b)) continue;
+            const va = rel[a * N + x], vb = rel[b * N + x];
+            if (va !== 0 && vb === 0) set(b, x, va);
+            else if (vb !== 0 && va === 0) set(a, x, vb);
+            else if (va !== 0 && vb !== 0 && va !== vb) throw new Contradiction();
+          }
+        } else if (v === 0) {
+          // if a and b cannot share any value of some third category -> different
+          for (let e = 0; e < k; e++) {
+            if (e === catOf(a) || e === catOf(b)) continue;
+            let share = false;
+            for (let j = 0; j < n; j++) {
+              const x = e * n + j;
+              if (rel[a * N + x] !== -1 && rel[b * N + x] !== -1) { share = true; break; }
+            }
+            if (!share) { set(a, b, -1); break; }
+          }
+        }
+      }
+    }
+    // possible ordered positions of value a in category T
+    function poss(a, T) {
+      const out = [];
+      if (catOf(a) === T) { out.push(a % n); return out; }
+      for (let j = 0; j < n; j++) if (rel[a * N + T * n + j] !== -1) out.push(j);
+      return out;
+    }
+    function cluePass() {
+      for (const c of P.clues) {
+        switch (c.t) {
+          case 'same': set(c.a, c.b, 1); break;
+          case 'diff': set(c.a, c.b, -1); break;
+          case 'either': {
+            const ca = catOf(c.a), cb = catOf(c.b);
+            if (ca === cb) {
+              for (let j = 0; j < n; j++) { const y = ca * n + j; if (y !== c.a && y !== c.b) set(c.x, y, -1); }
+            } else {
+              set(c.a, c.b, -1);
+              const va = get(c.x, c.a), vb = get(c.x, c.b);
+              if (va === 1) set(c.x, c.b, -1);
+              if (va === -1) set(c.x, c.b, 1);
+              if (vb === 1) set(c.x, c.a, -1);
+              if (vb === -1) set(c.x, c.a, 1);
+            }
+            break;
+          }
+          case 'pair': {
+            const p = catOf(c.a), q = catOf(c.c);
+            for (let j = 0; j < n; j++) {
+              const y = q * n + j; if (y !== c.c && y !== c.d) { set(c.a, y, -1); set(c.b, y, -1); }
+              const z = p * n + j; if (z !== c.a && z !== c.b) { set(z, c.c, -1); set(z, c.d, -1); }
+            }
+            break;
+          }
+          case 'less': case 'step': {
+            const T = c.T, vals = P.ord[T];
+            if (catOf(c.a) !== catOf(c.b)) set(c.a, c.b, -1);
+            const pa = poss(c.a, T), pb = poss(c.b, T);
+            if (!pa.length || !pb.length) throw new Contradiction();
+            if (c.t === 'less') {
+              const maxB = Math.max(...pb.map(j => vals[j])), minA = Math.min(...pa.map(j => vals[j]));
+              for (const j of pa) if (vals[j] >= maxB) setPos(c.a, T, j);
+              for (const j of pb) if (vals[j] <= minA) setPos(c.b, T, j);
+            } else {
+              const sa = new Set(pa.map(j => vals[j])), sb = new Set(pb.map(j => vals[j]));
+              for (const j of pa) if (!sb.has(vals[j] + c.d)) setPos(c.a, T, j);
+              for (const j of pb) if (!sa.has(vals[j] - c.d)) setPos(c.b, T, j);
+            }
+            break;
+          }
+        }
+      }
+    }
+    function setPos(a, T, j) {
+      if (catOf(a) === T) { if (a % n === j) throw new Contradiction(); return; }
+      set(a, T * n + j, -1);
+    }
+    function isSolved() {
+      for (let c = 1; c < k; c++) for (let i = 0; i < n; i++) {
+        let yes = 0; for (let j = 0; j < n; j++) if (rel[i * N + c * n + j] === 1) yes++;
+        if (yes !== 1) return false;
+      }
+      return true;
+    }
+    function propagate() {
+      let guard = 0;
+      do {
+        changed = false;
+        cluePass(); blockPass(); transPass();
+        if (++guard > 500) break;
+      } while (changed);
+    }
+
+    try {
+      propagate();
+      if (opts.trial && !isSolved()) {
+        let progress = true;
+        while (progress && !isSolved()) {
+          progress = false;
+          for (let a = 0; a < N && !progress; a++) for (let b = a + 1; b < N && !progress; b++) {
+            if (catOf(a) === catOf(b) || rel[a * N + b] !== 0) continue;
+            for (const v of [1, -1]) {
+              const r = solve(P, { state: st, assume: [a, b, v] });
+              if (r.status === 'contradiction') { set(a, b, -v); propagate(); progress = true; break; }
+            }
+          }
+        }
+      }
+      if (opts.assume) { set(opts.assume[0], opts.assume[1], opts.assume[2]); propagate(); }
+    } catch (e) {
+      if (e instanceof Contradiction) return { status: 'contradiction' };
+      throw e;
+    }
+    return { status: isSolved() ? 'solved' : 'stuck', state: st };
+  }
+
+  /* ---------- Generator ---------- */
+  function generate(themes, opts) {
+    const seed = opts.seed >>> 0;
+    const lv = LEVELS[opts.level] || LEVELS.medium;
+    const r = rngFrom(seed);
+    const theme = opts.theme ? themes.find(t => t.id === opts.theme) : pick(r, themes);
+    const { n, k } = lv;
+    for (let attempt = 0; attempt < 60; attempt++) {
+      // choose categories
+      let pool = theme.cats.slice();
+      if (opts.level === 'easy') pool = pool.filter(c => !c.ord);
+      let cats;
+      const ords = pool.filter(c => c.ord), plain = pool.filter(c => !c.ord);
+      if (opts.level !== 'easy' && ords.length) {
+        const o = pick(r, ords);
+        cats = [o].concat(shuffle(r, pool.filter(c => c !== o)).slice(0, k - 2));
+        cats = shuffle(r, cats);
+      } else cats = shuffle(r, plain).slice(0, k - 1);
+      if (cats.length < k - 1) cats = shuffle(r, theme.cats).slice(0, k - 1);
+
+      const names = shuffle(r, theme.names).slice(0, n).sort();
+      const catData = [{ id: 'who', label: theme.primaryLabel, items: names.map(x => ({ l: x })), primary: true }];
+      const ord = [null];
+      for (const c of cats) {
+        if (c.ord) {
+          const start = Math.floor(r() * (c.ord.vals.length - n + 1));
+          const vals = c.ord.vals.slice(start, start + n);
+          catData.push({ id: c.id, label: c.label, ordDef: c.ord, items: vals.map(v => ({ l: c.ord.fmt(v), v })) });
+          ord.push(vals);
+        } else {
+          catData.push({ id: c.id, label: c.label, items: shuffle(r, c.items).slice(0, n) });
+          ord.push(null);
+        }
+      }
+      // keep non-ordered items in a stable alphabetical order for the grid
+      for (let c = 1; c < k; c++) if (!ord[c]) catData[c].items.sort((x, y) => x.l.localeCompare(y.l));
+
+      // solution: ent[g] = entity index
+      const ent = new Array(n * k);
+      for (let i = 0; i < n; i++) ent[i] = i;
+      for (let c = 1; c < k; c++) {
+        const perm = shuffle(r, [...Array(n).keys()]);
+        for (let e = 0; e < n; e++) ent[c * n + perm[e]] = e;
+      }
+      const P = { n, k, ord, clues: [] };
+      const cand = makeClues(r, P, ent, lv, 400);
+      const used = [];
+      let solved = false;
+      for (const c of cand) {
+        used.push(c);
+        P.clues = used;
+        const res = solve(P, { trial: lv.trial });
+        if (res.status === 'contradiction') throw new Error('bad clue ' + JSON.stringify(c));
+        if (res.status === 'solved') { solved = true; break; }
+      }
+      if (!solved) continue;
+      // prune redundant clues
+      let clues = used.slice();
+      for (const c of shuffle(r, used)) {
+        const without = clues.filter(x => x !== c);
+        if (solve({ n, k, ord, clues: without }, { trial: lv.trial }).status === 'solved') clues = without;
+      }
+      // limit direct give-aways
+      const sameCount = clues.filter(c => c.t === 'same').length;
+      if (sameCount > (opts.level === 'easy' ? 1 : 0) && attempt < 40) continue;
+      if (opts.level === 'expert' && attempt < 30 && solve({ n, k, ord, clues }, {}).status === 'solved') continue; // want trial-needed
+      clues = shuffle(r, clues);
+      // question: pick a non-ordered, non-primary value
+      const qCats = [...Array(k).keys()].filter(c => c > 0 && !ord[c]);
+      const qc = qCats.length ? pick(r, qCats) : 1;
+      const qv = qc * n + Math.floor(r() * n);
+      return { seed, level: opts.level, theme: theme.id, n, k, cats: catData, ord, ent, clues, question: qv };
+    }
+    throw new Error('generation failed');
+  }
+
+  function makeClues(r, P, ent, lv, count) {
+    const { n, k, ord } = P, N = n * k;
+    const catOf = g => Math.floor(g / n);
+    const types = Object.entries(lv.types).filter(([t]) => (t !== 'less' && t !== 'step') || ord.some(Boolean));
+    const total = types.reduce((s, [, w]) => s + w, 0);
+    const out = []; const seen = new Set();
+    const rv = () => Math.floor(r() * N);
+    const sameEnt = (a, b) => ent[a] === ent[b];
+    const ordCats = [...Array(k).keys()].filter(c => ord[c]);
+    // ordered position value of entity e in category T
+    const valOf = (e, T) => { for (let j = 0; j < n; j++) if (ent[T * n + j] === e) return ord[T][j]; };
+    let guard = 0;
+    while (out.length < count && guard++ < count * 50) {
+      let x = r() * total, t;
+      for (const [tt, w] of types) { x -= w; if (x <= 0) { t = tt; break; } }
+      t = t || types[0][0];
+      let c = null;
+      if (t === 'same' || t === 'diff') {
+        const a = rv(), b = rv();
+        if (catOf(a) === catOf(b)) continue;
+        if ((t === 'same') !== sameEnt(a, b)) continue;
+        c = { t, a: Math.min(a, b), b: Math.max(a, b) };
+      } else if (t === 'either' || t === 'eitherSame') {
+        const xg = rv(), a = rv(), b = rv();
+        const cx = catOf(xg), ca = catOf(a), cb = catOf(b);
+        if (a === b || ca === cx || cb === cx) continue;
+        if ((t === 'eitherSame') !== (ca === cb)) continue;
+        if (!sameEnt(xg, a) || sameEnt(xg, b)) continue;
+        // phrasing: when a or b is a name, subject x must not be a name (fine since cx != ca)
+        c = r() < 0.5 ? { t: 'either', x: xg, a, b } : { t: 'either', x: xg, a: b, b: a };
+      } else if (t === 'pair') {
+        const a = rv(), b = rv();
+        if (catOf(a) !== catOf(b) || a === b) continue;
+        const q = Math.floor(r() * k); if (q === catOf(a)) continue;
+        let cc = -1, dd = -1;
+        for (let j = 0; j < n; j++) { if (ent[q * n + j] === ent[a]) cc = q * n + j; if (ent[q * n + j] === ent[b]) dd = q * n + j; }
+        if (r() < 0.5) c = { t: 'pair', a, b, c: cc, d: dd }; else c = { t: 'pair', a, b, c: dd, d: cc };
+      } else if (t === 'less' || t === 'step') {
+        if (!ordCats.length) continue;
+        const T = pick(r, ordCats);
+        const a = rv(), b = rv();
+        if (catOf(a) === T || catOf(b) === T || ent[a] === ent[b]) continue;
+        const va = valOf(ent[a], T), vb = valOf(ent[b], T);
+        if (va === vb) continue;
+        const [lo, hi] = va < vb ? [a, b] : [b, a];
+        if (t === 'less') c = { t: 'less', a: lo, b: hi, T, flip: r() < 0.5 };
+        else c = { t: 'step', a: lo, b: hi, T, d: Math.abs(vb - va), flip: r() < 0.5 };
+      }
+      if (!c) continue;
+      const key = JSON.stringify(c);
+      if (seen.has(key)) continue;
+      seen.add(key); out.push(c);
+    }
+    return out;
+  }
+
+  /* ---------- Text ---------- */
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function clueText(pz, theme, c) {
+    const n = pz.n, cats = pz.cats;
+    const catOf = g => Math.floor(g / n);
+    const item = g => cats[catOf(g)].items[g % n];
+    const isName = g => catOf(g) === 0;
+    const pred = g => { // verb phrase
+      const cat = cats[catOf(g)], it = item(g);
+      if (isName(g)) return 'was ' + it.l;
+      if (cat.ordDef) return cat.ordDef.p(it.l);
+      return it.p;
+    };
+    const neg = g => {
+      const cat = cats[catOf(g)], it = item(g);
+      if (isName(g)) return 'was not ' + it.l;
+      if (cat.ordDef) return cat.ordDef.n(it.l);
+      return it.n;
+    };
+    const np = g => isName(g) ? item(g).l : 'the ' + theme.noun + ' who ' + pred(g);
+    switch (c.t) {
+      case 'same': case 'diff': {
+        let a = c.a, b = c.b;
+        if (isName(b) || (!isName(a) && Math.random() < 0)) [a, b] = [b, a];
+        return cap(np(a)) + ' ' + (c.t === 'same' ? pred(b) : neg(b));
+      }
+      case 'either': {
+        const both = catOf(c.a) !== catOf(c.b);
+        if (isName(c.a) || isName(c.b)) {
+          let a = c.a, b = c.b; if (isName(b) && !isName(a)) [a, b] = [b, a];
+          return cap(np(c.x)) + ' was either ' + np(a) + ' or ' + np(b) + (both ? ' – but not both' : '');
+        }
+        return cap(np(c.x)) + ' either ' + pred(c.a) + ' or ' + pred(c.b) + (both ? ' – but not both' : '');
+      }
+      case 'pair': {
+        const q = cats[catOf(c.c)];
+        if (isName(c.c)) return 'Of ' + np(c.a) + ' and ' + np(c.b) + ', one was ' + item(c.c).l + ' and the other was ' + item(c.d).l;
+        return 'Of ' + np(c.a) + ' and ' + np(c.b) + ', one ' + pred(c.c) + ' and the other ' + pred(c.d);
+      }
+      case 'less': {
+        const od = cats[c.T].ordDef;
+        if (c.flip) return cap(np(c.b)) + ' ' + od.more + ' ' + np(c.a);
+        return cap(np(c.a)) + ' ' + od.less + ' ' + np(c.b);
+      }
+      case 'step': {
+        const od = cats[c.T].ordDef;
+        if (c.flip) return cap(np(c.b)) + ' ' + od.stepMore(c.d) + ' ' + np(c.a);
+        return cap(np(c.a)) + ' ' + od.stepLess(c.d) + ' ' + np(c.b);
+      }
+    }
+  }
+
+  root.LogicEngine = { generate, solve, clueText, LEVELS, rngFrom, shuffle };
+  if (typeof module !== 'undefined') module.exports = root.LogicEngine;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Original silly-crime themes. Each item: l = grid label, p = "did it" phrase, n = "did not" phrase. */
+(function (root) {
+  const I = (l, p, n) => ({ l, p, n });
+  const hrs = d => d === 1 ? 'one hour' : d + ' hours';
+  const clock = v => { const h = Math.floor(v), m = Math.round((v - h) * 60); return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
+  const dur = mins => { const h = Math.floor(mins / 60), m = mins % 60; return [h ? (h === 1 ? 'one hour' : h + ' hours') : '', m ? m + ' minutes' : ''].filter(Boolean).join(' and '); };
+
+  const THEMES = [
+    {
+      id: 'dogs', title: 'The Saturday Sofa Incidents', noun: 'dog', nounPl: 'dogs', primaryLabel: 'Dog', icon: 'dog',
+      names: ['Biscuit', 'Pickles', 'Waffles', 'Noodle', 'Mochi', 'Pretzel', 'Turnip', 'Crumpet', 'Sergeant Fluff'],
+      intro: (names, cats) => `${names} were left home alone on Saturday "for just one hour". Each of them used that hour to commit exactly one outrage against the household, and each has a perfectly reasonable explanation, which they communicate mainly by looking at the ceiling.`,
+      ask: q => `The dog who ${q} has been sentenced to a bath. Who was it?`,
+      cats: [
+        { id: 'crime', label: 'Outrage', items: [
+          I('Ate the sofa', 'ate a sofa cushion', 'did not eat a sofa cushion'),
+          I('Unrolled loo roll', 'unrolled the loo roll down the stairs', 'did not unroll the loo roll'),
+          I('Stole a turkey', 'stole the entire Sunday turkey', 'did not steal the turkey'),
+          I('Buried the remote', 'buried the TV remote in the garden', 'did not bury the TV remote'),
+          I('Wore the wig', 'got stuck inside Grandma\'s wig', 'did not get stuck in the wig'),
+          I('Rang the doorbell', 'barked at the doorbell for 40 minutes', 'did not bark at the doorbell'),
+          I('Ate the homework', 'genuinely ate the homework', 'did not eat the homework') ] },
+        { id: 'excuse', label: 'Excuse', items: [
+          I('A squirrel', 'blamed a squirrel', 'did not blame a squirrel'),
+          I('Boredom', 'claimed it was boredom', 'did not claim boredom'),
+          I('Self-defence', 'pleaded self-defence', 'did not plead self-defence'),
+          I('The cat', 'blamed the cat (there is no cat)', 'did not blame the cat'),
+          I('Art', 'insisted it was art', 'did not insist it was art'),
+          I('Hunger', 'said they hadn\'t eaten in minutes', 'did not plead hunger') ] },
+        { id: 'room', label: 'Scene', items: [
+          I('Kitchen', 'struck in the kitchen', 'did not strike in the kitchen'),
+          I('Hallway', 'struck in the hallway', 'did not strike in the hallway'),
+          I('Bathroom', 'struck in the bathroom', 'did not strike in the bathroom'),
+          I('Garden', 'struck in the garden', 'did not strike in the garden'),
+          I('Bedroom', 'struck on the big bed', 'did not strike on the big bed'),
+          I('Laundry', 'struck in the laundry basket', 'did not strike in the laundry basket') ] },
+        { id: 'time', label: 'Time', ord: {
+          vals: [10, 11, 12, 13, 14, 15], fmt: clock,
+          p: t => `struck at ${t}`, n: t => `did not strike at ${t}`,
+          less: 'struck earlier than', more: 'struck later than',
+          stepLess: d => `struck exactly ${hrs(d)} before`, stepMore: d => `struck exactly ${hrs(d)} after` } }
+      ]
+    },
+    {
+      id: 'veg', title: 'Scandal at the Giant Vegetable Show', noun: 'gardener', nounPl: 'gardeners', primaryLabel: 'Gardener', icon: 'veg',
+      names: ['Agnes', 'Bertram', 'Clementine', 'Desmond', 'Edwina', 'Fergus', 'Hyacinth', 'Ludwig'],
+      intro: names => `The annual Giant Vegetable Show ended in chaos. ${names} each entered one enormous vegetable, and each was caught committing one act of horticultural skulduggery. The judges are furious, the tea urn is empty, and someone has been sitting in the marrow.`,
+      ask: q => `The gardener who ${q} has been banned from the show for life. Who was it?`,
+      cats: [
+        { id: 'veg', label: 'Vegetable', items: [
+          I('Marrow', 'entered a giant marrow', 'did not enter the marrow'),
+          I('Pumpkin', 'entered a giant pumpkin', 'did not enter the pumpkin'),
+          I('Leek', 'entered a giant leek', 'did not enter the leek'),
+          I('Onion', 'entered a giant onion', 'did not enter the onion'),
+          I('Cabbage', 'entered a giant cabbage', 'did not enter the cabbage'),
+          I('Turnip', 'entered a giant turnip', 'did not enter the turnip') ] },
+        { id: 'crime', label: 'Skulduggery', items: [
+          I('Bribed with jam', 'bribed a judge with jam', 'did not bribe a judge with jam'),
+          I('Painted a melon', 'entered a melon painted green', 'did not paint a melon'),
+          I('Sang to rivals', 'sang sad songs at rival onions', 'did not sing at the onions'),
+          I('Hired slugs', 'hired a gang of slugs', 'did not hire slugs'),
+          I('Wore a disguise', 'came back in a fake moustache to vote twice', 'did not wear a fake moustache'),
+          I('Hid in the tent', 'hid overnight in the judging tent', 'did not hide in the tent') ] },
+        { id: 'place', label: 'Placed', ord: {
+          vals: [1, 2, 3, 4, 5, 6], fmt: v => ['', '1st', '2nd', '3rd', '4th', '5th', '6th'][v],
+          p: t => `finished ${t}`, n: t => `did not finish ${t}`,
+          less: 'finished higher than', more: 'finished lower than',
+          stepLess: d => `finished exactly ${d === 1 ? 'one place' : d + ' places'} above`, stepMore: d => `finished exactly ${d === 1 ? 'one place' : d + ' places'} below` } },
+        { id: 'kg', label: 'Weight', ord: {
+          vals: [6, 8, 10, 12, 14, 16], fmt: v => v + ' kg',
+          p: t => `grew a ${t} monster`, n: t => `did not grow the ${t} one`,
+          less: 'grew a lighter vegetable than', more: 'grew a heavier vegetable than',
+          stepLess: d => `grew a vegetable exactly ${d} kg lighter than`, stepMore: d => `grew a vegetable exactly ${d} kg heavier than` } }
+      ]
+    },
+    {
+      id: 'fridge', title: 'The Office Fridge Affair', noun: 'colleague', nounPl: 'colleagues', primaryLabel: 'Colleague', icon: 'mug',
+      names: ['Priya', 'Marco', 'Helen', 'Tomasz', 'Ingrid', 'Felix', 'Yuki', 'Gordon'],
+      intro: names => `Someone has been eating other people's lunches from the office fridge. Unfortunately it turns out to be everyone. ${names} each raided the fridge exactly once on Monday, each took one labelled lunch, and each has prepared an excuse of breathtaking stupidity.`,
+      ask: q => `HR would like a quiet word with the colleague who ${q}. Who was it?`,
+      cats: [
+        { id: 'food', label: 'Stole', items: [
+          I('Lasagne', 'stole a lasagne labelled "DO NOT"', 'did not steal the lasagne'),
+          I('Yoghurt', 'stole a yoghurt with a name on it', 'did not steal the yoghurt'),
+          I('Birthday cake', 'stole the birthday cake', 'did not steal the birthday cake'),
+          I('Sushi', 'stole the sushi', 'did not steal the sushi'),
+          I('Fish curry', 'microwaved a stolen fish curry', 'did not steal the fish curry'),
+          I('Trifle', 'stole a trifle', 'did not steal the trifle') ] },
+        { id: 'excuse', label: 'Excuse', items: [
+          I('Checking it', 'claimed they were checking it was safe', 'did not claim a safety check'),
+          I('Thought it was theirs', 'thought it was theirs', 'did not think it was theirs'),
+          I('Sleepwalking', 'blamed sleepwalking', 'did not blame sleepwalking'),
+          I('It spoke to me', 'said the food asked them to', 'did not say the food asked them'),
+          I('Team building', 'called it team building', 'did not call it team building'),
+          I('A bet', 'said it was for a bet', 'did not say it was for a bet') ] },
+        { id: 'dept', label: 'Department', items: [
+          I('Accounts', 'works in Accounts', 'does not work in Accounts'),
+          I('Marketing', 'works in Marketing', 'does not work in Marketing'),
+          I('IT', 'works in IT', 'does not work in IT'),
+          I('Legal', 'works in Legal', 'does not work in Legal'),
+          I('Reception', 'works on Reception', 'does not work on Reception'),
+          I('Sales', 'works in Sales', 'does not work in Sales') ] },
+        { id: 'time', label: 'Time', ord: {
+          vals: [10.5, 11, 11.5, 12, 12.5, 13], fmt: clock,
+          p: t => `raided the fridge at ${t}`, n: t => `did not raid the fridge at ${t}`,
+          less: 'raided the fridge earlier than', more: 'raided the fridge later than',
+          stepLess: d => `raided the fridge exactly ${dur(Math.round(d * 60))} before`, stepMore: d => `raided the fridge exactly ${dur(Math.round(d * 60))} after` } }
+      ]
+    },
+    {
+      id: 'ghosts', title: 'Complaints at the Haunted Hotel', noun: 'ghost', nounPl: 'ghosts', primaryLabel: 'Ghost', icon: 'ghost',
+      names: ['Lady Agatha', 'Barnaby', 'Cornelius', 'Dorothea', 'Ezekiel', 'Florence', 'Old Percy'],
+      intro: names => `The Grimwood Hotel is proud of its ghosts, but this week the guests complained. ${names} each haunted one room, each has one deeply irritating habit, and each scared off one very important guest. The manager is drafting strongly worded notes.`,
+      ask: q => `The ghost who ${q} has been told to haunt somewhere else. Who is it?`,
+      cats: [
+        { id: 'habit', label: 'Habit', items: [
+          I('Loud yodelling', 'yodels at 3am', 'does not yodel'),
+          I('Rearranges socks', 'rearranges guests\' socks', 'does not rearrange socks'),
+          I('Bad jokes', 'tells terrible jokes through the walls', 'does not tell jokes'),
+          I('Steals pillows', 'steals the good pillows', 'does not steal pillows'),
+          I('Plays bagpipes', 'plays the bagpipes badly', 'does not play the bagpipes'),
+          I('Reviews online', 'writes bad online reviews of the hotel', 'does not write reviews') ] },
+        { id: 'room', label: 'Haunts', items: [
+          I('Library', 'haunts the library', 'does not haunt the library'),
+          I('Ballroom', 'haunts the ballroom', 'does not haunt the ballroom'),
+          I('Cellar', 'haunts the cellar', 'does not haunt the cellar'),
+          I('Lift', 'haunts the lift', 'does not haunt the lift'),
+          I('Sauna', 'haunts the sauna', 'does not haunt the sauna'),
+          I('Car park', 'haunts the car park', 'does not haunt the car park') ] },
+        { id: 'guest', label: 'Scared off', items: [
+          I('A magician', 'scared off a magician', 'did not scare off the magician'),
+          I('A food critic', 'scared off a food critic', 'did not scare off the food critic'),
+          I('A wedding party', 'scared off a wedding party', 'did not scare off the wedding party'),
+          I('A ghost hunter', 'scared off a ghost hunter', 'did not scare off the ghost hunter'),
+          I('A tax inspector', 'scared off a tax inspector', 'did not scare off the tax inspector'),
+          I('A brass band', 'scared off a brass band', 'did not scare off the brass band') ] },
+        { id: 'died', label: 'Died', ord: {
+          vals: [1500, 1600, 1700, 1800, 1900, 2000], fmt: v => v + 's',
+          p: t => `died in the ${t}`, n: t => `did not die in the ${t}`,
+          less: 'died earlier than', more: 'died more recently than',
+          stepLess: d => `died exactly ${d === 100 ? 'one century' : d / 100 + ' centuries'} before`, stepMore: d => `died exactly ${d === 100 ? 'one century' : d / 100 + ' centuries'} after` } }
+      ]
+    },
+    {
+      id: 'pigeons', title: 'The Pigeons of Market Square', noun: 'pigeon', nounPl: 'pigeons', primaryLabel: 'Pigeon', icon: 'bird',
+      names: ['Big Kev', 'Doris', 'Two-Toes', 'Lorraine', 'The Professor', 'Gary', 'Mrs Puff'],
+      intro: names => `A crime wave has hit Market Square. Witnesses describe the suspects as "grey" and "a bit pigeony", which narrows it down to ${names}. Each pulled off one daring heist from one victim, then escaped to one rooftop to coo smugly about it.`,
+      ask: q => `The town council has put up a WANTED poster of the pigeon who ${q}. Who is it?`,
+      cats: [
+        { id: 'loot', label: 'Stole', items: [
+          I('A whole pizza', 'stole a whole pizza', 'did not steal the pizza'),
+          I('A croissant', 'stole a croissant', 'did not steal the croissant'),
+          I('A tourist\'s hat', 'stole a tourist\'s hat', 'did not steal the hat'),
+          I('Chips', 'stole a bag of chips', 'did not steal the chips'),
+          I('A wedding ring', 'stole a wedding ring (and gave it back)', 'did not steal the ring'),
+          I('An ice cream', 'stole an ice cream, cone and all', 'did not steal the ice cream') ] },
+        { id: 'victim', label: 'Victim', items: [
+          I('The mayor', 'robbed the mayor', 'did not rob the mayor'),
+          I('A busker', 'robbed a busker', 'did not rob the busker'),
+          I('A toddler', 'robbed a toddler', 'did not rob the toddler'),
+          I('A policeman', 'robbed a policeman', 'did not rob the policeman'),
+          I('A bride', 'robbed a bride', 'did not rob the bride'),
+          I('A statue', 'robbed a statue (somehow)', 'did not rob the statue') ] },
+        { id: 'roof', label: 'Hideout', items: [
+          I('Church', 'hid on the church roof', 'did not hide on the church'),
+          I('Bank', 'hid on the bank roof', 'did not hide on the bank'),
+          I('Bakery', 'hid on the bakery roof', 'did not hide on the bakery'),
+          I('Town hall', 'hid on the town hall', 'did not hide on the town hall'),
+          I('Bus stop', 'hid on the bus stop', 'did not hide on the bus stop'),
+          I('Clock tower', 'hid on the clock tower', 'did not hide on the clock tower') ] },
+        { id: 'time', label: 'Time', ord: {
+          vals: [8, 9, 10, 11, 12, 13], fmt: clock,
+          p: t => `struck at ${t}`, n: t => `did not strike at ${t}`,
+          less: 'struck earlier than', more: 'struck later than',
+          stepLess: d => `struck exactly ${hrs(d)} before`, stepMore: d => `struck exactly ${hrs(d)} after` } }
+      ]
+    }
+  ];
+  root.LOGIC_THEMES = THEMES;
+  if (typeof module !== 'undefined') module.exports = THEMES;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function(){
+'use strict';
+const E = window.LogicEngine, THEMES = window.LOGIC_THEMES;
+const $ = s => document.querySelector(s);
+const LEVEL_INFO = {
+  easy:   {name:'Easy',   desc:'3 suspects · 2 facts'},
+  medium: {name:'Medium', desc:'4 suspects · 2 facts'},
+  hard:   {name:'Hard',   desc:'4 suspects · 3 facts'},
+  expert: {name:'Expert', desc:'5 suspects · 3 facts · on a phone, turn it sideways'}
+};
+const ICONS = {
+  dog:'<svg viewBox="0 0 64 64"><path d="M14 18c-6 2-8 14-4 20 3 4 6 1 7-3M50 18c6 2 8 14 4 20-3 4-6 1-7-3" fill="#8a5a3b"/><ellipse cx="32" cy="34" rx="17" ry="18" fill="#c98b5e"/><ellipse cx="32" cy="43" rx="10" ry="8" fill="#f1d3b5"/><circle cx="25" cy="31" r="2.6" fill="#222"/><circle cx="39" cy="31" r="2.6" fill="#222"/><ellipse cx="32" cy="39" rx="4" ry="3" fill="#222"/><path d="M32 42v3m-4 1c2 2 6 2 8 0" stroke="#222" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M31 46c0 4 3 5 4 2v-2" fill="#e46b6b"/></svg>',
+  veg:'<svg viewBox="0 0 64 64"><path d="M30 14c-3-6 1-10 4-9-1 3 0 6 2 8 3-3 8-3 10-1-4 1-6 3-7 6" fill="#4f9a4a"/><path d="M22 20c8-6 20-3 24 6 3 8-4 22-18 30-6 3-9-1-9-6 0-12-4-23 3-30z" fill="#e8892f"/><path d="M26 30h6M24 38h7M25 46h5" stroke="#b9651b" stroke-width="2" stroke-linecap="round"/><circle cx="35" cy="29" r="2" fill="#222"/><circle cx="42" cy="31" r="2" fill="#222"/><path d="M35 37c2 2 5 2 7 0" stroke="#222" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>',
+  mug:'<svg viewBox="0 0 64 64"><rect x="12" y="14" width="34" height="40" rx="5" fill="#5c7cc2"/><path d="M46 24h4a7 7 0 0 1 0 14h-4" stroke="#5c7cc2" stroke-width="5" fill="none"/><path d="M20 8c0 3 3 3 3 6M29 6c0 3 3 3 3 6M38 8c0 3 3 3 3 6" stroke="#9aa3b5" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="23" cy="31" r="2.6" fill="#fff"/><circle cx="35" cy="31" r="2.6" fill="#fff"/><path d="M22 41c4-3 10-3 14 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="18" y="22" width="22" height="3" rx="1.5" fill="#22325c"/></svg>',
+  ghost:'<svg viewBox="0 0 64 64"><path d="M14 56V28a18 18 0 0 1 36 0v28l-6-5-6 5-6-5-6 5-6-5z" fill="#eef1f8" stroke="#9aa3b5" stroke-width="2"/><ellipse cx="25" cy="28" rx="3" ry="4" fill="#222"/><ellipse cx="39" cy="28" rx="3" ry="4" fill="#222"/><ellipse cx="32" cy="39" rx="4" ry="5" fill="#222"/><path d="M41 10l6-4 1 7" stroke="#e0a526" stroke-width="2" fill="none"/></svg>',
+  bird:'<svg viewBox="0 0 64 64"><ellipse cx="34" cy="40" rx="18" ry="14" fill="#8e97a8"/><circle cx="26" cy="24" r="11" fill="#a3abbb"/><path d="M27 30c4 6 12 8 18 5" stroke="#5f9e8f" stroke-width="5" fill="none"/><path d="M15 23l-7 3 7 2z" fill="#e0a526"/><circle cx="23" cy="21" r="3" fill="#fff"/><circle cx="22.5" cy="21.5" r="1.6" fill="#222"/><path d="M18 16l10 2" stroke="#222" stroke-width="2.4" stroke-linecap="round"/><path d="M30 53v6m8-6v6" stroke="#e0a526" stroke-width="2.4" stroke-linecap="round"/><path d="M40 32c6 2 10 8 12 14" stroke="#6b7385" stroke-width="2" fill="none"/></svg>'
+};
+const SVG_X = '<svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="var(--x)" stroke-width="2.4" stroke-linecap="round"/></svg>';
+const SVG_T = '<svg viewBox="0 0 20 20"><path d="M3.5 10.5l4.2 4.2L16.8 5" stroke="var(--tick)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('mm.'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('mm.'+k, JSON.stringify(v)); }catch(e){} }
+};
+let settings = Object.assign({auto:true, tickFirst:false, notes:true}, store.get('settings', {}));
+let stats = store.get('stats', {});
+let S = null;      // play state
+let PZ = null;     // puzzle
+let TH = null;     // theme
+let hintStage = null;
+
+function key(a,b){ return a<b ? a+'-'+b : b+'-'+a; }
+const catOf = g => Math.floor(g / PZ.n);
+const label = g => PZ.cats[catOf(g)].items[g % PZ.n].l;
+function truth(a,b){ return PZ.ent[a] === PZ.ent[b] ? 1 : -1; }
+function nameList(names){ return names.length < 2 ? names.join('') : names.slice(0,-1).join(', ') + ' and ' + names[names.length-1]; }
+
+/* ---------- puzzle lifecycle ---------- */
+function todaySeed(level){
+  const d = new Date(); const s = d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate();
+  return (s * 31 + Object.keys(LEVEL_INFO).indexOf(level) * 7919) >>> 0;
+}
+function startPuzzle(level, theme, seed, daily){
+  $('#loading').classList.add('open');
+  setTimeout(() => {
+    try{
+      seed = seed == null ? (Math.random()*4294967295)>>>0 : seed;
+      const pz = E.generate(THEMES, {seed, level, theme: theme || null});
+      S = {seed, level, theme: pz.theme, wantTheme: theme||null, marks:{}, auto:{}, struck:[], who:'', elapsed:0, solved:false, checks:0, hints:0, daily:!!daily, undo:[]};
+      load(pz);
+      save();
+    } finally { $('#loading').classList.remove('open'); }
+  }, 30);
+}
+function load(pz){
+  PZ = pz; TH = THEMES.find(t => t.id === pz.theme); hintStage = null;
+  render();
+}
+function save(){ if(S){ const {undo, ...rest} = S; store.set('state', rest); } }
+
+/* ---------- rendering ---------- */
+function render(){
+  renderCase(); renderClues(); renderGrid(); renderAnswers(); updateTimer();
+}
+function renderCase(){
+  const names = PZ.cats[0].items.map(i => i.l);
+  const others = PZ.cats.slice(1).map(c => c.label.toLowerCase());
+  const q = PZ.question, qc = PZ.cats[catOf(q)], qi = qc.items[q % PZ.n];
+  const qText = TH.ask(qi.p);
+  $('#caseCard').innerHTML =
+    `<div class="case-head">${ICONS[TH.icon]}<div><p class="case-title">${TH.title}</p>
+      <div class="chips"><span class="chip">${LEVEL_INFO[S.level].name}</span>${S.daily?'<span class="chip">Today\'s case</span>':''}<span class="chip">Case #${S.seed.toString(36).toUpperCase()}</span></div></div></div>
+     <p class="story">${TH.intro(nameList(names))}</p>
+     <p class="task">Work out each ${TH.noun}'s ${nameList(others)}.</p>
+     <div class="question">${qText}</div>`;
+  $('#whoQ').textContent = 'Who was it?';
+  $('#whoSel').innerHTML = '<option value="">Choose…</option>' + names.map((nm,i)=>`<option value="${i}">${nm}</option>`).join('');
+  $('#whoSel').value = S.who;
+}
+function clueHTML(){
+  return PZ.clues.map((c,i) => `<li data-i="${i}" class="${S.struck.includes(i)?'done':''}">${E.clueText(PZ, TH, c)}</li>`).join('');
+}
+function renderClues(){ $('#clues').innerHTML = clueHTML(); $('#clues2').innerHTML = clueHTML(); }
+
+function layoutVars(){
+  const n = PZ.n, k = PZ.k;
+  const wrap = $('#gridwrap');
+  const W = wrap.clientWidth || 340;
+  const phone = window.innerWidth < 600;
+  const lw = phone ? (n >= 5 ? 82 : 100) : 140;
+  const cols = (k-1)*n;
+  let cs = Math.floor((W - lw - (phone ? 18 : 22) - 6) / cols);
+  cs = Math.max(phone ? 21 : 26, Math.min(cs, phone ? 34 : 40));
+  const longest = Math.max(...PZ.cats.slice(1).flatMap(c => c.items.map(i => i.l.length)));
+  const hh = Math.min(phone ? 104 : 130, Math.max(58, longest * 7 + 10));
+  document.documentElement.style.setProperty('--cs', cs+'px');
+  document.documentElement.style.setProperty('--lw', lw+'px');
+  document.documentElement.style.setProperty('--hh', hh+'px');
+}
+function renderGrid(){
+  layoutVars();
+  const n = PZ.n, k = PZ.k;
+  const colCats = []; for(let c=1;c<k;c++) colCats.push(c);
+  const rowCats = [0]; for(let c=k-1;c>=2;c--) rowCats.push(c);
+  let h = '<table class="grid" id="grid"><tr><th class="corner" colspan="2" rowspan="2">'+ICONS[TH.icon]+'</th>';
+  for(const c of colCats) h += `<th class="cgroup" colspan="${n}">${PZ.cats[c].label}</th>`;
+  h += '</tr><tr>';
+  for(const c of colCats) for(let j=0;j<n;j++) h += `<th class="clab" data-g="${c*n+j}"><div>${PZ.cats[c].items[j].l}</div></th>`;
+  h += '</tr>';
+  rowCats.forEach((rc, ri) => {
+    const vis = colCats.slice(0, colCats.length - ri);
+    for(let i=0;i<n;i++){
+      const a = rc*n+i;
+      h += '<tr>';
+      if(i===0) h += `<th class="rgroup" rowspan="${n}"><div>${PZ.cats[rc].label}</div></th>`;
+      h += `<th class="rlab" data-g="${a}">${PZ.cats[rc].items[i].l}</th>`;
+      for(const cc of colCats){
+        if(!vis.includes(cc)){ for(let j=0;j<n;j++) h += '<td class="empty"></td>'; continue; }
+        for(let j=0;j<n;j++){
+          const b = cc*n+j;
+          let cls = 'cell';
+          if(j===0) cls += ' bl'; if(j===n-1) cls += ' br';
+          if(i===0) cls += ' bt'; if(i===n-1) cls += ' bb';
+          h += `<td class="${cls}" data-a="${a}" data-b="${b}"></td>`;
+        }
+      }
+      h += '</tr>';
+    }
+  });
+  h += '</table>';
+  $('#gridwrap').innerHTML = h;
+  paintAll();
+}
+function paintCell(td){
+  const v = S.marks[key(+td.dataset.a, +td.dataset.b)] || 0;
+  td.innerHTML = v === 1 ? SVG_T : v === -1 ? SVG_X : '';
+  td.classList.toggle('cross', false);
+  td.classList.toggle('auto', v === -1 && !!S.auto[key(+td.dataset.a, +td.dataset.b)]);
+}
+function paintAll(){ document.querySelectorAll('td.cell').forEach(paintCell); }
+
+function renderAnswers(){
+  const n = PZ.n, k = PZ.k;
+  let h = '<table class="ans"><tr><th>'+PZ.cats[0].label+'</th>';
+  for(let c=1;c<k;c++) h += `<th>${PZ.cats[c].label}</th>`;
+  h += '</tr>';
+  for(let i=0;i<n;i++){
+    h += `<tr><td>${PZ.cats[0].items[i].l}</td>`;
+    for(let c=1;c<k;c++){
+      let cur = '';
+      for(let j=0;j<n;j++) if(S.marks[key(i, c*n+j)] === 1) cur = String(c*n+j);
+      h += `<td><select data-a="${i}" data-c="${c}"><option value="">–</option>` +
+        PZ.cats[c].items.map((it,j)=>`<option value="${c*n+j}" ${String(c*n+j)===cur?'selected':''}>${it.l}</option>`).join('') + '</select></td>';
+    }
+    h += '</tr>';
+  }
+  h += '</table>';
+  $('#answers').innerHTML = h;
+}
+
+/* ---------- marking ---------- */
+function setMark(a, b, v, batch, isAuto){
+  const kk = key(a,b), old = S.marks[kk] || 0;
+  if(old === v) return;
+  batch.push([kk, old, !!S.auto[kk]]);
+  if(v) S.marks[kk] = v; else delete S.marks[kk];
+  if(isAuto) S.auto[kk] = 1; else delete S.auto[kk];
+}
+function blockPeers(a, b){
+  // same row of block: (a, any in cat(b)); same column: (any in cat(a), b)
+  const n = PZ.n, ca = catOf(a), cb = catOf(b), out = [];
+  for(let j=0;j<n;j++){ const x = cb*n+j; if(x!==b) out.push([a,x]); const y = ca*n+j; if(y!==a) out.push([y,b]); }
+  return out;
+}
+function applyMark(a, b, v){
+  const batch = [];
+  const old = S.marks[key(a,b)] || 0;
+  setMark(a, b, v, batch, false);
+  if(settings.auto){
+    if(v === 1){ for(const [x,y] of blockPeers(a,b)) if(!S.marks[key(x,y)]) setMark(x, y, -1, batch, true); }
+    else if(old === 1){ for(const [x,y] of blockPeers(a,b)) if(S.auto[key(x,y)]) setMark(x, y, 0, batch, false); }
+  }
+  if(batch.length){ S.undo.push(batch); if(S.undo.length > 300) S.undo.shift(); }
+  hintStage = null;
+  afterChange();
+}
+function afterChange(){
+  clearFlags();
+  paintAll(); renderAnswers(); save();
+  autoCheckComplete();
+}
+function clearFlags(){ document.querySelectorAll('td.wrong,td.hint').forEach(td => td.classList.remove('wrong','hint')); }
+
+$('#gridwrap').addEventListener('click', e => {
+  const td = e.target.closest('td.cell'); if(!td || S.solved) return;
+  const a = +td.dataset.a, b = +td.dataset.b;
+  const v = S.marks[key(a,b)] || 0;
+  const order = settings.tickFirst ? [0,1,-1] : [0,-1,1];
+  const next = order[(order.indexOf(v)+1) % 3];
+  applyMark(a, b, next);
+  highlight(a, b, next);
+});
+function highlight(a, b, v){
+  document.querySelectorAll('th.hl').forEach(t => t.classList.remove('hl'));
+  document.querySelectorAll(`th[data-g="${a}"],th[data-g="${b}"]`).forEach(t => t.classList.add('hl'));
+  $('#status').innerHTML = `<b>${label(a)}</b> &amp; <b>${label(b)}</b>: ${v===1?'✓ yes':v===-1?'✕ no':'blank'}`;
+}
+$('#answers').addEventListener('change', e => {
+  const sel = e.target.closest('select'); if(!sel || S.solved) return;
+  const a = +sel.dataset.a, c = +sel.dataset.c, n = PZ.n;
+  if(sel.value === ''){
+    for(let j=0;j<n;j++) if(S.marks[key(a,c*n+j)] === 1){ applyMark(a, c*n+j, 0); }
+  } else applyMark(a, +sel.value, 1);
+});
+$('#whoSel').addEventListener('change', e => { S.who = e.target.value; save(); autoCheckComplete(); });
+function onClueTap(e){
+  const li = e.target.closest('li'); if(!li) return;
+  const i = +li.dataset.i, at = S.struck.indexOf(i);
+  if(at >= 0) S.struck.splice(at,1); else S.struck.push(i);
+  save(); renderClues();
+}
+$('#clues').addEventListener('click', onClueTap);
+$('#clues2').addEventListener('click', onClueTap);
+
+$('#btnUndo').onclick = () => {
+  const batch = S.undo.pop(); if(!batch){ toast('Nothing to undo'); return; }
+  for(let i=batch.length-1;i>=0;i--){ const [kk, old, wasAuto] = batch[i]; if(old) S.marks[kk] = old; else delete S.marks[kk]; if(wasAuto) S.auto[kk]=1; else delete S.auto[kk]; }
+  afterChange();
+};
+
+/* ---------- checking ---------- */
+function allCells(){ return [...document.querySelectorAll('td.cell')].map(td => [+td.dataset.a, +td.dataset.b, td]); }
+function wrongCells(){ return allCells().filter(([a,b]) => { const v = S.marks[key(a,b)]; return v && v !== truth(a,b); }); }
+function tableComplete(){
+  const n = PZ.n;
+  for(let i=0;i<n;i++) for(let c=1;c<PZ.k;c++){
+    let ok = false; for(let j=0;j<n;j++) if(S.marks[key(i,c*n+j)] === 1 && truth(i,c*n+j) === 1) ok = true;
+    if(!ok) return false;
+  }
+  return true;
+}
+function whoCorrect(){ return S.who !== '' && PZ.ent[PZ.question] === +S.who; }
+function autoCheckComplete(){
+  if(S.solved) return;
+  if(tableComplete() && whoCorrect() && wrongCells().length === 0) win();
+}
+$('#btnCheck').onclick = () => {
+  if(S.solved){ showWin(); return; }
+  S.checks++;
+  clearFlags();
+  const wrong = wrongCells();
+  if(wrong.length){
+    wrong.forEach(([,,td]) => td.classList.add('wrong'));
+    toast(wrong.length === 1 ? '1 mark is wrong (shown in red)' : `${wrong.length} marks are wrong (shown in red)`);
+    setTimeout(clearFlags, 3500);
+  } else if(!tableComplete()){
+    toast('No mistakes so far. Keep going!');
+  } else if(S.who === ''){
+    toast('Grid is right! Now answer: who was it?'); $('#whoSel').focus();
+  } else if(!whoCorrect()){
+    toast('The grid is right, but check your answer to the question.');
+  } else win();
+  save();
+};
+
+/* ---------- hints ---------- */
+function stateFromMarks(onlyCorrect){
+  const N = PZ.n * PZ.k, rel = new Int8Array(N*N);
+  for(const [kk, v] of Object.entries(S.marks)){
+    const [a,b] = kk.split('-').map(Number);
+    if(onlyCorrect && v !== truth(a,b)) continue;
+    rel[a*N+b] = v; rel[b*N+a] = v;
+  }
+  return {N, rel};
+}
+function newFacts(res){
+  if(res.status === 'contradiction' || !res.state) return [];
+  const N = res.state.N, out = [];
+  for(const [a,b,td] of allCells()){ const v = res.state.rel[a*N+b]; if(v && !S.marks[key(a,b)]) out.push([a,b,td,v]); }
+  return out;
+}
+$('#btnHint').onclick = () => {
+  if(S.solved) return;
+  clearFlags();
+  const wrong = wrongCells();
+  if(wrong.length){ wrong[0][2].classList.add('wrong'); toast('This mark is wrong. Fix it first.'); S.hints++; save(); return; }
+  const P = {n:PZ.n, k:PZ.k, ord:PZ.ord};
+  const base = stateFromMarks(true);
+  if(hintStage && hintStage.cell){
+    const [a,b,td,v] = hintStage.cell; hintStage = null;
+    applyMark(a, b, v); S.hints++; save();
+    const td2 = document.querySelector(`td.cell[data-a="${a}"][data-b="${b}"]`); if(td2) td2.classList.add('hint');
+    highlight(a,b,v); return;
+  }
+  // 1) grid logic alone
+  let facts = newFacts(E.solve(Object.assign({clues:[]}, P), {state: base}));
+  if(facts.length){
+    hintStage = {cell: facts[0]};
+    toast('No clue needed: your marks already decide some squares. Press Hint again to see one.');
+    return;
+  }
+  // 2) a single clue
+  const order = PZ.clues.map((c,i)=>i).sort((x,y) => (S.struck.includes(x)?1:0) - (S.struck.includes(y)?1:0));
+  for(const i of order){
+    facts = newFacts(E.solve(Object.assign({clues:[PZ.clues[i]]}, P), {state: base}));
+    if(facts.length){
+      hintStage = {cell: facts[0]};
+      document.querySelectorAll(`li[data-i="${i}"]`).forEach(li => { li.classList.add('flash'); setTimeout(()=>li.classList.remove('flash'), 4000); });
+      if(S.struck.includes(i)){ S.struck.splice(S.struck.indexOf(i),1); renderClues(); document.querySelectorAll(`li[data-i="${i}"]`).forEach(li => li.classList.add('flash')); }
+      toast(`Look again at clue ${i+1}. Press Hint again to see what it gives you.`);
+      return;
+    }
+  }
+  // 3) combination / reveal
+  facts = newFacts(E.solve(Object.assign({clues:PZ.clues}, P), {state: base}));
+  if(!facts.length){
+    const N = PZ.n*PZ.k;
+    facts = allCells().filter(([a,b]) => !S.marks[key(a,b)]).map(([a,b,td]) => [a,b,td,truth(a,b)]).sort((x,y)=>y[3]-x[3]);
+  }
+  if(facts.length){
+    hintStage = {cell: facts[0]};
+    toast('This one needs two clues together. Press Hint again to reveal a square.');
+  } else toast('The grid is full! Fill in the question and press Check.');
+};
+
+/* ---------- win ---------- */
+function fmtTime(s){ s = Math.floor(s); const m = Math.floor(s/60); return m + ':' + String(s%60).padStart(2,'0'); }
+function win(){
+  S.solved = true;
+  const st = stats[S.level] || {solved:0, best:null, total:0};
+  st.solved++; st.total += S.elapsed; if(st.best == null || S.elapsed < st.best) st.best = S.elapsed;
+  if(S.hints === 0 && S.checks === 0) st.clean = (st.clean||0) + 1;
+  stats[S.level] = st; store.set('stats', stats);
+  save(); showWin();
+}
+function showWin(){
+  const name = PZ.cats[0].items[PZ.ent[PZ.question]].l;
+  $('#winTitle').textContent = `It was ${name}!`;
+  const flair = S.hints===0 && S.checks===0 ? 'No hints, no checks. Flawless detective work.' : `Solved with ${S.hints} hint${S.hints===1?'':'s'} and ${S.checks} check${S.checks===1?'':'s'}.`;
+  $('#winText').textContent = `Time: ${fmtTime(S.elapsed)}. ${flair}`;
+  const st = stats[S.level] || {};
+  $('#winStats').innerHTML = `<div><b>${st.solved||0}</b>${LEVEL_INFO[S.level].name} solved</div><div><b>${st.best!=null?fmtTime(st.best):'–'}</b>best time</div><div><b>${st.solved?fmtTime(st.total/st.solved):'–'}</b>average</div><div><b>${st.clean||0}</b>flawless</div>`;
+  open('#mWin');
+}
+$('#btnWinNext').onclick = () => { close('#mWin'); startPuzzle(S.level, S.wantTheme, null, false); };
+
+/* ---------- timer ---------- */
+let lastTick = Date.now();
+function updateTimer(){ $('#timer').textContent = S ? fmtTime(S.elapsed) : '0:00'; }
+setInterval(() => {
+  const now = Date.now(), dt = (now - lastTick)/1000; lastTick = now;
+  if(S && !S.solved && document.visibilityState === 'visible' && dt < 5){ S.elapsed += dt; updateTimer(); if(Math.floor(S.elapsed) % 5 === 0) save(); }
+}, 1000);
+
+/* ---------- dialogs ---------- */
+function open(id){ $(id).classList.add('open'); }
+function close(id){ $(id).classList.remove('open'); }
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if(e.target === m || e.target.closest('[data-close]')) m.classList.remove('open'); }));
+let pickLevel = 'medium', pickTheme = '';
+function renderNew(){
+  $('#levelOpts').innerHTML = Object.entries(LEVEL_INFO).map(([k,v]) => `<button class="opt ${k===pickLevel?'sel':''}" data-l="${k}"><b>${v.name}</b><small>${v.desc}</small></button>`).join('');
+  $('#themeOpts').innerHTML = `<button class="opt ${pickTheme===''?'sel':''}" data-t=""><b>🎲 Surprise me</b><small>any story</small></button>` +
+    THEMES.map(t => `<button class="opt ${t.id===pickTheme?'sel':''}" data-t="${t.id}"><b>${t.title}</b></button>`).join('');
+}
+$('#levelOpts').onclick = e => { const b = e.target.closest('[data-l]'); if(b){ pickLevel = b.dataset.l; renderNew(); } };
+$('#themeOpts').onclick = e => { const b = e.target.closest('[data-t]'); if(b){ pickTheme = b.dataset.t; renderNew(); } };
+$('#btnNew').onclick = () => { pickLevel = S ? S.level : 'medium'; pickTheme = S ? (S.wantTheme||'') : ''; renderNew(); open('#mNew'); };
+$('#btnStart').onclick = () => { close('#mNew'); store.set('lastLevel', pickLevel); startPuzzle(pickLevel, pickTheme, null, false); };
+$('#btnDaily').onclick = () => { close('#mNew'); startPuzzle(pickLevel, null, todaySeed(pickLevel), true); };
+$('#btnMenu').onclick = () => {
+  $('#setAuto').checked = settings.auto; $('#setTickFirst').checked = settings.tickFirst;
+  $('#statsBox').innerHTML = Object.entries(LEVEL_INFO).map(([k,v]) => { const s = stats[k]||{}; return `<div><b>${s.solved||0}</b>${v.name}<br>${s.best!=null?'best '+fmtTime(s.best):''}</div>`; }).join('');
+  open('#mMenu');
+};
+$('#setAuto').onchange = e => { settings.auto = e.target.checked; store.set('settings', settings); };
+$('#setTickFirst').onchange = e => { settings.tickFirst = e.target.checked; store.set('settings', settings); };
+$('#btnRestart').onclick = () => { if(S.solved) return; S.marks = {}; S.auto = {}; S.struck = []; S.who=''; S.undo = []; close('#mMenu'); render(); save(); };
+$('#btnHow').onclick = () => { close('#mMenu'); open('#mHow'); };
+$('#btnClues').onclick = () => $('#sheet').classList.toggle('open');
+$('#btnSheetClose').onclick = () => $('#sheet').classList.remove('open');
+
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 3200); }
+
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if(PZ){ renderGrid(); } }, 150); });
+
+window.__mm = () => ({PZ, S});
+/* ---------- boot ---------- */
+const saved = store.get('state', null);
+if(saved && saved.seed != null){
+  try{
+    const pz = E.generate(THEMES, {seed: saved.seed, level: saved.level, theme: saved.wantTheme || null});
+    S = Object.assign({auto:{}, struck:[], who:'', checks:0, hints:0}, saved, {undo:[]});
+    load(pz);
+  }catch(e){ startPuzzle('easy', null, null, false); }
+} else {
+  startPuzzle('easy', 'dogs', null, false);
+  if(!store.get('seenHow', false)){ setTimeout(()=>open('#mHow'), 400); store.set('seenHow', true); }
+}
+})();
+</script>
+</body>
+</html>
