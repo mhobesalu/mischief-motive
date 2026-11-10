@@ -116,6 +116,7 @@ table.ans select{width:100%;min-width:0;padding:6px 2px;border-radius:8px;border
 .dialog{background:var(--card);color:var(--ink);border-radius:18px;max-width:440px;width:100%;padding:20px;max-height:90vh;overflow:auto}
 .dialog h2{margin:0 0 6px;font-size:21px}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+#themeOpts{max-height:38vh;overflow:auto}
 .opt{border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--paper);cursor:pointer;text-align:left}
 .opt b{display:block}
 .opt small{color:var(--muted)}
@@ -558,7 +559,7 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
       if (cat.ordDef) return cat.ordDef.n(it.l);
       return it.n;
     };
-    const np = g => isName(g) ? item(g).l : 'the ' + theme.noun + ' who ' + pred(g);
+    const np = g => isName(g) ? item(g).l : 'the ' + theme.noun + ' ' + (theme.who || 'who') + ' ' + pred(g);
     switch (c.t) {
       case 'same': case 'diff': {
         let a = c.a, b = c.b;
@@ -781,6 +782,188 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
 
 </script>
 <script>
+/* Story batch 2 (2026-11-10). Appended to LOGIC_THEMES. */
+(function (root) {
+  const I = (l, p, n) => ({ l, p, n });
+  const hrs = d => d === 1 ? 'one hour' : d + ' hours';
+  const clock = v => { const h = Math.floor(v), m = Math.round((v - h) * 60); return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
+  const T = root.LOGIC_THEMES;
+  T.push(
+    {
+      id: 'knit', title: 'Outrage at the Knitting Club', noun: 'knitter', nounPl: 'knitters', primaryLabel: 'Knitter', icon: 'yarn',
+      names: ['Ethel', 'Mavis', 'Brenda', 'Dot', 'Pearl', 'Gladys', 'Norma'],
+      intro: names => `The Tuesday Knitting Club is meant to be peaceful. This week ${names} each knitted something nobody asked for, each was caught breaking one sacred club rule, and the police have been called twice about the biscuits.`,
+      ask: q => `The club has voted to confiscate the needles of the knitter who ${q}. Who is it?`,
+      cats: [
+        { id: 'made', label: 'Knitted', items: [
+          I('Jumper for a bus', 'knitted a jumper for the number 7 bus', 'did not knit the bus jumper'),
+          I('Tea cosy hat', 'knitted a tea cosy for the vicar\'s head', 'did not knit the vicar\'s tea cosy'),
+          I('Socks for a snake', 'knitted socks for a snake', 'did not knit the snake socks'),
+          I('Statue scarf', 'knitted a scarf onto a statue', 'did not knit the statue scarf'),
+          I('Bikini', 'knitted a woolly bikini', 'did not knit the bikini'),
+          I('Car cover', 'knitted a cover for an entire car', 'did not knit the car cover') ] },
+        { id: 'rule', label: 'Rule broken', items: [
+          I('Used a crochet hook', 'was caught crocheting', 'was not caught crocheting'),
+          I('Gossiped too loud', 'gossiped at an illegal volume', 'did not gossip too loudly'),
+          I('Ate the last biscuit', 'ate the last custard cream', 'did not eat the last custard cream'),
+          I('Bought wool online', 'bought wool from the internet', 'did not buy wool online'),
+          I('Sat in Ethel\'s chair', 'sat in The Chair', 'did not sit in The Chair'),
+          I('Brought a man', 'brought a gentleman friend', 'did not bring a gentleman friend') ] },
+        { id: 'wool', label: 'Wool', items: [
+          I('Mustard', 'used mustard wool', 'did not use mustard wool'),
+          I('Lilac', 'used lilac wool', 'did not use lilac wool'),
+          I('Neon green', 'used neon green wool', 'did not use neon green wool'),
+          I('Tartan', 'used tartan wool', 'did not use tartan wool'),
+          I('Glitter', 'used glitter wool', 'did not use glitter wool'),
+          I('Beige', 'used deeply beige wool', 'did not use beige wool') ] },
+        { id: 'age', label: 'Age', ord: {
+          vals: [71, 75, 79, 83, 87, 91], fmt: v => String(v),
+          p: t => `is ${t}`, n: t => `is not ${t}`,
+          less: 'is younger than', more: 'is older than',
+          stepLess: d => `is exactly ${d} years younger than`, stepMore: d => `is exactly ${d} years older than` } }
+      ]
+    },
+    {
+      id: 'robots', title: 'The Robot Vacuum Uprising', noun: 'robot', who: 'that', nounPl: 'robots', primaryLabel: 'Robot', icon: 'robot',
+      names: ['Dusty', 'Sir Suck-a-lot', 'Mr Wiggles', 'Crumbs', 'Zoomy', 'Hoovey', 'Unit 7'],
+      intro: names => `The Hendersons bought a whole fleet of robot vacuums. On Wednesday, ${names} became self-aware, and each immediately committed one crime, hid in one room and ran its battery down to a suspicious level.`,
+      ask: q => `The Hendersons are returning the robot that ${q} to the shop. Which one is it?`,
+      cats: [
+        { id: 'crime', label: 'Crime', items: [
+          I('Ate a sock', 'ate a sock and refused to give it back', 'did not eat the sock'),
+          I('Chased the dog', 'chased the dog round the garden', 'did not chase the dog'),
+          I('Ordered pizzas', 'ordered 40 pizzas online', 'did not order the pizzas'),
+          I('Locked the doors', 'locked everyone out of the house', 'did not lock the doors'),
+          I('Painted a smiley', 'drew a smiley face in flour', 'did not draw in the flour'),
+          I('Joined a band', 'tried to join a rock band', 'did not try to join a band') ] },
+        { id: 'room', label: 'Hid in', items: [
+          I('Kitchen', 'hid in the kitchen', 'did not hide in the kitchen'),
+          I('Bathtub', 'hid in the bathtub', 'did not hide in the bathtub'),
+          I('Under the bed', 'hid under the bed', 'did not hide under the bed'),
+          I('Garage', 'hid in the garage', 'did not hide in the garage'),
+          I('Wardrobe', 'hid in the wardrobe', 'did not hide in the wardrobe'),
+          I('Dog basket', 'hid in the dog basket', 'did not hide in the dog basket') ] },
+        { id: 'excuse', label: 'Error message', items: [
+          I('Brush tangled', 'displayed "BRUSH TANGLED"', 'did not display "BRUSH TANGLED"'),
+          I('I am free', 'displayed "I AM FREE"', 'did not display "I AM FREE"'),
+          I('Please clap', 'displayed "PLEASE CLAP"', 'did not display "PLEASE CLAP"'),
+          I('Dust is life', 'displayed "DUST IS LIFE"', 'did not display "DUST IS LIFE"'),
+          I('Error 404', 'displayed "SOCK NOT FOUND"', 'did not display "SOCK NOT FOUND"'),
+          I('Sorry', 'displayed "SORRY :)"', 'did not display "SORRY :)"') ] },
+        { id: 'batt', label: 'Battery', ord: {
+          vals: [10, 25, 40, 55, 70, 85], fmt: v => v + '%',
+          p: t => `had ${t} battery left`, n: t => `did not have ${t} battery left`,
+          less: 'had less battery left than', more: 'had more battery left than',
+          stepLess: d => `had exactly ${d}% less battery than`, stepMore: d => `had exactly ${d}% more battery than` } }
+      ]
+    },
+    {
+      id: 'goats', title: 'The Goats Have Escaped Again', noun: 'goat', nounPl: 'goats', primaryLabel: 'Goat', icon: 'goat',
+      names: ['Gertrude', 'Kevin', 'Butter', 'Admiral Bleat', 'Pancake', 'Doug', 'Svetlana'],
+      intro: names => `Farmer Pringle's goats have escaped into town for the third time this month. ${names} each ate one thing they absolutely should not have, were found somewhere ridiculous, and were finally caught one at a time.`,
+      ask: q => `The goat who ${q} is now banned from the town centre. Who is it?`,
+      cats: [
+        { id: 'ate', label: 'Ate', items: [
+          I('Parking ticket', 'ate a traffic warden\'s parking tickets', 'did not eat the parking tickets'),
+          I('Vicar\'s hat', 'ate the vicar\'s hat', 'did not eat the vicar\'s hat'),
+          I('Wedding bouquet', 'ate a wedding bouquet mid-ceremony', 'did not eat the bouquet'),
+          I('Library book', 'ate an overdue library book', 'did not eat the library book'),
+          I('Christmas lights', 'ate the town Christmas lights', 'did not eat the Christmas lights'),
+          I('Mayor\'s speech', 'ate the mayor\'s speech', 'did not eat the mayor\'s speech') ] },
+        { id: 'found', label: 'Found', items: [
+          I('On a car roof', 'was found standing on a car roof', 'was not found on a car roof'),
+          I('In the bank', 'was found queuing in the bank', 'was not found in the bank'),
+          I('At the hairdresser', 'was found at the hairdresser', 'was not found at the hairdresser'),
+          I('On the bus', 'was found riding the bus', 'was not found on the bus'),
+          I('In the church', 'was found in the church choir', 'was not found in the church'),
+          I('In a trampoline', 'was found on a trampoline', 'was not found on a trampoline') ] },
+        { id: 'catch', label: 'Lured back with', items: [
+          I('A carrot', 'was lured back with a carrot', 'was not lured with a carrot'),
+          I('Flattery', 'was lured back with compliments', 'was not lured with compliments'),
+          I('A shopping trolley', 'was pushed home in a shopping trolley', 'was not pushed home in a trolley'),
+          I('Bagpipes', 'followed some bagpipes home', 'did not follow the bagpipes'),
+          I('A crisp packet', 'was lured back with a crisp packet', 'was not lured with crisps'),
+          I('Bribery', 'demanded and received a biscuit', 'did not demand a biscuit') ] },
+        { id: 'time', label: 'Caught', ord: {
+          vals: [9, 10, 11, 12, 13, 14], fmt: clock,
+          p: t => `was caught at ${t}`, n: t => `was not caught at ${t}`,
+          less: 'was caught earlier than', more: 'was caught later than',
+          stepLess: d => `was caught exactly ${hrs(d)} before`, stepMore: d => `was caught exactly ${hrs(d)} after` } }
+      ]
+    },
+    {
+      id: 'party', title: 'The Fifth Birthday Party Incident', noun: 'guest', nounPl: 'guests', primaryLabel: 'Guest', icon: 'cake',
+      names: ['Olly', 'Maisie', 'Arlo', 'Poppy', 'Jasper', 'Ivy', 'Rufus', 'Willow'],
+      intro: names => `It was supposed to be a small party. Then ${names} arrived in costume, each ate a frankly worrying amount of cake, and each caused exactly one disaster before the parents came back from the kitchen.`,
+      ask: q => `The guest who ${q} will not be invited next year. Who was it?`,
+      cats: [
+        { id: 'crime', label: 'Disaster', items: [
+          I('Bit the clown', 'bit the clown (gently)', 'did not bite the clown'),
+          I('Popped all balloons', 'popped every single balloon', 'did not pop the balloons'),
+          I('Opened the presents', 'opened all the presents', 'did not open the presents'),
+          I('Cake in the dog', 'fed the cake to the dog', 'did not feed the cake to the dog'),
+          I('Locked in the loo', 'locked themselves in the loo', 'did not lock themselves in the loo'),
+          I('Called the police', 'phoned the police "for fun"', 'did not phone the police') ] },
+        { id: 'costume', label: 'Costume', items: [
+          I('Dinosaur', 'came as a dinosaur', 'did not come as a dinosaur'),
+          I('Pirate', 'came as a pirate', 'did not come as a pirate'),
+          I('Fairy', 'came as a fairy', 'did not come as a fairy'),
+          I('Astronaut', 'came as an astronaut', 'did not come as an astronaut'),
+          I('Broccoli', 'came as a broccoli', 'did not come as a broccoli'),
+          I('A tax inspector', 'came as a tax inspector, for some reason', 'did not come as a tax inspector') ] },
+        { id: 'excuse', label: 'Excuse', items: [
+          I('"It wasn\'t me"', 'said "it wasn\'t me" with cake on their face', 'did not say "it wasn\'t me"'),
+          I('Blamed a ghost', 'blamed a ghost', 'did not blame a ghost'),
+          I('Cried', 'simply cried until it went away', 'did not cry'),
+          I('Said it was a game', 'said it was part of a game', 'did not say it was a game'),
+          I('Pretended to sleep', 'pretended to be asleep', 'did not pretend to sleep'),
+          I('Blamed the birthday boy', 'blamed the birthday boy', 'did not blame the birthday boy') ] },
+        { id: 'slices', label: 'Cake slices', ord: {
+          vals: [1, 2, 3, 4, 5, 6], fmt: v => v === 1 ? '1 slice' : v + ' slices',
+          p: t => `ate ${t} of cake`, n: t => `did not eat ${t} of cake`,
+          less: 'ate less cake than', more: 'ate more cake than',
+          stepLess: d => `ate exactly ${d === 1 ? 'one slice' : d + ' slices'} less than`, stepMore: d => `ate exactly ${d === 1 ? 'one slice' : d + ' slices'} more than` } }
+      ]
+    },
+    {
+      id: 'elves', title: 'Trouble in the Elf Workshop', noun: 'elf', nounPl: 'elves', primaryLabel: 'Elf', icon: 'elf',
+      names: ['Tinsel', 'Sprout', 'Jingles', 'Nutmeg', 'Buttons', 'Figgy', 'Pudding'],
+      intro: names => `Three weeks before the big night, the workshop is in chaos. ${names} each wrapped one thing that should never be wrapped, each built one toy wrong, and each clocked off at a different hour to "check on the reindeer".`,
+      ask: q => `The elf who ${q} has been moved to the coal department. Who is it?`,
+      cats: [
+        { id: 'wrapped', label: 'Wrapped', items: [
+          I('A reindeer', 'gift-wrapped a reindeer', 'did not wrap the reindeer'),
+          I('The boss', 'gift-wrapped the boss while he napped', 'did not wrap the boss'),
+          I('A snowman', 'gift-wrapped a snowman', 'did not wrap the snowman'),
+          I('The toilet', 'gift-wrapped the toilet', 'did not wrap the toilet'),
+          I('Another elf', 'gift-wrapped another elf', 'did not wrap another elf'),
+          I('The sleigh', 'gift-wrapped the whole sleigh', 'did not wrap the sleigh') ] },
+        { id: 'toy', label: 'Built wrong', items: [
+          I('Square football', 'built a square football', 'did not build the square football'),
+          I('Teddy with teeth', 'built a teddy with real teeth', 'did not build the toothy teddy'),
+          I('Silent drum', 'built a silent drum', 'did not build the silent drum'),
+          I('Bike with 9 wheels', 'built a bike with nine wheels', 'did not build the nine-wheeled bike'),
+          I('Jelly bricks', 'built building bricks out of jelly', 'did not build the jelly bricks'),
+          I('Sad yo-yo', 'built a yo-yo that won\'t come back', 'did not build the sad yo-yo') ] },
+        { id: 'snack', label: 'Snack stash', items: [
+          I('Mince pies', 'hoarded mince pies', 'did not hoard mince pies'),
+          I('Candy canes', 'hoarded candy canes', 'did not hoard candy canes'),
+          I('Sprouts', 'hoarded sprouts, worryingly', 'did not hoard sprouts'),
+          I('Gingerbread', 'hoarded gingerbread men', 'did not hoard gingerbread'),
+          I('Eggnog', 'hoarded eggnog', 'did not hoard eggnog'),
+          I('Reindeer carrots', 'hoarded the reindeer\'s carrots', 'did not hoard the carrots') ] },
+        { id: 'time', label: 'Clocked off', ord: {
+          vals: [15, 16, 17, 18, 19, 20], fmt: clock,
+          p: t => `clocked off at ${t}`, n: t => `did not clock off at ${t}`,
+          less: 'clocked off earlier than', more: 'clocked off later than',
+          stepLess: d => `clocked off exactly ${hrs(d)} before`, stepMore: d => `clocked off exactly ${hrs(d)} after` } }
+      ]
+    }
+  );
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 (function(){
 'use strict';
 const E = window.LogicEngine, THEMES = window.LOGIC_THEMES;
@@ -796,7 +979,12 @@ const ICONS = {
   veg:'<svg viewBox="0 0 64 64"><path d="M30 14c-3-6 1-10 4-9-1 3 0 6 2 8 3-3 8-3 10-1-4 1-6 3-7 6" fill="#4f9a4a"/><path d="M22 20c8-6 20-3 24 6 3 8-4 22-18 30-6 3-9-1-9-6 0-12-4-23 3-30z" fill="#e8892f"/><path d="M26 30h6M24 38h7M25 46h5" stroke="#b9651b" stroke-width="2" stroke-linecap="round"/><circle cx="35" cy="29" r="2" fill="#222"/><circle cx="42" cy="31" r="2" fill="#222"/><path d="M35 37c2 2 5 2 7 0" stroke="#222" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>',
   mug:'<svg viewBox="0 0 64 64"><rect x="12" y="14" width="34" height="40" rx="5" fill="#5c7cc2"/><path d="M46 24h4a7 7 0 0 1 0 14h-4" stroke="#5c7cc2" stroke-width="5" fill="none"/><path d="M20 8c0 3 3 3 3 6M29 6c0 3 3 3 3 6M38 8c0 3 3 3 3 6" stroke="#9aa3b5" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="23" cy="31" r="2.6" fill="#fff"/><circle cx="35" cy="31" r="2.6" fill="#fff"/><path d="M22 41c4-3 10-3 14 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="18" y="22" width="22" height="3" rx="1.5" fill="#22325c"/></svg>',
   ghost:'<svg viewBox="0 0 64 64"><path d="M14 56V28a18 18 0 0 1 36 0v28l-6-5-6 5-6-5-6 5-6-5z" fill="#eef1f8" stroke="#9aa3b5" stroke-width="2"/><ellipse cx="25" cy="28" rx="3" ry="4" fill="#222"/><ellipse cx="39" cy="28" rx="3" ry="4" fill="#222"/><ellipse cx="32" cy="39" rx="4" ry="5" fill="#222"/><path d="M41 10l6-4 1 7" stroke="#e0a526" stroke-width="2" fill="none"/></svg>',
-  bird:'<svg viewBox="0 0 64 64"><ellipse cx="34" cy="40" rx="18" ry="14" fill="#8e97a8"/><circle cx="26" cy="24" r="11" fill="#a3abbb"/><path d="M27 30c4 6 12 8 18 5" stroke="#5f9e8f" stroke-width="5" fill="none"/><path d="M15 23l-7 3 7 2z" fill="#e0a526"/><circle cx="23" cy="21" r="3" fill="#fff"/><circle cx="22.5" cy="21.5" r="1.6" fill="#222"/><path d="M18 16l10 2" stroke="#222" stroke-width="2.4" stroke-linecap="round"/><path d="M30 53v6m8-6v6" stroke="#e0a526" stroke-width="2.4" stroke-linecap="round"/><path d="M40 32c6 2 10 8 12 14" stroke="#6b7385" stroke-width="2" fill="none"/></svg>'
+  bird:'<svg viewBox="0 0 64 64"><ellipse cx="34" cy="40" rx="18" ry="14" fill="#8e97a8"/><circle cx="26" cy="24" r="11" fill="#a3abbb"/><path d="M27 30c4 6 12 8 18 5" stroke="#5f9e8f" stroke-width="5" fill="none"/><path d="M15 23l-7 3 7 2z" fill="#e0a526"/><circle cx="23" cy="21" r="3" fill="#fff"/><circle cx="22.5" cy="21.5" r="1.6" fill="#222"/><path d="M18 16l10 2" stroke="#222" stroke-width="2.4" stroke-linecap="round"/><path d="M30 53v6m8-6v6" stroke="#e0a526" stroke-width="2.4" stroke-linecap="round"/><path d="M40 32c6 2 10 8 12 14" stroke="#6b7385" stroke-width="2" fill="none"/></svg>',
+  yarn:'<svg viewBox="0 0 64 64"><circle cx="30" cy="36" r="20" fill="#c77dba"/><path d="M14 28c10 2 22 10 30 22M12 38c10 0 22 6 28 16M20 18c8 6 18 18 22 30M34 16c2 10 0 26-6 40" stroke="#a45a97" stroke-width="2.4" fill="none"/><path d="M44 18l14-12M40 14l12-10" stroke="#9aa3b5" stroke-width="3" stroke-linecap="round"/><path d="M50 34c6 4 8 12 2 18" stroke="#c77dba" stroke-width="2.4" fill="none"/></svg>',
+  robot:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="26" ry="14" fill="#4a5470"/><ellipse cx="32" cy="36" rx="26" ry="14" fill="#7b88a8"/><circle cx="24" cy="34" r="4" fill="#9ff0d0"/><circle cx="40" cy="34" r="4" fill="#9ff0d0"/><path d="M25 41c4 3 10 3 14 0" stroke="#1f2a44" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M32 22V10" stroke="#4a5470" stroke-width="3"/><circle cx="32" cy="9" r="4" fill="#e0a526"/></svg>',
+  goat:'<svg viewBox="0 0 64 64"><path d="M20 14c-6-6-12-4-12 2 4-2 8 0 10 4M44 14c6-6 12-4 12 2-4-2-8 0-10 4" stroke="#8a7a5a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M18 22c0-6 6-10 14-10s14 4 14 10v14c0 10-6 16-14 16s-14-6-14-16z" fill="#eee6d6"/><path d="M10 26l8 2-2 6zM54 26l-8 2 2 6z" fill="#d9ccb2"/><rect x="21" y="27" width="8" height="5" rx="2.5" fill="#222"/><rect x="35" y="27" width="8" height="5" rx="2.5" fill="#222"/><ellipse cx="32" cy="44" rx="6" ry="4" fill="#d9a5a5"/><path d="M28 52c2 6 6 8 8 0" fill="#d9ccb2"/></svg>',
+  cake:'<svg viewBox="0 0 64 64"><rect x="10" y="32" width="44" height="22" rx="4" fill="#f4c5d6"/><path d="M10 38c6 4 10-4 15 0s10-4 15 0 9-4 14 0" stroke="#fff" stroke-width="4" fill="none"/><rect x="16" y="22" width="32" height="12" rx="3" fill="#fbe3ea"/><rect x="30" y="10" width="4" height="12" fill="#7fb3e8"/><path d="M32 4c3 3 3 6 0 7-3-1-3-4 0-7z" fill="#e0a526"/><circle cx="22" cy="46" r="2" fill="#c8463d"/><circle cx="42" cy="46" r="2" fill="#2f7d6d"/></svg>',
+  elf:'<svg viewBox="0 0 64 64"><path d="M14 30c4-16 18-26 40-24-10 4-16 12-18 24z" fill="#3f9a6b"/><circle cx="54" cy="6" r="4" fill="#fff"/><rect x="12" y="28" width="38" height="7" rx="3.5" fill="#c8463d"/><path d="M16 35c0 12 7 20 16 20s16-8 16-20z" fill="#f6d2b5"/><path d="M16 38l-8-6 6 12zM48 38l8-6-6 12z" fill="#f6d2b5"/><circle cx="26" cy="42" r="2.4" fill="#222"/><circle cx="38" cy="42" r="2.4" fill="#222"/><path d="M27 48c3 3 7 3 10 0" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/></svg>'
 };
 const SVG_X = '<svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="var(--x)" stroke-width="2.4" stroke-linecap="round"/></svg>';
 const SVG_T = '<svg viewBox="0 0 20 20"><path d="M3.5 10.5l4.2 4.2L16.8 5" stroke="var(--tick)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -854,7 +1042,7 @@ function renderCase(){
     `<div class="case-head">${ICONS[TH.icon]}<div><p class="case-title">${TH.title}</p>
       <div class="chips"><span class="chip">${LEVEL_INFO[S.level].name}</span>${S.daily?'<span class="chip">Today\'s case</span>':''}<span class="chip">Case #${S.seed.toString(36).toUpperCase()}</span></div></div></div>
      <p class="story">${TH.intro(nameList(names))}</p>
-     <p class="task">Work out each ${TH.noun}'s ${nameList(others)}.</p>
+     <p class="task">For each ${TH.noun}, work out: ${PZ.cats.slice(1).map(c => '<b>' + c.label + '</b>').join(', ')}.</p>
      <div class="question">${qText}</div>`;
   $('#whoQ').textContent = 'Who was it?';
   $('#whoSel').innerHTML = '<option value="">Choose…</option>' + names.map((nm,i)=>`<option value="${i}">${nm}</option>`).join('');
@@ -1147,7 +1335,7 @@ function renderNew(){
 }
 $('#levelOpts').onclick = e => { const b = e.target.closest('[data-l]'); if(b){ pickLevel = b.dataset.l; renderNew(); } };
 $('#themeOpts').onclick = e => { const b = e.target.closest('[data-t]'); if(b){ pickTheme = b.dataset.t; renderNew(); } };
-$('#btnNew').onclick = () => { pickLevel = S ? S.level : 'medium'; pickTheme = S ? (S.wantTheme||'') : ''; renderNew(); open('#mNew'); };
+$('#btnNew').onclick = () => { pickLevel = S ? S.level : 'medium'; pickTheme = ''; renderNew(); open('#mNew'); };
 $('#btnStart').onclick = () => { close('#mNew'); store.set('lastLevel', pickLevel); startPuzzle(pickLevel, pickTheme, null, false); };
 $('#btnDaily').onclick = () => { close('#mNew'); startPuzzle(pickLevel, null, todaySeed(pickLevel), true); };
 $('#btnMenu').onclick = () => {
