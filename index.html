@@ -963,6 +963,359 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
 
 </script>
 <script>
+/* Story batch 3 (2026-11-11). Appended to LOGIC_THEMES. Icons are emoji (see iconHTML in app.html). */
+(function (root) {
+  const I = (l, p, n) => ({ l, p, n });
+  const hrs = d => d === 1 ? 'one hour' : d + ' hours';
+  const clock = v => { const h = Math.floor(v), m = Math.round((v - h) * 60); return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
+  const num = (d, one, many) => d === 1 ? 'one ' + one : d + ' ' + many;
+  const T = root.LOGIC_THEMES;
+  T.push(
+    {
+      id: 'cruise', title: 'The Cruise Ship Buffet Scandal', noun: 'passenger', nounPl: 'passengers', primaryLabel: 'Passenger', emoji: '🚢',
+      names: ['Barbara', 'Clive', 'Doreen', 'Graham', 'Linda', 'Trevor', 'Shirley'],
+      intro: names => `The captain has called an emergency meeting about the buffet. ${names} each committed one buffet crime, each reserved a sunbed in a deeply unfair way, and each is staying on a different deck.`,
+      ask: q => `The passenger who ${q} is being put off at the next port. Who is it?`,
+      cats: [
+        { id: 'crime', label: 'Buffet crime', items: [
+          I('Took 14 prawns', 'took fourteen prawn cocktails', 'did not take the prawn cocktails'),
+          I('Tongs in mouth', 'licked the serving tongs', 'did not lick the tongs'),
+          I('Handbag of rolls', 'filled a handbag with bread rolls', 'did not fill a handbag with rolls'),
+          I('Whole cheese wheel', 'carried off a whole wheel of cheese', 'did not take the cheese wheel'),
+          I('Queue jumping', 'pushed in front of a pensioner', 'did not push in'),
+          I('Ice sculpture', 'took a bite out of the ice swan', 'did not bite the ice swan') ] },
+        { id: 'bed', label: 'Sunbed trick', items: [
+          I('Towel at 5am', 'put a towel down at 5am', 'did not put a towel down at 5am'),
+          I('Fake sunburn', 'claimed a medical sunbed', 'did not claim a medical sunbed'),
+          I('Glued a towel', 'glued their towel down', 'did not glue their towel'),
+          I('Slept on it', 'slept on the sunbed all night', 'did not sleep on the sunbed'),
+          I('Hired a child', 'paid a child to guard it', 'did not pay a child to guard it'),
+          I('Moved others', 'moved other people\'s towels', 'did not move other towels') ] },
+        { id: 'wear', label: 'Wearing', items: [
+          I('Captain\'s hat', 'wore a fake captain\'s hat', 'did not wear the captain\'s hat'),
+          I('Matching shirts', 'wore a shirt that matched the curtains', 'did not wear the curtain shirt'),
+          I('Bathrobe', 'wore a bathrobe to dinner', 'did not wear a bathrobe'),
+          I('Lifejacket', 'wore a lifejacket all week', 'did not wear a lifejacket'),
+          I('Sequins', 'wore head-to-toe sequins', 'did not wear sequins'),
+          I('Socks & sandals', 'wore socks with sandals', 'did not wear socks with sandals') ] },
+        { id: 'deck', label: 'Deck', ord: {
+          vals: [3, 4, 5, 6, 7, 8], fmt: v => 'Deck ' + v,
+          p: t => `stays on ${t}`, n: t => `does not stay on ${t}`,
+          less: 'stays on a lower deck than', more: 'stays on a higher deck than',
+          stepLess: d => `stays exactly ${num(d, 'deck', 'decks')} below`, stepMore: d => `stays exactly ${num(d, 'deck', 'decks')} above` } }
+      ]
+    },
+    {
+      id: 'nativity', title: 'Disaster at the School Nativity', noun: 'child', nounPl: 'children', primaryLabel: 'Child', emoji: '⭐',
+      names: ['Alfie', 'Bella', 'Charlie', 'Daisy', 'Freddie', 'Harriet', 'Mo'],
+      intro: names => `The school nativity play will be remembered for years. ${names} each had one role, each went off-script in one memorable way, and each smuggled one thing on stage. The head teacher has taken up gardening.`,
+      ask: q => `The child who ${q} has been made Third Tree from the Left next year. Who is it?`,
+      cats: [
+        { id: 'role', label: 'Role', items: [
+          I('Donkey', 'played the donkey', 'did not play the donkey'),
+          I('Innkeeper', 'played the innkeeper', 'did not play the innkeeper'),
+          I('Angel', 'played an angel', 'did not play an angel'),
+          I('Sheep', 'played a sheep', 'did not play a sheep'),
+          I('Star', 'played the star', 'did not play the star'),
+          I('Lobster', 'played a lobster, for reasons', 'did not play the lobster') ] },
+        { id: 'chaos', label: 'Went off-script', items: [
+          I('Waved at Mum', 'waved at Mum for ten minutes', 'did not wave at Mum'),
+          I('Said rooms free', 'said there was plenty of room at the inn', 'did not offer a room'),
+          I('Sang pop song', 'sang a pop song instead', 'did not sing a pop song'),
+          I('Took a bow early', 'took a bow halfway through', 'did not take an early bow'),
+          I('Lay down', 'lay down and refused to move', 'did not lie down'),
+          I('Told a joke', 'told a joke about the vicar', 'did not tell a joke') ] },
+        { id: 'prop', label: 'Smuggled on', items: [
+          I('A real chicken', 'brought a real chicken on stage', 'did not bring the chicken'),
+          I('Lightsaber', 'brought a lightsaber', 'did not bring a lightsaber'),
+          I('Party popper', 'set off a party popper', 'did not bring a party popper'),
+          I('Sandwich', 'ate a sandwich on stage', 'did not eat a sandwich'),
+          I('Toy dinosaur', 'brought a toy dinosaur to the manger', 'did not bring a dinosaur'),
+          I('Grandad', 'brought Grandad on stage', 'did not bring Grandad') ] },
+        { id: 'late', label: 'Minutes late', ord: {
+          vals: [0, 5, 10, 15, 20, 25], fmt: v => v ? v + ' min late' : 'On time',
+          p: t => t === 'On time' ? 'arrived on time' : `arrived ${t}`, n: t => t === 'On time' ? 'did not arrive on time' : `did not arrive ${t}`,
+          less: 'arrived earlier than', more: 'arrived later than',
+          stepLess: d => `arrived exactly ${d} minutes before`, stepMore: d => `arrived exactly ${d} minutes after` } }
+      ]
+    },
+    {
+      id: 'zoo', title: 'Night Shift at the Zoo', noun: 'animal', nounPl: 'animals', primaryLabel: 'Animal', emoji: '🦒',
+      names: ['Gerald', 'Princess', 'Mr Snuffles', 'Brenda', 'Big Steve', 'Duchess', 'Wobbles'],
+      intro: names => `The new night keeper fell asleep at 9pm. By morning ${names} had each escaped their enclosure, each caused one disaster and each was found in a ridiculous place.`,
+      ask: q => `The animal who ${q} is getting a much bigger padlock. Who is it?`,
+      cats: [
+        { id: 'species', label: 'Species', items: [
+          I('Llama', 'is a llama', 'is not the llama'),
+          I('Penguin', 'is a penguin', 'is not the penguin'),
+          I('Sloth', 'is a sloth', 'is not the sloth'),
+          I('Ostrich', 'is an ostrich', 'is not the ostrich'),
+          I('Capybara', 'is a capybara', 'is not the capybara'),
+          I('Tortoise', 'is a tortoise', 'is not the tortoise') ] },
+        { id: 'crime', label: 'Disaster', items: [
+          I('Ate the map', 'ate every map in the gift shop', 'did not eat the maps'),
+          I('Rode the train', 'drove the little zoo train', 'did not drive the zoo train'),
+          I('Opened the café', 'opened the café and served nobody', 'did not open the café'),
+          I('Spat at a statue', 'spat at the statue of the founder', 'did not spit at the statue'),
+          I('Fed the lions', 'tried to make friends with the lions', 'did not visit the lions'),
+          I('Called the radio', 'phoned a late-night radio show', 'did not phone the radio') ] },
+        { id: 'found', label: 'Found', items: [
+          I('In the gift shop', 'was found in the gift shop', 'was not found in the gift shop'),
+          I('In the ice cream van', 'was found in the ice cream van', 'was not found in the ice cream van'),
+          I('On the roundabout', 'was found on the car park roundabout', 'was not found on the roundabout'),
+          I('In the office', 'was found in the manager\'s chair', 'was not found in the manager\'s chair'),
+          I('In the aquarium', 'was found in the aquarium', 'was not found in the aquarium'),
+          I('On the bus', 'was found on the first bus to town', 'was not found on the bus') ] },
+        { id: 'time', label: 'Escaped', ord: {
+          vals: [22, 23, 24, 25, 26, 27], fmt: v => clock(v % 24),
+          p: t => `escaped at ${t}`, n: t => `did not escape at ${t}`,
+          less: 'escaped earlier than', more: 'escaped later than',
+          stepLess: d => `escaped exactly ${hrs(d)} before`, stepMore: d => `escaped exactly ${hrs(d)} after` } }
+      ]
+    },
+    {
+      id: 'bake', title: 'Sabotage in the Baking Tent', noun: 'baker', nounPl: 'bakers', primaryLabel: 'Baker', emoji: '🎂',
+      names: ['Margot', 'Raj', 'Fenella', 'Bob', 'Tilly', 'Hugo', 'Cath'],
+      intro: names => `It was showstopper week in the village baking contest, and things got nasty. ${names} each baked one showstopper, each was caught sabotaging a rival, and each ran over time by a different amount.`,
+      ask: q => `The judges have sent the baker who ${q} home in disgrace. Who is it?`,
+      cats: [
+        { id: 'bake', label: 'Showstopper', items: [
+          I('Castle of choux', 'built a castle out of choux buns', 'did not build the choux castle'),
+          I('Bread crocodile', 'baked a bread crocodile', 'did not bake the crocodile'),
+          I('Jelly volcano', 'made an erupting jelly volcano', 'did not make the jelly volcano'),
+          I('Self-portrait', 'baked a cake of their own face', 'did not bake the face cake'),
+          I('Pie tower', 'stacked a tower of 30 pies', 'did not stack the pies'),
+          I('Biscuit bus', 'built a full-size biscuit bus', 'did not build the biscuit bus') ] },
+        { id: 'sab', label: 'Sabotage', items: [
+          I('Salt for sugar', 'swapped a rival\'s sugar for salt', 'did not swap the sugar'),
+          I('Opened oven', 'kept opening a rival\'s oven', 'did not open a rival\'s oven'),
+          I('Hid the eggs', 'hid all the eggs', 'did not hide the eggs'),
+          I('Loud humming', 'hummed loudly to break concentration', 'did not hum'),
+          I('Turned off fridge', 'switched off a rival\'s fridge', 'did not switch off the fridge'),
+          I('Fake recipe', 'leaked a fake recipe', 'did not leak a fake recipe') ] },
+        { id: 'excuse', label: 'Excuse', items: [
+          I('Accident', 'called it an accident', 'did not call it an accident'),
+          I('Squirrel', 'blamed a squirrel in the tent', 'did not blame the squirrel'),
+          I('Allergic', 'said they were allergic to losing', 'did not plead an allergy'),
+          I('Tradition', 'said it was a family tradition', 'did not claim tradition'),
+          I('Wasn\'t there', 'claimed to have been in the loo', 'did not claim to be in the loo'),
+          I('Sobbed', 'sobbed into a tea towel', 'did not sob') ] },
+        { id: 'over', label: 'Over time', ord: {
+          vals: [2, 4, 6, 8, 10, 12], fmt: v => v + ' min',
+          p: t => `ran ${t} over time`, n: t => `did not run ${t} over`,
+          less: 'ran less over time than', more: 'ran more over time than',
+          stepLess: d => `ran exactly ${d} minutes less over time than`, stepMore: d => `ran exactly ${d} minutes more over time than` } }
+      ]
+    },
+    {
+      id: 'bingo', title: 'Cheating at Sunnyvale Bingo', noun: 'resident', nounPl: 'residents', primaryLabel: 'Resident', emoji: '🎱',
+      names: ['Agatha', 'Bernard', 'Cyril', 'Edna', 'Florrie', 'Harold', 'Ivy'],
+      intro: names => `Bingo night at Sunnyvale Retirement Home has been rocked by scandal. ${names} each cheated in one outrageous way, each won one prize they now refuse to return, and the staff have confiscated three walking sticks as evidence.`,
+      ask: q => `The resident who ${q} is banned from bingo until spring. Who is it?`,
+      cats: [
+        { id: 'cheat', label: 'Cheated by', items: [
+          I('Two cards', 'played with eleven cards at once', 'did not play eleven cards'),
+          I('Bribed caller', 'bribed the caller with toffees', 'did not bribe the caller'),
+          I('Fake faint', 'faked a faint to reshuffle the balls', 'did not fake a faint'),
+          I('Hearing aid', 'used a hearing aid as a radio', 'did not use a radio hearing aid'),
+          I('Grandson', 'had a grandson signal from the window', 'did not use a grandson'),
+          I('Shouted early', 'shouted HOUSE before it started', 'did not shout early') ] },
+        { id: 'prize', label: 'Won', items: [
+          I('Tin of biscuits', 'won the tin of biscuits', 'did not win the biscuits'),
+          I('Toaster', 'won a toaster', 'did not win the toaster'),
+          I('Day trip', 'won a day trip to the garden centre', 'did not win the day trip'),
+          I('Bath salts', 'won the bath salts', 'did not win the bath salts'),
+          I('Giant teddy', 'won a giant teddy', 'did not win the teddy'),
+          I('Lottery ticket', 'won a lottery ticket', 'did not win the lottery ticket') ] },
+        { id: 'snack', label: 'Snack', items: [
+          I('Humbugs', 'sucked humbugs throughout', 'did not have humbugs'),
+          I('Sherry', 'sipped sherry from a flask', 'did not have sherry'),
+          I('Pork pie', 'ate a pork pie', 'did not have a pork pie'),
+          I('Crisps', 'rustled crisps during calls', 'did not have crisps'),
+          I('Mints', 'handed out mints as bribes', 'did not have mints'),
+          I('Prunes', 'ate prunes, for some reason', 'did not have prunes') ] },
+        { id: 'age', label: 'Age', ord: {
+          vals: [82, 85, 88, 91, 94, 97], fmt: v => String(v),
+          p: t => `is ${t}`, n: t => `is not ${t}`,
+          less: 'is younger than', more: 'is older than',
+          stepLess: d => `is exactly ${d} years younger than`, stepMore: d => `is exactly ${d} years older than` } }
+      ]
+    },
+    {
+      id: 'wizards', title: 'Detention at Wizard School', noun: 'student', nounPl: 'students', primaryLabel: 'Student', emoji: '🧙',
+      names: ['Bramble', 'Cedric', 'Elowen', 'Fizz', 'Morwenna', 'Pip', 'Thaddeus'],
+      intro: names => `It was a bad week at the academy. ${names} each cast one spell that went horribly wrong, each owns a badly behaved pet, and each has been given a different number of hours of detention.`,
+      ask: q => `The headmistress has turned the student who ${q} into a doorstop for the afternoon. Who is it?`,
+      cats: [
+        { id: 'spell', label: 'Spell gone wrong', items: [
+          I('Teacher teapot', 'turned a teacher into a teapot', 'did not make the teapot'),
+          I('Flying toilets', 'made the toilets fly', 'did not make the toilets fly'),
+          I('Singing soup', 'made the soup sing opera', 'did not make the soup sing'),
+          I('Bald dragon', 'made the dragon go bald', 'did not make the dragon bald'),
+          I('Upside-down tower', 'flipped a tower upside down', 'did not flip the tower'),
+          I('Infinite pigeons', 'summoned endless pigeons', 'did not summon the pigeons') ] },
+        { id: 'pet', label: 'Pet', items: [
+          I('Toad', 'owns a toad', 'does not own the toad'),
+          I('Owl', 'owns an owl', 'does not own the owl'),
+          I('Ferret', 'owns a ferret', 'does not own the ferret'),
+          I('Goldfish', 'owns a goldfish', 'does not own the goldfish'),
+          I('Rock', 'owns a pet rock', 'does not own the rock'),
+          I('Tiny dragon', 'owns a tiny dragon', 'does not own the tiny dragon') ] },
+        { id: 'house', label: 'Excuse', items: [
+          I('Wand faulty', 'blamed a faulty wand', 'did not blame the wand'),
+          I('Sneezed', 'sneezed mid-spell', 'did not sneeze'),
+          I('Read it upside down', 'read the spellbook upside down', 'did not read it upside down'),
+          I('A dare', 'did it for a dare', 'did not do it for a dare'),
+          I('Pet did it', 'blamed their pet', 'did not blame their pet'),
+          I('It\'s an improvement', 'insisted it was an improvement', 'did not call it an improvement') ] },
+        { id: 'det', label: 'Detention', ord: {
+          vals: [1, 2, 3, 4, 5, 6], fmt: v => v === 1 ? '1 hour' : v + ' hours',
+          p: t => `got ${t} of detention`, n: t => `did not get ${t} of detention`,
+          less: 'got less detention than', more: 'got more detention than',
+          stepLess: d => `got exactly ${hrs(d)} less detention than`, stepMore: d => `got exactly ${hrs(d)} more detention than` } }
+      ]
+    },
+    {
+      id: 'hamsters', title: 'The Classroom Hamster Heist', noun: 'hamster', nounPl: 'hamsters', primaryLabel: 'Hamster', emoji: '🐹',
+      names: ['Nibbles', 'Peanut', 'Professor Whiskers', 'Dumpling', 'Gnasher', 'Toffee', 'Biscuit Jr'],
+      intro: names => `Over half term the school hamsters were left in charge of the classroom. ${names} each stole one thing, each stuffed it somewhere unusual, and each hamster's cheeks were measured on the first day back.`,
+      ask: q => `The hamster who ${q} is being moved to the Head's office. Who is it?`,
+      cats: [
+        { id: 'loot', label: 'Stole', items: [
+          I('Glue sticks', 'stole all the glue sticks', 'did not steal the glue sticks'),
+          I('Gold stars', 'stole the gold star stickers', 'did not steal the gold stars'),
+          I('Teacher\'s keys', 'stole the teacher\'s car keys', 'did not steal the keys'),
+          I('Crayons', 'stole the crayons', 'did not steal the crayons'),
+          I('Register', 'stole the register', 'did not steal the register'),
+          I('Lunch money', 'stole the lunch money', 'did not steal the lunch money') ] },
+        { id: 'hide', label: 'Hid it in', items: [
+          I('Piano', 'hid it in the piano', 'did not hide it in the piano'),
+          I('Globe', 'hid it inside the globe', 'did not hide it in the globe'),
+          I('Lost property', 'hid it in lost property', 'did not hide it in lost property'),
+          I('Wellies', 'hid it in a welly boot', 'did not hide it in a welly'),
+          I('Fish tank', 'hid it behind the fish tank', 'did not hide it by the fish tank'),
+          I('Own cheeks', 'kept it in their cheeks', 'did not keep it in their cheeks') ] },
+        { id: 'act', label: 'Acted', items: [
+          I('Innocent', 'acted innocent', 'did not act innocent'),
+          I('Asleep', 'pretended to be asleep', 'did not pretend to sleep'),
+          I('Ran in wheel', 'ran in the wheel furiously', 'did not run in the wheel'),
+          I('Waved', 'waved at the class', 'did not wave'),
+          I('Hid in straw', 'hid under the straw', 'did not hide in the straw'),
+          I('Stared', 'stared silently at the teacher', 'did not stare at the teacher') ] },
+        { id: 'cheek', label: 'Cheek size', ord: {
+          vals: [2, 3, 4, 5, 6, 7], fmt: v => v + ' cm',
+          p: t => `had ${t} cheeks`, n: t => `did not have ${t} cheeks`,
+          less: 'had smaller cheeks than', more: 'had bigger cheeks than',
+          stepLess: d => `had cheeks exactly ${d} cm smaller than`, stepMore: d => `had cheeks exactly ${d} cm bigger than` } }
+      ]
+    },
+    {
+      id: 'space', title: 'The Space Station Snack Thief', noun: 'astronaut', nounPl: 'astronauts', primaryLabel: 'Astronaut', emoji: '🚀',
+      names: ['Commander Holt', 'Dr Okafor', 'Lieutenant Moss', 'Engineer Vance', 'Captain Reyes', 'Dr Lindqvist'],
+      intro: names => `Six months into the mission, morale aboard the space station has hit a new low. ${names} each stole one precious snack, each hid in a different module, and each has done a different number of spacewalks.`,
+      ask: q => `Mission Control has grounded the astronaut who ${q}. Who is it?`,
+      cats: [
+        { id: 'snack', label: 'Stole', items: [
+          I('Tube of cheese', 'stole a tube of cheese', 'did not steal the cheese'),
+          I('Freeze-dried pizza', 'stole the freeze-dried pizza', 'did not steal the pizza'),
+          I('Birthday cake', 'stole the birthday cake (in a pouch)', 'did not steal the cake'),
+          I('Coffee', 'stole the last coffee', 'did not steal the coffee'),
+          I('Chocolate', 'stole the emergency chocolate', 'did not steal the chocolate'),
+          I('Pickles', 'stole the pickles', 'did not steal the pickles') ] },
+        { id: 'module', label: 'Hid in', items: [
+          I('Airlock', 'hid in the airlock', 'did not hide in the airlock'),
+          I('Gym', 'hid in the gym', 'did not hide in the gym'),
+          I('Greenhouse', 'hid in the greenhouse', 'did not hide in the greenhouse'),
+          I('Toilet', 'hid in the space toilet', 'did not hide in the toilet'),
+          I('Lab', 'hid in the lab', 'did not hide in the lab'),
+          I('Cupola', 'hid in the window dome', 'did not hide in the dome') ] },
+        { id: 'excuse', label: 'Excuse', items: [
+          I('Gravity', 'blamed zero gravity', 'did not blame gravity'),
+          I('Aliens', 'blamed aliens', 'did not blame aliens'),
+          I('Science', 'said it was for science', 'did not claim science'),
+          I('Floated away', 'said it floated into their mouth', 'did not say it floated away'),
+          I('Homesick', 'said they were homesick', 'did not plead homesickness'),
+          I('Mission Control', 'said Mission Control told them to', 'did not blame Mission Control') ] },
+        { id: 'walks', label: 'Spacewalks', ord: {
+          vals: [1, 2, 3, 4, 5, 6], fmt: v => String(v),
+          p: t => `has done ${t} spacewalk${t === '1' ? '' : 's'}`, n: t => `has not done ${t} spacewalk${t === '1' ? '' : 's'}`,
+          less: 'has done fewer spacewalks than', more: 'has done more spacewalks than',
+          stepLess: d => `has done exactly ${num(d, 'spacewalk', 'spacewalks')} fewer than`, stepMore: d => `has done exactly ${num(d, 'spacewalk', 'spacewalks')} more than` } }
+      ]
+    },
+    {
+      id: 'pirates', title: 'Laundry Day on the Pirate Ship', noun: 'pirate', nounPl: 'pirates', primaryLabel: 'Pirate', emoji: '🏴‍☠️',
+      names: ['One-Sock Sal', 'Barnacle Bill', 'Mad Maggie', 'Captain Plank', 'Smelly Pete', 'Nell the Knot'],
+      intro: names => `The pirate ship's monthly laundry day has ended in mutiny. ${names} each shrank one item, each blamed someone else in one way, and each owes the captain a different number of gold coins.`,
+      ask: q => `The pirate who ${q} is walking the plank (into a paddling pool). Who is it?`,
+      cats: [
+        { id: 'item', label: 'Shrank', items: [
+          I('Captain\'s hat', 'shrank the captain\'s hat', 'did not shrink the hat'),
+          I('Treasure map', 'washed the treasure map', 'did not wash the map'),
+          I('Eye patch', 'shrank an eye patch', 'did not shrink the eye patch'),
+          I('Flag', 'turned the flag pink', 'did not turn the flag pink'),
+          I('Parrot', 'accidentally washed the parrot', 'did not wash the parrot'),
+          I('Wooden leg', 'shrank a wooden leg (somehow)', 'did not shrink the wooden leg') ] },
+        { id: 'blame', label: 'Blamed', items: [
+          I('The sea', 'blamed the sea', 'did not blame the sea'),
+          I('A mermaid', 'blamed a mermaid', 'did not blame a mermaid'),
+          I('The cook', 'blamed the cook', 'did not blame the cook'),
+          I('The moon', 'blamed the moon', 'did not blame the moon'),
+          I('A ghost ship', 'blamed a ghost ship', 'did not blame a ghost ship'),
+          I('The parrot', 'blamed the parrot', 'did not blame the parrot') ] },
+        { id: 'song', label: 'Sang', items: [
+          I('Sea shanty', 'sang sea shanties', 'did not sing shanties'),
+          I('Opera', 'sang opera', 'did not sing opera'),
+          I('Lullabies', 'sang lullabies', 'did not sing lullabies'),
+          I('Pop hits', 'sang pop hits', 'did not sing pop hits'),
+          I('Yodelling', 'yodelled', 'did not yodel'),
+          I('Nothing', 'refused to sing', 'did not refuse to sing') ] },
+        { id: 'coins', label: 'Coins owed', ord: {
+          vals: [10, 20, 30, 40, 50, 60], fmt: v => v + ' coins',
+          p: t => `owes ${t}`, n: t => `does not owe ${t}`,
+          less: 'owes fewer coins than', more: 'owes more coins than',
+          stepLess: d => `owes exactly ${d} coins fewer than`, stepMore: d => `owes exactly ${d} coins more than` } }
+      ]
+    },
+    {
+      id: 'garden', title: 'Faux Pas at the Royal Garden Party', noun: 'guest', nounPl: 'guests', primaryLabel: 'Guest', emoji: '👒',
+      names: ['Lady Pemberton', 'Mr Fox', 'Mrs Higgins', 'Colonel Rudd', 'Ms Achebe', 'Lord Fenwick'],
+      intro: names => `The palace garden party was going beautifully until ${names} arrived. Each wore one alarming hat, each committed one terrible breach of etiquette, and each drank a different number of cups of tea.`,
+      ask: q => `The guest who ${q} has been quietly removed from next year's list. Who is it?`,
+      cats: [
+        { id: 'hat', label: 'Hat', items: [
+          I('Flamingo hat', 'wore a life-size flamingo hat', 'did not wear the flamingo hat'),
+          I('Teapot hat', 'wore a working teapot hat', 'did not wear the teapot hat'),
+          I('Fruit bowl', 'wore a fruit bowl hat', 'did not wear the fruit bowl'),
+          I('Tiny hat', 'wore a hat the size of a coin', 'did not wear the tiny hat'),
+          I('Lampshade', 'wore what was clearly a lampshade', 'did not wear the lampshade'),
+          I('Bird nest', 'wore a hat with live birds', 'did not wear the bird nest') ] },
+        { id: 'faux', label: 'Faux pas', items: [
+          I('Curtsied to statue', 'curtsied to a statue', 'did not curtsy to a statue'),
+          I('Took selfies', 'took 200 selfies with a guard', 'did not take selfies'),
+          I('Dunked scone', 'dunked a scone in the fountain', 'did not dunk a scone'),
+          I('Called the corgi', 'whistled for the palace dogs', 'did not whistle for the dogs'),
+          I('Sat on a throne', 'sat on a decorative throne', 'did not sit on the throne'),
+          I('Jam first', 'started a fight about jam or cream first', 'did not start the jam fight') ] },
+        { id: 'sand', label: 'Sandwich', items: [
+          I('Cucumber', 'ate cucumber sandwiches', 'did not eat cucumber sandwiches'),
+          I('Egg cress', 'ate egg and cress', 'did not eat egg and cress'),
+          I('Salmon', 'ate the smoked salmon', 'did not eat the salmon'),
+          I('Coronation chicken', 'ate coronation chicken', 'did not eat coronation chicken'),
+          I('Jam', 'ate jam sandwiches', 'did not eat jam sandwiches'),
+          I('All of them', 'ate a bit of everything', 'did not eat a bit of everything') ] },
+        { id: 'tea', label: 'Cups of tea', ord: {
+          vals: [2, 3, 4, 5, 6, 7], fmt: v => v + ' cups',
+          p: t => `drank ${t} of tea`, n: t => `did not drink ${t} of tea`,
+          less: 'drank less tea than', more: 'drank more tea than',
+          stepLess: d => `drank exactly ${num(d, 'cup', 'cups')} less than`, stepMore: d => `drank exactly ${num(d, 'cup', 'cups')} more than` } }
+      ]
+    }
+  );
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 (function(){
 'use strict';
 const E = window.LogicEngine, THEMES = window.LOGIC_THEMES;
@@ -985,6 +1338,7 @@ const ICONS = {
   cake:'<svg viewBox="0 0 64 64"><rect x="10" y="32" width="44" height="22" rx="4" fill="#f4c5d6"/><path d="M10 38c6 4 10-4 15 0s10-4 15 0 9-4 14 0" stroke="#fff" stroke-width="4" fill="none"/><rect x="16" y="22" width="32" height="12" rx="3" fill="#fbe3ea"/><rect x="30" y="10" width="4" height="12" fill="#7fb3e8"/><path d="M32 4c3 3 3 6 0 7-3-1-3-4 0-7z" fill="#e0a526"/><circle cx="22" cy="46" r="2" fill="#c8463d"/><circle cx="42" cy="46" r="2" fill="#2f7d6d"/></svg>',
   elf:'<svg viewBox="0 0 64 64"><path d="M14 30c4-16 18-26 40-24-10 4-16 12-18 24z" fill="#3f9a6b"/><circle cx="54" cy="6" r="4" fill="#fff"/><rect x="12" y="28" width="38" height="7" rx="3.5" fill="#c8463d"/><path d="M16 35c0 12 7 20 16 20s16-8 16-20z" fill="#f6d2b5"/><path d="M16 38l-8-6 6 12zM48 38l8-6-6 12z" fill="#f6d2b5"/><circle cx="26" cy="42" r="2.4" fill="#222"/><circle cx="38" cy="42" r="2.4" fill="#222"/><path d="M27 48c3 3 7 3 10 0" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/></svg>'
 };
+function iconHTML(th){ return ICONS[th.icon] || `<svg viewBox="0 0 64 64"><text x="32" y="47" text-anchor="middle" font-size="44">${th.emoji||'🔍'}</text></svg>`; }
 const SVG_X = '<svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="var(--x)" stroke-width="2.4" stroke-linecap="round"/></svg>';
 const SVG_T = '<svg viewBox="0 0 20 20"><path d="M3.5 10.5l4.2 4.2L16.8 5" stroke="var(--tick)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
@@ -1038,7 +1392,7 @@ function renderCase(){
   const q = PZ.question, qc = PZ.cats[catOf(q)], qi = qc.items[q % PZ.n];
   const qText = TH.ask(qi.p);
   $('#caseCard').innerHTML =
-    `<div class="case-head">${ICONS[TH.icon]}<div><p class="case-title">${TH.title}</p>
+    `<div class="case-head">${iconHTML(TH)}<div><p class="case-title">${TH.title}</p>
       <div class="chips"><span class="chip">${LEVEL_INFO[S.level].name}</span>${S.daily?'<span class="chip">Today\'s case</span>':''}<span class="chip">Case #${S.seed.toString(36).toUpperCase()}</span></div></div></div>
      <p class="story">${TH.intro(nameList(names))}</p>
      <p class="task">For each ${TH.noun}, work out: ${PZ.cats.slice(1).map(c => '<b>' + c.label + '</b>').join(', ')}.</p>
@@ -1072,7 +1426,7 @@ function renderGrid(){
   const n = PZ.n, k = PZ.k;
   const colCats = []; for(let c=1;c<k;c++) colCats.push(c);
   const rowCats = [0]; for(let c=k-1;c>=2;c--) rowCats.push(c);
-  let h = '<table class="grid" id="grid"><tr><th class="corner" colspan="2" rowspan="2">'+ICONS[TH.icon]+'</th>';
+  let h = '<table class="grid" id="grid"><tr><th class="corner" colspan="2" rowspan="2">'+iconHTML(TH)+'</th>';
   for(const c of colCats) h += `<th class="cgroup" colspan="${n}">${PZ.cats[c].label}</th>`;
   h += '</tr><tr>';
   for(const c of colCats) for(let j=0;j<n;j++) h += `<th class="clab" data-g="${c*n+j}"><div>${PZ.cats[c].items[j].l}</div></th>`;
