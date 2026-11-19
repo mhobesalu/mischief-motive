@@ -7,5 +7,14 @@
     "contentInset": "never",
     "scheme": "Mischief",
     "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK",
+      "insetsHandling": "css"
+    }
+  },
+  "android": {
+    "backgroundColor": "#1f2a44"
   }
 }

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mischief &amp; Motive</string>
+    <string name="title_activity_main">Mischief &amp; Motive</string>
+    <string name="package_name">ee.silgrowth.mischiefmotive</string>
+    <string name="custom_url_scheme">ee.silgrowth.mischiefmotive</string>
+</resources>
