@@ -15,12 +15,12 @@
 <style>
 :root{
   --ink:#1f2a44; --paper:#f7f5ef; --card:#ffffff; --line:#c9cfdb; --thick:#1f2a44;
-  --accent:#e0a526; --accent2:#2f7d6d; --bad:#c8463d; --muted:#6b7280; --hl:#fff1c9; --x:#7b8496; --tick:#2f7d6d;
+  --accent:#e0a526; --accent2:#4257b2; --bad:#c8463d; --muted:#6b7280; --hl:#fff1c9; --x:#7b8496; --tick:#2f8a3e;
   --cs:30px; --lw:120px; --hh:110px;
 }
 @media (prefers-color-scheme: dark){
   :root{ --ink:#e8ebf2; --paper:#12161f; --card:#1b2130; --line:#384155; --thick:#c9d1e3;
-    --muted:#9aa3b5; --hl:#3a3420; --x:#8c95a8; --tick:#5ec2a8; }
+    --muted:#9aa3b5; --hl:#3a3420; --x:#8c95a8; --tick:#6fcf7f; }
 }
 *{box-sizing:border-box}
 html,body{overflow-x:hidden;margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
@@ -132,12 +132,20 @@ label.set{display:flex;align-items:center;justify-content:space-between;gap:10px
 .toast.show{opacity:1;transform:translateX(-50%)}
 .loading{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(10,14,24,.4);color:#fff;font-weight:700;font-size:17px}
 .loading.open{display:flex}
+.opt.locked{opacity:.72}
+.opt.locked b::after{content:" 🔒";font-size:12px}
+.unlock-banner{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--hl);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px;margin:6px 0}
+.unlock-banner .tbtn{padding:6px 10px}
+.links{margin-top:12px;font-size:13px;text-align:center;color:var(--muted)}
+.links a{color:inherit}
+.native-only{display:none}
+html.native .native-only{display:block}
 select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M19.5 19.5 28 28" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M9.5 13.5l2.5 2.5 5-5.5" fill="none" stroke="#e0a526" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Mischief &amp; Motive</span></div>
+  <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M19.5 19.5 28 28" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M10.6 11.2c0-1.6 1.1-2.6 2.5-2.6s2.4.9 2.4 2.2c0 1.1-.7 1.6-1.5 2.1-.6.4-.9.8-.9 1.5v.3" fill="none" stroke="#e0a526" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.1" cy="17.4" r="1.2" fill="#e0a526"/></svg><span>Mischief &amp; Motive</span></div>
   <button class="hbtn" id="btnNew">New case</button>
   <button class="hbtn" id="btnMenu" aria-label="Settings">⚙︎</button>
 </header>
@@ -186,9 +194,20 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
   <h2>Settings</h2>
   <label class="set"><span>Auto-✕ the rest of the row and column when you place a ✓</span><input type="checkbox" id="setAuto"></label>
   <label class="set"><span>First tap places a ✓ instead of ✕</span><input type="checkbox" id="setTickFirst"></label>
+  <div class="native-only" id="storeBox" style="margin-top:12px"></div>
   <h3 style="margin-top:14px">Your record</h3>
   <div class="stats" id="statsBox"></div>
   <div class="row"><button class="tbtn" id="btnRestart">Clear this grid</button><button class="tbtn" id="btnHow">How to play</button><button class="tbtn primary" data-close>Done</button></div>
+  <div class="links native-only"><a href="https://sildpartners.com/apps/mischief-motive/" target="_blank" rel="noopener">Help &amp; support</a> · <a href="https://sildpartners.com/apps/mischief-motive/privacy.html" target="_blank" rel="noopener">Privacy</a></div>
+</div></div>
+
+<div class="modal" id="mUnlock"><div class="dialog">
+  <h2>Unlock every case</h2>
+  <p id="unlockText"></p>
+  <p style="color:var(--muted);font-size:14px">One payment, yours for good. No ads, no subscription. New stories arrive with updates and are included.</p>
+  <div class="hint-note" id="unlockMsg"></div>
+  <div class="row"><button class="tbtn" data-close>Not now</button><button class="tbtn primary" id="btnBuy">Unlock all</button></div>
+  <div class="row"><button class="tbtn" id="btnRestore">Restore purchase</button></div>
 </div></div>
 
 <div class="modal" id="mHow"><div class="dialog">
@@ -206,6 +225,7 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
   <h2 id="winTitle">Solved!</h2>
   <p id="winText"></p>
   <div class="stats" id="winStats"></div>
+  <div id="winNudge"></div>
   <div class="row"><button class="tbtn" data-close>Admire grid</button><button class="tbtn primary" id="btnWinNext">Next case</button></div>
 </div></div>
 
@@ -1699,6 +1719,56 @@ const store = {
 };
 let settings = Object.assign({auto:true, tickFirst:false, notes:true}, store.get('settings', {}));
 let stats = store.get('stats', {});
+/* ---------- free stories + one-time unlock (App Store build only) ---------- */
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+if(NATIVE) document.documentElement.classList.add('native');
+const FREE_IDS = ['dogs', 'veg', 'fridge', 'ghosts', 'pigeons'];
+let unlocked = !NATIVE || store.get('unlocked', false);
+let priceText = '';
+const isLocked = th => !unlocked && !FREE_IDS.includes(th.id);
+const shop = {
+  call(method){ return window.Capacitor.nativePromise('Store', method, {}); },
+  setUnlocked(v){ unlocked = !!v; store.set('unlocked', unlocked); renderStoreBox(); if($('#mNew').classList.contains('open')) renderNew(); },
+  async refresh(){
+    if(!NATIVE) return;
+    try{ const r = await shop.call('isUnlocked'); shop.setUnlocked(r.unlocked); }catch(e){}
+    if(!priceText){ try{ const p = await shop.call('getProduct'); priceText = p.price || ''; renderStoreBox(); }catch(e){} }
+  }
+};
+function renderStoreBox(){
+  if(!NATIVE) return;
+  $('#storeBox').innerHTML = unlocked
+    ? '<div class="unlock-banner"><span>All stories unlocked. Thank you!</span></div>'
+    : `<div class="unlock-banner"><span>${FREE_IDS.length} of ${THEMES.length} stories are free.</span><button class="tbtn primary" id="btnUnlockSet">Unlock all</button></div>`;
+  const b = $('#btnUnlockSet'); if(b) b.onclick = () => { close('#mMenu'); openUnlock(); };
+}
+function openUnlock(){
+  $('#unlockText').textContent = `You have ${FREE_IDS.length} free stories. Unlock all ${THEMES.length} stories, at every difficulty.`;
+  $('#btnBuy').textContent = priceText ? `Unlock all – ${priceText}` : 'Unlock all';
+  $('#unlockMsg').textContent = '';
+  open('#mUnlock');
+  if(!priceText) shop.refresh().then(() => { if(priceText) $('#btnBuy').textContent = `Unlock all – ${priceText}`; });
+}
+async function doStore(method, btn){
+  btn.disabled = true; $('#unlockMsg').textContent = method === 'purchase' ? 'Talking to the App Store…' : 'Checking your purchases…';
+  try{
+    const r = await shop.call(method);
+    if(r.unlocked){ shop.setUnlocked(true); close('#mUnlock'); toast('All stories unlocked. Enjoy the mischief!'); }
+    else if(r.pending) $('#unlockMsg').textContent = 'Waiting for approval. The stories unlock as soon as it goes through.';
+    else if(r.cancelled) $('#unlockMsg').textContent = '';
+    else $('#unlockMsg').textContent = method === 'restore' ? 'No earlier purchase found on this Apple ID.' : 'The purchase did not go through.';
+  }catch(e){ $('#unlockMsg').textContent = 'Could not reach the App Store. Check your connection and try again.'; }
+  btn.disabled = false;
+}
+function maybeAskReview(){
+  if(!NATIVE) return;
+  const solved = Object.values(stats).reduce((a, s) => a + (s.solved || 0), 0);
+  const asked = store.get('reviewAsks', []);
+  for(const at of [3, 12, 40]){
+    if(solved >= at && !asked.includes(at)){ asked.push(at); store.set('reviewAsks', asked); setTimeout(() => shop.call('requestReview').catch(()=>{}), 1500); break; }
+  }
+}
+
 let S = null;      // play state
 let PZ = null;     // puzzle
 let TH = null;     // theme
@@ -1720,8 +1790,9 @@ function startPuzzle(level, theme, seed, daily){
   setTimeout(() => {
     try{
       seed = seed == null ? (Math.random()*4294967295)>>>0 : seed;
-      const pz = E.generate(THEMES, {seed, level, theme: theme || null});
-      S = {seed, level, theme: pz.theme, wantTheme: theme||null, marks:{}, auto:{}, struck:[], who:'', elapsed:0, solved:false, checks:0, hints:0, daily:!!daily, undo:[]};
+      const genTheme = theme || (daily || unlocked ? null : FREE_IDS[Math.floor(Math.random() * FREE_IDS.length)]);
+      const pz = E.generate(THEMES, {seed, level, theme: genTheme});
+      S = {seed, level, theme: pz.theme, wantTheme: theme||null, genTheme, marks:{}, auto:{}, struck:[], who:'', elapsed:0, solved:false, checks:0, hints:0, daily:!!daily, undo:[]};
       load(pz);
       save();
     } finally { $('#loading').classList.remove('open'); }
@@ -2015,7 +2086,10 @@ function showWin(){
   $('#winText').textContent = flair;
   const st = stats[S.level] || {};
   $('#winStats').innerHTML = `<div><b>${st.solved||0}</b>${LEVEL_INFO[S.level].name} solved</div><div><b>${st.clean||0}</b>flawless</div>`;
+  $('#winNudge').innerHTML = unlocked ? '' : `<div class="unlock-banner" style="margin-top:12px"><span>${THEMES.length - FREE_IDS.length} more stories are waiting.</span><button class="tbtn" id="btnWinUnlock">See them</button></div>`;
+  const wu = $('#btnWinUnlock'); if(wu) wu.onclick = () => { close('#mWin'); openUnlock(); };
   open('#mWin');
+  maybeAskReview();
 }
 $('#btnWinNext').onclick = () => { close('#mWin'); startPuzzle(S.level, S.wantTheme, null, false); };
 
@@ -2034,15 +2108,25 @@ document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e =
 let pickLevel = 'medium', pickTheme = '';
 function renderNew(){
   $('#levelOpts').innerHTML = Object.entries(LEVEL_INFO).map(([k,v]) => `<button class="opt ${k===pickLevel?'sel':''}" data-l="${k}"><b>${v.name}</b><small>${v.desc}</small></button>`).join('');
-  $('#themeOpts').innerHTML = `<button class="opt ${pickTheme===''?'sel':''}" data-t=""><b>🎲 Surprise me</b><small>any story</small></button>` +
-    THEMES.map(t => `<button class="opt ${t.id===pickTheme?'sel':''}" data-t="${t.id}"><b>${t.title}</b></button>`).join('');
+  $('#themeOpts').innerHTML = (unlocked ? '' : `<div class="unlock-banner" style="grid-column:1/-1"><span>${FREE_IDS.length} free stories · ${THEMES.length - FREE_IDS.length} more to unlock</span><button class="tbtn primary" data-unlock>Unlock all</button></div>`) +
+    `<button class="opt ${pickTheme===''?'sel':''}" data-t=""><b>🎲 Surprise me</b><small>${unlocked ? 'any story' : 'any free story'}</small></button>` +
+    THEMES.map(t => `<button class="opt ${t.id===pickTheme?'sel':''} ${isLocked(t)?'locked':''}" data-t="${t.id}"><b>${t.title}</b></button>`).join('');
 }
 $('#levelOpts').onclick = e => { const b = e.target.closest('[data-l]'); if(b){ pickLevel = b.dataset.l; renderNew(); } };
-$('#themeOpts').onclick = e => { const b = e.target.closest('[data-t]'); if(b){ pickTheme = b.dataset.t; renderNew(); } };
+$('#themeOpts').onclick = e => {
+  if(e.target.closest('[data-unlock]')){ openUnlock(); return; }
+  const b = e.target.closest('[data-t]'); if(!b) return;
+  const th = THEMES.find(t => t.id === b.dataset.t);
+  if(th && isLocked(th)){ openUnlock(); return; }
+  pickTheme = b.dataset.t; renderNew();
+};
+$('#btnBuy').onclick = e => doStore('purchase', e.currentTarget);
+$('#btnRestore').onclick = e => doStore('restore', e.currentTarget);
 $('#btnNew').onclick = () => { pickLevel = S ? S.level : 'medium'; pickTheme = ''; renderNew(); open('#mNew'); };
 $('#btnStart').onclick = () => { close('#mNew'); store.set('lastLevel', pickLevel); startPuzzle(pickLevel, pickTheme, null, false); };
 $('#btnDaily').onclick = () => { close('#mNew'); startPuzzle(pickLevel, null, todaySeed(pickLevel), true); };
 $('#btnMenu').onclick = () => {
+  renderStoreBox();
   $('#setAuto').checked = settings.auto; $('#setTickFirst').checked = settings.tickFirst;
   $('#statsBox').innerHTML = Object.entries(LEVEL_INFO).map(([k,v]) => { const s = stats[k]||{}; return `<div><b>${s.solved||0}</b>${v.name}</div>`; }).join('');
   open('#mMenu');
@@ -2060,11 +2144,12 @@ function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add
 let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if(PZ){ renderGrid(); } }, 150); });
 
 window.__mm = () => ({PZ, S});
+if(NATIVE){ shop.refresh(); document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') shop.refresh(); }); }
 /* ---------- boot ---------- */
 const saved = store.get('state', null);
 if(saved && saved.seed != null){
   try{
-    const pz = E.generate(THEMES, {seed: saved.seed, level: saved.level, theme: saved.wantTheme || null});
+    const pz = E.generate(THEMES, {seed: saved.seed, level: saved.level, theme: saved.genTheme || saved.wantTheme || null});
     S = Object.assign({auto:{}, struck:[], who:'', checks:0, hints:0}, saved, {undo:[]});
     load(pz);
   }catch(e){ startPuzzle('easy', null, null, false); }

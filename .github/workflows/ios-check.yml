@@ -1,0 +1,29 @@
+# Compiles the iPhone app on a GitHub Mac (no signing, no Apple account needed).
+name: iOS build check
+on:
+  push:
+    paths: ['index.html', 'native/**', '.github/workflows/ios-*.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prepare web files
+        working-directory: native
+        run: |
+          npm ci
+          node build-web.js
+          npx cap sync ios
+      - name: Build for the iPhone simulator
+        working-directory: native/ios/App
+        run: |
+          xcodebuild -version
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -n 80
+          exit ${PIPESTATUS[0]}

@@ -1,0 +1,11 @@
+{
+  "appId": "ee.silgrowth.mischiefmotive",
+  "appName": "Mischief & Motive",
+  "webDir": "www",
+  "backgroundColor": "#1f2a44",
+  "ios": {
+    "contentInset": "never",
+    "scheme": "Mischief",
+    "limitsNavigationsToAppBoundDomains": false
+  }
+}
