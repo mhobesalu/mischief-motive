@@ -194,7 +194,7 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
   <h2>Settings</h2>
   <label class="set"><span>Auto-✕ the rest of the row and column when you place a ✓</span><input type="checkbox" id="setAuto"></label>
   <label class="set"><span>First tap places a ✓ instead of ✕</span><input type="checkbox" id="setTickFirst"></label>
-  <div class="native-only" id="storeBox" style="margin-top:12px"></div>
+  <div id="storeBox" style="margin-top:12px"></div>
   <h3 style="margin-top:14px">Your record</h3>
   <div class="stats" id="statsBox"></div>
   <div class="row"><button class="tbtn" id="btnRestart">Clear this grid</button><button class="tbtn" id="btnHow">How to play</button><button class="tbtn primary" data-close>Done</button></div>
@@ -202,12 +202,12 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
 </div></div>
 
 <div class="modal" id="mUnlock"><div class="dialog">
-  <h2>Unlock every case</h2>
+  <h2 id="unlockTitle">Unlock every case</h2>
   <p id="unlockText"></p>
   <p style="color:var(--muted);font-size:14px">One payment, yours for good. No ads, no subscription. New stories arrive with updates and are included.</p>
   <div class="hint-note" id="unlockMsg"></div>
   <div class="row"><button class="tbtn" data-close>Not now</button><button class="tbtn primary" id="btnBuy">Unlock all</button></div>
-  <div class="row"><button class="tbtn" id="btnRestore">Restore purchase</button></div>
+  <div class="row native-only" style="display:none" id="restoreRow"><button class="tbtn" id="btnRestore">Restore purchase</button></div>
 </div></div>
 
 <div class="modal" id="mHow"><div class="dialog">
@@ -1719,11 +1719,14 @@ const store = {
 };
 let settings = Object.assign({auto:true, tickFirst:false, notes:true}, store.get('settings', {}));
 let stats = store.get('stats', {});
-/* ---------- free stories + one-time unlock (App Store build only) ---------- */
+/* ---------- free stories + one-time unlock (App Store) / free demo (website) ---------- */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 if(NATIVE) document.documentElement.classList.add('native');
 const FREE_IDS = ['dogs', 'veg', 'fridge', 'ghosts', 'pigeons'];
-let unlocked = !NATIVE || store.get('unlocked', false);
+// Set this to the App Store link once the app is live, e.g. 'https://apps.apple.com/app/id1234567890'.
+const APP_STORE_URL = '';
+const UNLOCK_LABEL = NATIVE ? 'Unlock all' : 'Get the full app';
+let unlocked = NATIVE && store.get('unlocked', false);
 let priceText = '';
 const isLocked = th => !unlocked && !FREE_IDS.includes(th.id);
 const shop = {
@@ -1736,13 +1739,22 @@ const shop = {
   }
 };
 function renderStoreBox(){
-  if(!NATIVE) return;
   $('#storeBox').innerHTML = unlocked
     ? '<div class="unlock-banner"><span>All stories unlocked. Thank you!</span></div>'
-    : `<div class="unlock-banner"><span>${FREE_IDS.length} of ${THEMES.length} stories are free.</span><button class="tbtn primary" id="btnUnlockSet">Unlock all</button></div>`;
+    : `<div class="unlock-banner"><span>${FREE_IDS.length} of ${THEMES.length} stories are free.</span><button class="tbtn primary" id="btnUnlockSet">${UNLOCK_LABEL}</button></div>`;
   const b = $('#btnUnlockSet'); if(b) b.onclick = () => { close('#mMenu'); openUnlock(); };
 }
 function openUnlock(){
+  if(!NATIVE){
+    $('#unlockTitle').textContent = 'Get the full app';
+    $('#unlockText').textContent = `This free demo has ${FREE_IDS.length} stories. The full app for iPhone has all ${THEMES.length}, at every difficulty, with new ones in every update.`;
+    $('#btnBuy').textContent = APP_STORE_URL ? 'Get the full app' : 'Coming soon to the App Store';
+    $('#btnBuy').disabled = !APP_STORE_URL;
+    $('#unlockMsg').textContent = '';
+    open('#mUnlock');
+    return;
+  }
+  $('#restoreRow').style.display = 'flex';
   $('#unlockText').textContent = `You have ${FREE_IDS.length} free stories. Unlock all ${THEMES.length} stories, at every difficulty.`;
   $('#btnBuy').textContent = priceText ? `Unlock all – ${priceText}` : 'Unlock all';
   $('#unlockMsg').textContent = '';
@@ -2108,7 +2120,7 @@ document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e =
 let pickLevel = 'medium', pickTheme = '';
 function renderNew(){
   $('#levelOpts').innerHTML = Object.entries(LEVEL_INFO).map(([k,v]) => `<button class="opt ${k===pickLevel?'sel':''}" data-l="${k}"><b>${v.name}</b><small>${v.desc}</small></button>`).join('');
-  $('#themeOpts').innerHTML = (unlocked ? '' : `<div class="unlock-banner" style="grid-column:1/-1"><span>${FREE_IDS.length} free stories · ${THEMES.length - FREE_IDS.length} more to unlock</span><button class="tbtn primary" data-unlock>Unlock all</button></div>`) +
+  $('#themeOpts').innerHTML = (unlocked ? '' : `<div class="unlock-banner" style="grid-column:1/-1"><span>${FREE_IDS.length} free stories · ${THEMES.length - FREE_IDS.length} ${NATIVE ? 'more to unlock' : 'more in the app'}</span><button class="tbtn primary" data-unlock>${UNLOCK_LABEL}</button></div>`) +
     `<button class="opt ${pickTheme===''?'sel':''}" data-t=""><b>🎲 Surprise me</b><small>${unlocked ? 'any story' : 'any free story'}</small></button>` +
     THEMES.map(t => `<button class="opt ${t.id===pickTheme?'sel':''} ${isLocked(t)?'locked':''}" data-t="${t.id}"><b>${t.title}</b></button>`).join('');
 }
@@ -2120,7 +2132,7 @@ $('#themeOpts').onclick = e => {
   if(th && isLocked(th)){ openUnlock(); return; }
   pickTheme = b.dataset.t; renderNew();
 };
-$('#btnBuy').onclick = e => doStore('purchase', e.currentTarget);
+$('#btnBuy').onclick = e => { if(NATIVE) doStore('purchase', e.currentTarget); else if(APP_STORE_URL) window.open(APP_STORE_URL, '_blank', 'noopener'); };
 $('#btnRestore').onclick = e => doStore('restore', e.currentTarget);
 $('#btnNew').onclick = () => { pickLevel = S ? S.level : 'medium'; pickTheme = ''; renderNew(); open('#mNew'); };
 $('#btnStart').onclick = () => { close('#mNew'); store.set('lastLevel', pickLevel); startPuzzle(pickLevel, pickTheme, null, false); };
