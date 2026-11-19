@@ -16,6 +16,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    env:
+      HAS_PLAY_KEY: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -54,9 +56,7 @@ jobs:
           name: mischief-motive-${{ github.event.inputs.version }}-${{ github.run_number }}
           path: native/android/app/build/outputs/bundle/release/app-release.aab
       - name: Upload to Google Play (internal testing)
-        if: ${{ env.PLAY_JSON != '' }}
-        env:
-          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        if: env.HAS_PLAY_KEY == 'true'
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
