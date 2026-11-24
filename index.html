@@ -1687,6 +1687,2144 @@ select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset
 
 </script>
 <script>
+/* Story batch 5 (2026-11-24): 70 new stories, taking the app to 100. Appended to LOGIC_THEMES. */
+(function (root) {
+  const I = (l, p, n) => ({ l, p, n });
+  const hrs = d => d === 1 ? 'one hour' : d + ' hours';
+  const clock = v => { const h = Math.floor(v), m = Math.round((v - h) * 60); return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
+  // Ordered category where a smaller value reads as "lessAdj" (e.g. paid less, finished higher).
+  const numC = (id, label, vals, fmt, verb, neg, lessAdj, moreAdj, du, lw, mw) => ({ id, label, ord: {
+    vals, fmt, p: t => `${verb} ${t}`, n: t => `${neg} ${t}`,
+    less: lw || `${verb} ${lessAdj} than`, more: mw || `${verb} ${moreAdj} than`,
+    stepLess: d => `${verb} exactly ${du(d)} ${lessAdj} than`, stepMore: d => `${verb} exactly ${du(d)} ${moreAdj} than` } });
+  // Clock-time category: "arrived at 10:00", "arrived earlier than", "arrived exactly 2 hours before".
+  const timeC = (vals, verb, neg, label) => ({ id: 'time', label: label || 'Time', ord: {
+    vals, fmt: clock, p: t => `${verb} at ${t}`, n: t => `${neg} at ${t}`,
+    less: `${verb} earlier than`, more: `${verb} later than`,
+    stepLess: d => `${verb} exactly ${hrs(d)} before`, stepMore: d => `${verb} exactly ${hrs(d)} after` } });
+  const eur = v => '€' + v, euros = d => '€' + d;
+  const place = v => ['', '1st', '2nd', '3rd', '4th', '5th', '6th'][v], places = d => d === 1 ? 'one place' : d + ' places';
+  const T = root.LOGIC_THEMES;
+  T.push(
+    {
+      id: 'sundaydinner', title: 'Sunday Dinner Seating Chart', noun: 'relative', nounPl: 'relatives', primaryLabel: 'Relative', emoji: '🍗',
+      names: ['Uncle Derek', 'Auntie Pam', 'Cousin Jade', 'Grandad Wilf', 'Nana Rose', 'Little Theo', 'Cousin Barry'],
+      intro: names => `Sunday dinner was meant to be calm. Then the seating plan went missing. ${names} each sat in the wrong place, each started exactly one argument, and each brought a side dish nobody asked for.`,
+      ask: q => `Next Sunday, the relative who ${q} is eating in the kitchen. Who is it?`,
+      cats: [
+        { id: 'row', label: 'Argument', items: [
+          I('The gravy', 'argued about how thick gravy should be', 'did not argue about gravy'),
+          I('Parking', 'argued about who parked badly', 'did not argue about parking'),
+          I('The thermostat', 'argued about the heating', 'did not argue about the heating'),
+          I('Old holiday', 'reopened a fight from a 1994 holiday', 'did not bring up 1994'),
+          I('Board games', 'argued about the rules of a board game', 'did not argue about board games'),
+          I('Who carves', 'argued about who carves the meat', 'did not argue about carving') ] },
+        { id: 'dish', label: 'Brought', items: [
+          I('Jelly salad', 'brought a wobbly jelly salad', 'did not bring the jelly salad'),
+          I('Burnt rolls', 'brought burnt bread rolls', 'did not bring the burnt rolls'),
+          I('Mystery stew', 'brought a stew of unknown origin', 'did not bring the mystery stew'),
+          I('Shop trifle', 'brought a shop trifle in a fancy bowl', 'did not bring the trifle'),
+          I('Raw sprouts', 'brought a bag of raw sprouts', 'did not bring sprouts'),
+          I('Nothing', 'brought nothing but opinions', 'brought at least something') ] },
+        { id: 'seat', label: 'Sat', items: [
+          I('Head of table', 'sat at the head of the table', 'did not sit at the head'),
+          I('Kids\' table', 'sat at the kids\' table', 'did not sit at the kids\' table'),
+          I('On a stool', 'sat on a wobbly stool', 'did not sit on the stool'),
+          I('By the radiator', 'sat by the hot radiator', 'did not sit by the radiator'),
+          I('Next to the dog', 'sat next to the dog', 'did not sit next to the dog'),
+          I('In the doorway', 'sat in the doorway', 'did not sit in the doorway') ] },
+        numC('helps', 'Helpings', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one helping' : v + ' helpings', 'had', 'did not have', 'fewer', 'more', d => d === 1 ? 'one helping' : d + ' helpings', 'had fewer helpings than', 'had more helpings than')
+      ]
+    },
+    {
+      id: 'bowling', title: 'The Bowling Night Bet', noun: 'bowler', nounPl: 'bowlers', primaryLabel: 'Bowler', emoji: '🎳',
+      names: ['Gaz', 'Shona', 'Kev', 'Bernadette', 'Raj', 'Lorna', 'Dmitri'],
+      intro: names => `It was supposed to be a friendly game. Then somebody made a bet. ${names} each lost the bet in a different way, each wore shoes that did not fit, and each blamed something other than themselves.`,
+      ask: q => `The bowler who ${q} has to pay for everyone's chips. Who is it?`,
+      cats: [
+        { id: 'excuse', label: 'Blamed', items: [
+          I('The ball', 'blamed the ball for being too round', 'did not blame the ball'),
+          I('The lane', 'said the lane was tilted', 'did not blame the lane'),
+          I('The music', 'blamed the loud music', 'did not blame the music'),
+          I('New shoes', 'blamed the hired shoes', 'did not blame the shoes'),
+          I('The lights', 'said the lights were in their eyes', 'did not blame the lights'),
+          I('A sneeze', 'blamed a sneeze mid-throw', 'did not blame a sneeze') ] },
+        { id: 'oops', label: 'Disaster', items: [
+          I('Bowled backwards', 'bowled the ball backwards', 'did not bowl backwards'),
+          I('Fell on lane', 'slid down the lane on their bottom', 'did not slide down the lane'),
+          I('Wrong lane', 'bowled into the next lane', 'did not use the wrong lane'),
+          I('Stuck finger', 'got a finger stuck in the ball', 'did not get a finger stuck'),
+          I('Hit the bumper', 'asked for the kids\' bumpers', 'did not ask for bumpers'),
+          I('Danced too soon', 'did a victory dance before the pins fell', 'did not dance too soon') ] },
+        { id: 'shoe', label: 'Shoe size', items: [
+          I('Far too big', 'wore shoes three sizes too big', 'did not wear huge shoes'),
+          I('Far too small', 'wore shoes two sizes too small', 'did not wear tiny shoes'),
+          I('Odd pair', 'wore two different sizes', 'did not wear an odd pair'),
+          I('Still damp', 'wore shoes that were still damp', 'did not wear damp shoes'),
+          I('Squeaky', 'wore very squeaky shoes', 'did not wear squeaky shoes'),
+          I('Own socks only', 'refused shoes and bowled in socks', 'did not bowl in socks') ] },
+        numC('score', 'Score', [20, 30, 40, 50, 60, 70], v => v + ' points', 'scored', 'did not score', 'fewer', 'more', d => d + ' points')
+      ]
+    },
+    {
+      id: 'bells', title: 'The Church Bell Ringer', noun: 'bell ringer', nounPl: 'bell ringers', primaryLabel: 'Ringer', emoji: '🔔',
+      names: ['Hubert', 'Winifred', 'Clive', 'Petunia', 'Ambrose', 'Delia', 'Morris'],
+      intro: names => `The church bells rang in the middle of the night, and the whole village is cross. ${names} each sneaked into the tower once, each rang the bells for a silly reason, and each left something behind.`,
+      ask: q => `The vicar has banned the ringer who ${q} from the bell tower. Who is it?`,
+      cats: [
+        { id: 'why', label: 'Reason', items: [
+          I('Lost cat', 'rang to call a lost cat home', 'did not ring for a lost cat'),
+          I('Wrong clock', 'thought it was Sunday morning', 'did not mix up the days'),
+          I('Practice', 'wanted to practise a new tune', 'did not ring to practise'),
+          I('A dare', 'rang because of a dare', 'did not ring for a dare'),
+          I('Birthday', 'rang for their own birthday', 'did not ring for a birthday'),
+          I('Sleepwalking', 'rang while sleepwalking', 'was not sleepwalking') ] },
+        { id: 'left', label: 'Left behind', items: [
+          I('A slipper', 'left a fluffy slipper in the tower', 'did not leave a slipper'),
+          I('Sandwich crusts', 'left sandwich crusts on the stairs', 'did not leave crusts'),
+          I('A torch', 'left a torch still switched on', 'did not leave a torch'),
+          I('Ear plugs', 'left a pair of ear plugs', 'did not leave ear plugs'),
+          I('A flask', 'left a flask of cocoa', 'did not leave a flask'),
+          I('A wig', 'left a wig on the bell rope', 'did not leave a wig') ] },
+        { id: 'bell', label: 'Bell', items: [
+          I('Big Bertha', 'rang Big Bertha', 'did not ring Big Bertha'),
+          I('Little Tom', 'rang Little Tom', 'did not ring Little Tom'),
+          I('The cracked one', 'rang the cracked bell', 'did not ring the cracked bell'),
+          I('Old Grumbler', 'rang Old Grumbler', 'did not ring Old Grumbler'),
+          I('Tinkly Ann', 'rang Tinkly Ann', 'did not ring Tinkly Ann'),
+          I('The new bell', 'rang the brand new bell', 'did not ring the new bell') ] },
+        timeC([0, 1, 2, 3, 4, 5], 'rang', 'did not ring')
+      ]
+    },
+    {
+      id: 'souvenir', title: 'The Souvenir Shop Breakage', noun: 'tourist', nounPl: 'tourists', primaryLabel: 'Tourist', emoji: '🗼',
+      names: ['Brad', 'Ingeborg', 'Fernando', 'Moira', 'Kenji', 'Dolores', 'Hamish'],
+      intro: names => `The souvenir shop was full of tiny, fragile things. Then a tour bus arrived. ${names} each broke exactly one souvenir, each hid the evidence somewhere silly, and each paid a different amount to say sorry.`,
+      ask: q => `The shop has put up a photo of the tourist who ${q}. Who is it?`,
+      cats: [
+        { id: 'broke', label: 'Broke', items: [
+          I('Tiny tower', 'broke a tiny tower ornament', 'did not break the tiny tower'),
+          I('Snow globe', 'broke a snow globe', 'did not break the snow globe'),
+          I('Name mug', 'broke a mug with someone else\'s name', 'did not break the name mug'),
+          I('Glass swan', 'broke a glass swan', 'did not break the glass swan'),
+          I('Fridge magnet', 'somehow broke a fridge magnet', 'did not break the magnet'),
+          I('Musical box', 'broke a musical box mid-song', 'did not break the musical box') ] },
+        { id: 'hid', label: 'Hid it', items: [
+          I('In a hat', 'hid the pieces in a hat', 'did not hide them in a hat'),
+          I('Behind postcards', 'hid the pieces behind the postcards', 'did not use the postcards'),
+          I('In a pocket', 'put the pieces in their pocket', 'did not use a pocket'),
+          I('Under a rug', 'swept the pieces under a rug', 'did not use the rug'),
+          I('In a tote bag', 'hid them in a souvenir tote bag', 'did not use a tote bag'),
+          I('Did not hide', 'proudly held the pieces up', 'tried to hide it') ] },
+        { id: 'from', label: 'Home town', items: [
+          I('Seaside town', 'comes from a seaside town', 'does not come from the seaside'),
+          I('Big city', 'comes from a big city', 'does not come from a big city'),
+          I('Mountain village', 'comes from a mountain village', 'does not come from the mountains'),
+          I('Tiny island', 'comes from a tiny island', 'does not come from an island'),
+          I('Farm', 'comes from a farm', 'does not come from a farm'),
+          I('Suburb', 'comes from a quiet suburb', 'does not come from a suburb') ] },
+        numC('paid', 'Paid', [5, 10, 15, 20, 25, 30], eur, 'paid', 'did not pay', 'less', 'more', euros)
+      ]
+    },
+    {
+      id: 'firedrill', title: 'The Fire Drill Escape', noun: 'worker', nounPl: 'workers', primaryLabel: 'Worker', emoji: '🚨',
+      names: ['Nigel', 'Ruth', 'Sanjay', 'Fenella', 'Oskar', 'Bev', 'Trevor'],
+      intro: names => `The fire alarm went off for the yearly drill. Most people walked calmly outside. ${names} did not. Each was found in a very odd place, each was carrying something they refused to leave behind, and each took a different time to come out.`,
+      ask: q => `The fire warden is writing a strongly worded email to the worker who ${q}. Who is it?`,
+      cats: [
+        { id: 'found', label: 'Found', items: [
+          I('In a cupboard', 'was found in the stationery cupboard', 'was not in the cupboard'),
+          I('On the roof', 'was found on the roof', 'was not on the roof'),
+          I('In the lift', 'was found stuck in the lift', 'was not in the lift'),
+          I('Under a desk', 'was found asleep under a desk', 'was not under a desk'),
+          I('In the canteen', 'was found still eating in the canteen', 'was not in the canteen'),
+          I('In the car park', 'was found sitting in their car', 'was not in the car park') ] },
+        { id: 'carried', label: 'Carried', items: [
+          I('A pot plant', 'carried out a large pot plant', 'did not carry a plant'),
+          I('The kettle', 'carried out the office kettle', 'did not carry the kettle'),
+          I('A laptop', 'carried out a laptop still on a call', 'did not carry a laptop'),
+          I('Cake', 'carried out half a birthday cake', 'did not carry cake'),
+          I('A chair', 'carried out their favourite chair', 'did not carry a chair'),
+          I('Nothing at all', 'carried nothing but panic', 'carried something') ] },
+        { id: 'excuse', label: 'Excuse', items: [
+          I('Headphones', 'said they had headphones on', 'did not blame headphones'),
+          I('Thought it was a test', 'said they thought it was a test', 'did not say it was a test'),
+          I('Finishing an email', 'had to finish an email first', 'did not finish an email'),
+          I('Lost shoe', 'said they lost a shoe', 'did not lose a shoe'),
+          I('Wrong exit', 'followed the wrong exit sign', 'did not take the wrong exit'),
+          I('In a meeting', 'said the meeting was too important', 'did not blame a meeting') ] },
+        numC('mins', 'Took', [2, 4, 6, 8, 10, 12], v => v + ' minutes', 'took', 'did not take', 'less time', 'more time', d => d + ' minutes')
+      ]
+    },
+    {
+      id: 'eastereggs', title: 'The Easter Egg Hunt Fiasco', noun: 'hunter', nounPl: 'hunters', primaryLabel: 'Hunter', emoji: '🥚',
+      names: ['Poppy', 'Alfie', 'Mrs Tibbs', 'Uncle Ron', 'Zara', 'Grandpa Joe', 'Ivy'],
+      intro: names => `The Easter egg hunt in the park was a disaster. ${names} each cheated in one way, each hid their eggs somewhere sneaky, and each ended up with a different number of eggs. Several children cried. So did one adult.`,
+      ask: q => `The hunter who ${q} must give every egg back. Who is it?`,
+      cats: [
+        { id: 'cheat', label: 'Cheat', items: [
+          I('Used a map', 'used a hand-drawn map of the eggs', 'did not use a map'),
+          I('Started early', 'started before the whistle', 'did not start early'),
+          I('Bribed a child', 'paid a child in crisps', 'did not bribe a child'),
+          I('Brought own eggs', 'brought eggs from home', 'did not bring their own eggs'),
+          I('Used a dog', 'used a dog to sniff them out', 'did not use a dog'),
+          I('Climbed a tree', 'climbed a tree to spot eggs', 'did not climb a tree') ] },
+        { id: 'stash', label: 'Stash', items: [
+          I('In a wellie', 'stashed eggs in a wellie', 'did not use a wellie'),
+          I('In a hood', 'stashed eggs in a hoodie hood', 'did not use a hood'),
+          I('Under a hat', 'stashed eggs under a sun hat', 'did not use a hat'),
+          I('In a pram', 'stashed eggs in an empty pram', 'did not use the pram'),
+          I('In a bin', 'stashed eggs in a clean bin', 'did not use the bin'),
+          I('Ate them', 'ate the eggs on the spot', 'did not eat them on the spot') ] },
+        { id: 'dress', label: 'Dressed as', items: [
+          I('A bunny', 'was dressed as a bunny', 'was not dressed as a bunny'),
+          I('A chick', 'was dressed as a chick', 'was not dressed as a chick'),
+          I('A lamb', 'was dressed as a lamb', 'was not dressed as a lamb'),
+          I('A carrot', 'was dressed as a carrot', 'was not dressed as a carrot'),
+          I('A daffodil', 'was dressed as a daffodil', 'was not dressed as a daffodil'),
+          I('Normal clothes', 'wore normal clothes', 'was in costume') ] },
+        numC('eggs', 'Eggs', [3, 5, 7, 9, 11, 13], v => v + ' eggs', 'found', 'did not find', 'fewer', 'more', d => d + ' eggs')
+      ]
+    },
+    {
+      id: 'portraithat', title: 'The Portrait Painter\'s Missing Hat', noun: 'sitter', nounPl: 'sitters', primaryLabel: 'Sitter', emoji: '🎩',
+      names: ['Lady Penelope', 'Sir Reginald', 'Mrs Hogg', 'Captain Pip', 'Duchess Mabel', 'Mr Quill', 'Lord Fenwick'],
+      intro: names => `A famous portrait painter keeps one posh hat for sitters to wear. Today it went missing just before the big sitting. ${names} each borrowed something from the studio, each pulled a silly face, and each sat for a different length of time.`,
+      ask: q => `The painter will paint a moustache on the sitter who ${q}. Who is it?`,
+      cats: [
+        { id: 'took', label: 'Borrowed', items: [
+          I('The posh hat', 'borrowed the posh hat', 'did not borrow the hat'),
+          I('A paintbrush', 'borrowed a paintbrush as a hairpin', 'did not borrow a brush'),
+          I('The velvet cape', 'borrowed the velvet cape', 'did not borrow the cape'),
+          I('A fake parrot', 'borrowed the fake parrot', 'did not borrow the parrot'),
+          I('The golden chair', 'borrowed the golden chair', 'did not borrow the chair'),
+          I('A monocle', 'borrowed a monocle', 'did not borrow the monocle') ] },
+        { id: 'face', label: 'Face', items: [
+          I('Sneezing', 'sneezed in the middle of posing', 'did not sneeze'),
+          I('Winking', 'kept winking at the painter', 'did not wink'),
+          I('Cross-eyed', 'went cross-eyed', 'did not go cross-eyed'),
+          I('Asleep', 'fell asleep with mouth open', 'did not fall asleep'),
+          I('Tongue out', 'stuck their tongue out', 'did not stick their tongue out'),
+          I('Giggling', 'could not stop giggling', 'did not giggle') ] },
+        { id: 'pet', label: 'Brought pet', items: [
+          I('A pug', 'brought a pug', 'did not bring a pug'),
+          I('A goose', 'brought a goose', 'did not bring a goose'),
+          I('A tortoise', 'brought a tortoise', 'did not bring a tortoise'),
+          I('A cat', 'brought a cat', 'did not bring a cat'),
+          I('A goldfish', 'brought a goldfish in a bowl', 'did not bring a goldfish'),
+          I('No pet', 'came without a pet', 'brought a pet') ] },
+        numC('sat', 'Sat for', [1, 2, 3, 4, 5, 6], hrs, 'sat for', 'did not sit for', 'less time', 'more time', hrs)
+      ]
+    },
+    {
+      id: 'gnomeking', title: 'The Gnome King\'s Crown', noun: 'gnome', nounPl: 'gnomes', primaryLabel: 'Gnome', emoji: '👑',
+      names: ['Pebbleton', 'Mossbeard', 'Twiggle', 'Old Thimble', 'Dandelion', 'Snodgrass', 'Fernwhistle'],
+      intro: names => `The Gnome King woke up and his tiny crown was gone. It turned up on a toadstool, very sticky. ${names} each sneaked out of the garden last night, each did one naughty thing, and each came home at a different hour.`,
+      ask: q => `The king has sentenced the gnome who ${q} to a week facing the fence. Who is it?`,
+      cats: [
+        { id: 'naughty', label: 'Mischief', items: [
+          I('Wore the crown', 'wore the crown on a toadstool', 'did not wear the crown'),
+          I('Licked a snail', 'licked a snail for a bet', 'did not lick a snail'),
+          I('Moved a pond', 'moved the pond two metres left', 'did not move the pond'),
+          I('Rode the cat', 'rode the neighbour\'s cat', 'did not ride the cat'),
+          I('Painted a slug', 'painted a slug gold', 'did not paint a slug'),
+          I('Sang to the moon', 'sang loudly to the moon', 'did not sing to the moon') ] },
+        { id: 'hat', label: 'Hat colour', items: [
+          I('Red', 'wears a red hat', 'does not wear red'),
+          I('Blue', 'wears a blue hat', 'does not wear blue'),
+          I('Green', 'wears a green hat', 'does not wear green'),
+          I('Yellow', 'wears a yellow hat', 'does not wear yellow'),
+          I('Purple', 'wears a purple hat', 'does not wear purple'),
+          I('Striped', 'wears a striped hat', 'does not wear stripes') ] },
+        { id: 'spot', label: 'Usual spot', items: [
+          I('By the pond', 'usually stands by the pond', 'does not stand by the pond'),
+          I('On the wall', 'usually sits on the wall', 'does not sit on the wall'),
+          I('In the herbs', 'usually hides in the herbs', 'does not stand in the herbs'),
+          I('Under the bench', 'usually sits under the bench', 'does not sit under the bench'),
+          I('By the shed', 'usually guards the shed', 'does not guard the shed'),
+          I('In a flowerpot', 'usually sits in a flowerpot', 'does not sit in a flowerpot') ] },
+        timeC([1, 2, 3, 4, 5, 6], 'came home', 'did not come home', 'Home at')
+      ]
+    },
+    {
+      id: 'boyband', title: 'The Boy Band Reunion', noun: 'band member', nounPl: 'band members', primaryLabel: 'Member', emoji: '🎤',
+      names: ['Jez', 'Dazzle', 'Little Lee', 'Marcus', 'Shane-O', 'Big Rob', 'Kristof'],
+      intro: names => `Twenty years later, the made-up boy band Five Alive is back for one reunion show. It did not go well. ${names} each forgot one dance move, each wore something regrettable, and each demanded something odd backstage.`,
+      ask: q => `The rest of the band have voted out the member who ${q}. Who is it?`,
+      cats: [
+        { id: 'move', label: 'Forgot', items: [
+          I('The stool bit', 'forgot the dramatic stool stand-up', 'did not forget the stool bit'),
+          I('The key change', 'forgot to stand for the key change', 'did not forget the key change'),
+          I('The spin', 'spun the wrong way', 'did not spin the wrong way'),
+          I('The point', 'pointed at the wrong crowd', 'did not point wrong'),
+          I('The slide', 'slid off the stage', 'did not slide off the stage'),
+          I('The words', 'forgot every word of the big hit', 'did not forget the words') ] },
+        { id: 'outfit', label: 'Wore', items: [
+          I('White suit', 'wore an all-white suit', 'did not wear the white suit'),
+          I('Leather trousers', 'wore very tight leather trousers', 'did not wear leather trousers'),
+          I('Bucket hat', 'wore a bucket hat', 'did not wear a bucket hat'),
+          I('Frosted tips', 'came back with frosted tips', 'did not have frosted tips'),
+          I('Matching denim', 'wore head-to-toe denim', 'did not wear all denim'),
+          I('Glitter vest', 'wore a glitter vest', 'did not wear a glitter vest') ] },
+        { id: 'rider', label: 'Demanded', items: [
+          I('Blue sweets only', 'demanded only blue sweets', 'did not demand blue sweets'),
+          I('A pony', 'demanded a pony backstage', 'did not demand a pony'),
+          I('Warm milk', 'demanded warm milk', 'did not demand warm milk'),
+          I('A massage chair', 'demanded a massage chair', 'did not demand a massage chair'),
+          I('Their mum', 'demanded their mum be there', 'did not demand their mum'),
+          I('Fog machine', 'demanded their own fog machine', 'did not demand fog') ] },
+        numC('fans', 'Fan letters', [2, 4, 6, 8, 10, 12], v => v + ' letters', 'got', 'did not get', 'fewer', 'more', d => d + ' letters')
+      ]
+    },
+    {
+      id: 'boardgame', title: 'The Board Game Night Flip', noun: 'player', nounPl: 'players', primaryLabel: 'Player', emoji: '🎲',
+      names: ['Fran', 'Oli', 'Big Steve', 'Meera', 'Tobias', 'Wendy', 'Kai'],
+      intro: names => `Board game night ended with the board on the ceiling fan. ${names} each played a different game, each cheated in one way, and each lasted a different amount of time before storming off.`,
+      ask: q => `The player who ${q} is no longer allowed to be the banker. Who is it?`,
+      cats: [
+        { id: 'game', label: 'Game', items: [
+          I('Property game', 'played the property game', 'did not play the property game'),
+          I('Word tiles', 'played the word tile game', 'did not play word tiles'),
+          I('Murder mystery', 'played the murder mystery game', 'did not play the mystery game'),
+          I('Snakes', 'played snakes and ladders', 'did not play snakes and ladders'),
+          I('Trivia', 'played the trivia game', 'did not play trivia'),
+          I('Card battle', 'played the card battle game', 'did not play the card game') ] },
+        { id: 'cheat', label: 'Cheat', items: [
+          I('Hid money', 'hid money under the board', 'did not hide money'),
+          I('Made up a word', 'invented a word and defended it', 'did not invent a word'),
+          I('Moved pieces', 'moved pieces when nobody looked', 'did not move pieces'),
+          I('Loaded dice', 'used a lucky dice from home', 'did not bring their own dice'),
+          I('Read the cards', 'read the answer cards', 'did not read the answers'),
+          I('New rules', 'kept inventing new rules', 'did not invent rules') ] },
+        { id: 'snack', label: 'Snack', items: [
+          I('Cheesy puffs', 'got cheesy dust on the cards', 'did not eat cheesy puffs'),
+          I('Popcorn', 'dropped popcorn in the box', 'did not eat popcorn'),
+          I('Chocolate', 'got chocolate on the board', 'did not eat chocolate'),
+          I('Pickled onions', 'ate pickled onions loudly', 'did not eat pickled onions'),
+          I('Grapes', 'threw grapes at the winner', 'did not throw grapes'),
+          I('Nachos', 'dripped salsa everywhere', 'did not eat nachos') ] },
+        numC('mins', 'Lasted', [15, 30, 45, 60, 75, 90], v => v + ' minutes', 'lasted', 'did not last', 'less time', 'longer', d => d + ' minutes')
+      ]
+    }
+  );
+  T.push(
+    {
+      id: 'samples', title: 'The Supermarket Free Samples', noun: 'shopper', nounPl: 'shoppers', primaryLabel: 'Shopper', emoji: '🛒',
+      names: ['Doreen', 'Malcolm', 'Tilly', 'Vikram', 'Gwen', 'Rocco', 'Hattie'],
+      intro: names => `Free Sample Saturday at the supermarket ended with empty trays everywhere. ${names} each emptied one tray, each used a disguise to come back for more, and each went round a different number of times.`,
+      ask: q => `The store manager has pinned up a photo of the shopper who ${q}. Who is it?`,
+      cats: [
+        { id: 'tray', label: 'Emptied', items: [
+          I('Cheese cubes', 'emptied the cheese cubes', 'did not empty the cheese'),
+          I('Mini sausages', 'emptied the mini sausages', 'did not empty the sausages'),
+          I('Cake bites', 'emptied the cake bites', 'did not empty the cake'),
+          I('Crackers', 'emptied the crackers', 'did not empty the crackers'),
+          I('Juice shots', 'drank every juice shot', 'did not empty the juice'),
+          I('Olives', 'emptied the olives', 'did not empty the olives') ] },
+        { id: 'disguise', label: 'Disguise', items: [
+          I('Sunglasses', 'came back in sunglasses', 'did not use sunglasses'),
+          I('Fake beard', 'came back in a fake beard', 'did not use a fake beard'),
+          I('Different coat', 'came back in a different coat', 'did not change coats'),
+          I('Pushing a pram', 'came back pushing an empty pram', 'did not use a pram'),
+          I('Big hat', 'came back in a very big hat', 'did not use a big hat'),
+          I('Walking backwards', 'came back walking backwards', 'did not walk backwards') ] },
+        { id: 'bought', label: 'Actually bought', items: [
+          I('One banana', 'actually bought one banana', 'did not buy a banana'),
+          I('Toothpicks', 'actually bought toothpicks', 'did not buy toothpicks'),
+          I('A newspaper', 'actually bought a newspaper', 'did not buy a newspaper'),
+          I('Nothing', 'bought nothing at all', 'bought something'),
+          I('Bin bags', 'actually bought bin bags', 'did not buy bin bags'),
+          I('A lemon', 'actually bought a single lemon', 'did not buy a lemon') ] },
+        numC('trips', 'Trips', [2, 3, 4, 5, 6, 7], v => v + ' times', 'went round', 'did not go round', 'fewer times', 'more times', d => d === 1 ? 'one more time' : d + ' times', 'went round fewer times than', 'went round more times than')
+      ]
+    },
+    {
+      id: 'zerogcake', title: 'The Zero-Gravity Birthday Cake', noun: 'astronaut', nounPl: 'astronauts', primaryLabel: 'Astronaut', emoji: '🎂',
+      names: ['Commander Sparks', 'Dr Okafor', 'Lt Nilsson', 'Engineer Bloom', 'Pilot Vega', 'Dr Hamada', 'Cadet Finch'],
+      intro: names => `It was the captain's birthday on the space station, and someone baked a cake. In zero gravity. ${names} each caused one floating disaster, each grabbed a different piece, and each was in a different part of the station when the icing escaped.`,
+      ask: q => `Mission Control has given the astronaut who ${q} cleaning duty for a month. Who is it?`,
+      cats: [
+        { id: 'mess', label: 'Disaster', items: [
+          I('Released the icing', 'let the icing float free', 'did not release the icing'),
+          I('Lit the candles', 'lit candles in a spaceship', 'did not light candles'),
+          I('Sneezed on it', 'sneezed and sent crumbs flying', 'did not sneeze'),
+          I('Sang too loud', 'sang so loud the cake spun', 'did not sing too loud'),
+          I('Opened a vent', 'opened the wrong air vent', 'did not open a vent'),
+          I('Did a flip', 'did a celebration flip into it', 'did not do a flip') ] },
+        { id: 'piece', label: 'Grabbed', items: [
+          I('A cherry', 'grabbed a floating cherry', 'did not grab the cherry'),
+          I('A candle', 'grabbed a candle by mistake', 'did not grab a candle'),
+          I('Sprinkles', 'grabbed a cloud of sprinkles', 'did not grab sprinkles'),
+          I('The middle bit', 'grabbed the gooey middle', 'did not grab the middle'),
+          I('A corner', 'grabbed a crunchy corner', 'did not grab a corner'),
+          I('The plate', 'grabbed only the plate', 'did not grab the plate') ] },
+        { id: 'module', label: 'Module', items: [
+          I('Kitchen pod', 'was in the kitchen pod', 'was not in the kitchen pod'),
+          I('Gym wheel', 'was on the gym wheel', 'was not on the gym wheel'),
+          I('Window dome', 'was in the window dome', 'was not in the window dome'),
+          I('Sleep pods', 'was in the sleep pods', 'was not in the sleep pods'),
+          I('Science lab', 'was in the science lab', 'was not in the lab'),
+          I('Airlock', 'was by the airlock', 'was not by the airlock') ] },
+        numC('days', 'Days in space', [10, 20, 30, 40, 50, 60], v => v + ' days', 'had been up for', 'had not been up for', 'fewer days', 'more days', d => d + ' days', 'had been in space for less time than', 'had been in space for longer than')
+      ]
+    },
+    {
+      id: 'gowns', title: 'The Graduation Gown Swap', noun: 'graduate', nounPl: 'graduates', primaryLabel: 'Graduate', emoji: '🎓',
+      names: ['Chloe', 'Femi', 'Rory', 'Anastasia', 'Bilal', 'Grace', 'Magnus'],
+      intro: names => `Graduation day went wrong before anyone reached the stage. ${names} each ended up in the wrong gown, each did one silly thing when their name was called, and each studied something different.`,
+      ask: q => `The university has asked the graduate who ${q} to give the hat back. Who is it?`,
+      cats: [
+        { id: 'gown', label: 'Gown', items: [
+          I('Far too long', 'wore a gown that dragged on the floor', 'did not have the long gown'),
+          I('Far too short', 'wore a gown that stopped at the knees', 'did not have the short gown'),
+          I('Inside out', 'wore their gown inside out', 'did not wear it inside out'),
+          I('Professor\'s gown', 'wore a professor\'s gown by mistake', 'did not wear the professor\'s gown'),
+          I('Choir robe', 'wore a choir robe', 'did not wear the choir robe'),
+          I('Dressing gown', 'wore a fluffy dressing gown', 'did not wear a dressing gown') ] },
+        { id: 'stage', label: 'On stage', items: [
+          I('Tripped', 'tripped on the steps', 'did not trip'),
+          I('Dabbed', 'did a dance move at the dean', 'did not dance at the dean'),
+          I('Waved at mum', 'stopped to wave at their mum for ages', 'did not wave at mum'),
+          I('Wrong way', 'walked off the wrong side', 'did not walk off the wrong side'),
+          I('Hugged the dean', 'hugged the dean', 'did not hug the dean'),
+          I('Threw hat early', 'threw their hat too early', 'did not throw their hat early') ] },
+        { id: 'subject', label: 'Studied', items: [
+          I('Maths', 'studied maths', 'did not study maths'),
+          I('Drama', 'studied drama', 'did not study drama'),
+          I('Geology', 'studied rocks', 'did not study rocks'),
+          I('Law', 'studied law', 'did not study law'),
+          I('Music', 'studied music', 'did not study music'),
+          I('Biology', 'studied biology', 'did not study biology') ] },
+        numC('guests', 'Guests', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one guest' : v + ' guests', 'brought', 'did not bring', 'fewer', 'more', d => d === 1 ? 'one guest' : d + ' guests', 'brought fewer guests than', 'brought more guests than')
+      ]
+    },
+    {
+      id: 'beeswarm', title: 'The Bee Swarm Picnic', noun: 'picnicker', nounPl: 'picnickers', primaryLabel: 'Picnicker', emoji: '🐝',
+      names: ['Rosalind', 'Teddy', 'Mrs Abernethy', 'Junior', 'Felicity', 'Bob', 'Harriet'],
+      intro: names => `A lovely picnic by the river, until the bees arrived. ${names} each ran in a different direction, each left one item behind, and each had brought a different picnic food that the bees loved.`,
+      ask: q => `The bees have crowned the picnicker who ${q} as their favourite. Who is it?`,
+      cats: [
+        { id: 'ran', label: 'Escape', items: [
+          I('Into the river', 'jumped in the river', 'did not jump in the river'),
+          I('Up a tree', 'climbed a tree', 'did not climb a tree'),
+          I('Under the blanket', 'hid under the picnic blanket', 'did not hide under the blanket'),
+          I('Into the car', 'locked themselves in the car', 'did not hide in the car'),
+          I('In circles', 'ran in circles shouting', 'did not run in circles'),
+          I('Stood still', 'stood very still and whimpered', 'did not stand still') ] },
+        { id: 'food', label: 'Brought', items: [
+          I('Jam tarts', 'brought jam tarts', 'did not bring jam tarts'),
+          I('Lemonade', 'brought pink lemonade', 'did not bring lemonade'),
+          I('Honey cake', 'brought honey cake', 'did not bring honey cake'),
+          I('Fruit salad', 'brought fruit salad', 'did not bring fruit salad'),
+          I('Fizzy pop', 'brought fizzy pop', 'did not bring fizzy pop'),
+          I('Ice lollies', 'brought ice lollies', 'did not bring ice lollies') ] },
+        { id: 'left', label: 'Left behind', items: [
+          I('One shoe', 'left one shoe behind', 'did not leave a shoe'),
+          I('Their phone', 'left their phone behind', 'did not leave a phone'),
+          I('A sun hat', 'left a sun hat behind', 'did not leave a sun hat'),
+          I('The car keys', 'left the car keys behind', 'did not leave the keys'),
+          I('A deck chair', 'left a deck chair behind', 'did not leave a deck chair'),
+          I('Their dignity', 'left their dignity behind', 'kept their dignity') ] },
+        numC('stings', 'Stings', [0, 1, 2, 3, 4, 5], v => v === 1 ? 'one sting' : v === 0 ? 'no stings' : v + ' stings', 'got', 'did not get', 'fewer', 'more', d => d === 1 ? 'one sting' : d + ' stings', 'got fewer stings than', 'got more stings than')
+      ]
+    },
+    {
+      id: 'stargazing', title: 'The Stargazing Night Torch', noun: 'stargazer', nounPl: 'stargazers', primaryLabel: 'Stargazer', emoji: '🔭',
+      names: ['Orla', 'Percival', 'Nadia', 'Cuthbert', 'Luna', 'Godfrey', 'Esme'],
+      intro: names => `The astronomy club met on a dark hill to watch a meteor shower. Someone kept switching on a torch. Then everyone did. ${names} each ruined the dark in one way, each claimed to see a different thing, and each arrived at a different time.`,
+      ask: q => `The club has taken the torch away from the stargazer who ${q}. Who is it?`,
+      cats: [
+        { id: 'light', label: 'Ruined it with', items: [
+          I('A head torch', 'wore a very bright head torch', 'did not wear a head torch'),
+          I('Phone screen', 'checked their phone on full brightness', 'did not check their phone'),
+          I('Car headlights', 'left the car headlights on', 'did not leave headlights on'),
+          I('Glow sticks', 'cracked a box of glow sticks', 'did not crack glow sticks'),
+          I('Sparkler', 'lit a sparkler to celebrate', 'did not light a sparkler'),
+          I('Flashing trainers', 'wore trainers that flash', 'did not wear flashing trainers') ] },
+        { id: 'saw', label: 'Claimed to see', items: [
+          I('A UFO', 'claimed to see a UFO', 'did not claim a UFO'),
+          I('A new planet', 'claimed to find a new planet', 'did not claim a new planet'),
+          I('A face in the moon', 'saw a face in the moon', 'did not see a face'),
+          I('A shooting star', 'claimed 400 shooting stars', 'did not count shooting stars'),
+          I('An owl', 'only ever saw an owl', 'did not see the owl'),
+          I('Their own house', 'pointed the telescope at their house', 'did not look at their house') ] },
+        { id: 'snack', label: 'Snack', items: [
+          I('Soup flask', 'brought a flask of soup', 'did not bring soup'),
+          I('Crisps', 'brought noisy crisps', 'did not bring crisps'),
+          I('Moon pies', 'brought moon pies', 'did not bring moon pies'),
+          I('Hot chocolate', 'brought hot chocolate', 'did not bring hot chocolate'),
+          I('Space ice cream', 'brought freeze-dried ice cream', 'did not bring space ice cream'),
+          I('Toast', 'somehow brought toast', 'did not bring toast') ] },
+        timeC([18, 19, 20, 21, 22, 23], 'arrived', 'did not arrive')
+      ]
+    },
+    {
+      id: 'lastbiscuit', title: 'Who Ate the Last Biscuit?', noun: 'housemate', nounPl: 'housemates', primaryLabel: 'Housemate', emoji: '🍪',
+      names: ['Dev', 'Saskia', 'Moll', 'Craig', 'Bea', 'Lars', 'Yemi'],
+      intro: names => `The biscuit tin in the shared house is empty again. ${names} each took biscuits once this week, each left crumbs somewhere suspicious, and each has a very fishy alibi.`,
+      ask: q => `The house meeting has decided the housemate who ${q} buys biscuits for a month. Who is it?`,
+      cats: [
+        { id: 'biscuit', label: 'Biscuit', items: [
+          I('Chocolate digestive', 'took the chocolate digestives', 'did not take digestives'),
+          I('Custard cream', 'took the custard creams', 'did not take custard creams'),
+          I('Jammy one', 'took the jammy ones', 'did not take the jammy ones'),
+          I('Ginger nut', 'took the ginger nuts', 'did not take ginger nuts'),
+          I('Shortbread', 'took the shortbread', 'did not take shortbread'),
+          I('Wafer', 'took the wafers', 'did not take wafers') ] },
+        { id: 'crumbs', label: 'Crumbs', items: [
+          I('In bed', 'left crumbs in their bed', 'had no crumbs in bed'),
+          I('On the stairs', 'left a trail up the stairs', 'did not leave a stair trail'),
+          I('In the bath', 'left crumbs in the bath', 'had no crumbs in the bath'),
+          I('On the cat', 'left crumbs on the cat', 'left no crumbs on the cat'),
+          I('In a shoe', 'left crumbs in a shoe', 'had no crumbs in a shoe'),
+          I('On the keyboard', 'left crumbs in the keyboard', 'had no keyboard crumbs') ] },
+        { id: 'alibi', label: 'Alibi', items: [
+          I('Was asleep', 'said they were asleep all day', 'did not claim to be asleep'),
+          I('Is on a diet', 'said they are on a strict diet', 'did not claim a diet'),
+          I('Hates biscuits', 'claimed to hate biscuits', 'did not claim to hate biscuits'),
+          I('Was at the gym', 'said they were at the gym', 'did not claim the gym'),
+          I('Blamed a ghost', 'blamed the house ghost', 'did not blame the ghost'),
+          I('Only licked them', 'said they only licked them', 'did not claim to lick them') ] },
+        numC('ate', 'Ate', [2, 4, 6, 8, 10, 12], v => v + ' biscuits', 'ate', 'did not eat', 'fewer', 'more', d => d + ' biscuits', 'ate fewer biscuits than', 'ate more biscuits than')
+      ]
+    },
+    {
+      id: 'golftrophy', title: 'The Golf Club Trophy', noun: 'golfer', nounPl: 'golfers', primaryLabel: 'Golfer', emoji: '🏌️',
+      names: ['Rupert', 'Marjorie', 'Clive', 'Babs', 'Hugo', 'Sunita', 'Dennis'],
+      intro: names => `The golf club's shiny trophy has been found holding tulips in the clubhouse. ${names} each used the trophy for something it was not meant for, each lost a ball somewhere silly, and each finished the club match in a different place.`,
+      ask: q => `The golf club committee has suspended the golfer who ${q}. Who is it?`,
+      cats: [
+        { id: 'used', label: 'Used trophy as', items: [
+          I('A vase', 'used the trophy as a flower vase', 'did not use it as a vase'),
+          I('A soup bowl', 'ate soup out of the trophy', 'did not eat soup from it'),
+          I('A doorstop', 'used the trophy as a doorstop', 'did not use it as a doorstop'),
+          I('A hat', 'wore the trophy as a hat', 'did not wear the trophy'),
+          I('A dog bowl', 'let the dog drink from it', 'did not use it as a dog bowl'),
+          I('A piggy bank', 'kept coins in the trophy', 'did not keep coins in it') ] },
+        { id: 'lost', label: 'Lost ball in', items: [
+          I('The pond', 'lost a ball in the pond', 'did not lose a ball in the pond'),
+          I('A handbag', 'hit a ball into a handbag', 'did not lose a ball in a handbag'),
+          I('The car park', 'hit a car in the car park', 'did not hit the car park'),
+          I('A bunker', 'lost a ball in a bunker for an hour', 'did not lose one in a bunker'),
+          I('A duck nest', 'lost a ball to a duck', 'did not lose one to a duck'),
+          I('The clubhouse', 'hit a ball through the clubhouse window', 'did not hit the clubhouse') ] },
+        { id: 'trousers', label: 'Trousers', items: [
+          I('Tartan', 'wore tartan trousers', 'did not wear tartan'),
+          I('Pink', 'wore pink trousers', 'did not wear pink'),
+          I('Lime green', 'wore lime green trousers', 'did not wear lime green'),
+          I('Polka dot', 'wore polka dot trousers', 'did not wear polka dots'),
+          I('Bright orange', 'wore bright orange trousers', 'did not wear orange'),
+          I('Shorts', 'wore shorts in the rain', 'did not wear shorts') ] },
+        numC('place', 'Finished', [1, 2, 3, 4, 5, 6], place, 'finished', 'did not finish', 'higher', 'lower', places)
+      ]
+    },
+    {
+      id: 'roundtable', title: 'King Arthur\'s Round Table Seating', noun: 'knight', nounPl: 'knights', primaryLabel: 'Knight', emoji: '🛡️',
+      names: ['Sir Bumbleton', 'Sir Wobbly', 'Dame Greta', 'Sir Crumb', 'Dame Elspeth', 'Sir Parsnip', 'Sir Duncan'],
+      intro: names => `The table is round so that nobody is more important. The knights did not get the message. ${names} each tried one trick to sit next to the king, each brought a different pet to the feast, and each told a different tall tale.`,
+      ask: q => `The king has moved the knight who ${q} to a stool in the corridor. Who is it?`,
+      cats: [
+        { id: 'trick', label: 'Trick', items: [
+          I('Moved name card', 'swapped the name cards', 'did not swap name cards'),
+          I('Came early', 'arrived three hours early', 'did not arrive early'),
+          I('Fake message', 'sent a fake message calling a rival away', 'did not send a fake message'),
+          I('Sat on a knight', 'sat on another knight', 'did not sit on a knight'),
+          I('Bribed the cook', 'bribed the cook with pies', 'did not bribe the cook'),
+          I('Wore a crown', 'wore a cardboard crown', 'did not wear a crown') ] },
+        { id: 'pet', label: 'Pet', items: [
+          I('A falcon', 'brought a falcon', 'did not bring a falcon'),
+          I('A pig', 'brought a pig', 'did not bring a pig'),
+          I('A ferret', 'brought a ferret', 'did not bring a ferret'),
+          I('A goat', 'brought a goat', 'did not bring a goat'),
+          I('A hedgehog', 'brought a hedgehog', 'did not bring a hedgehog'),
+          I('A tiny dragon', 'brought a very small dragon', 'did not bring a dragon') ] },
+        { id: 'tale', label: 'Tall tale', items: [
+          I('Fought a giant', 'claimed to have fought a giant', 'did not claim a giant'),
+          I('Rescued a cow', 'claimed to have rescued a royal cow', 'did not claim a cow'),
+          I('Found treasure', 'claimed to have found treasure', 'did not claim treasure'),
+          I('Beat a dragon', 'claimed to have beaten a dragon at chess', 'did not claim dragon chess'),
+          I('Met a mermaid', 'claimed to have met a mermaid', 'did not claim a mermaid'),
+          I('Lifted a castle', 'claimed to have lifted a castle', 'did not claim a castle') ] },
+        numC('pies', 'Pies eaten', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one pie' : v + ' pies', 'ate', 'did not eat', 'fewer', 'more', d => d === 1 ? 'one pie' : d + ' pies', 'ate fewer pies than', 'ate more pies than')
+      ]
+    },
+    {
+      id: 'libraryvan', title: 'The Mobile Library Van', noun: 'borrower', nounPl: 'borrowers', primaryLabel: 'Borrower', emoji: '🚐',
+      names: ['Mr Tumble', 'Agatha', 'Wesley', 'Polly', 'Ignatius', 'Rosie', 'Barnaby'],
+      intro: names => `The mobile library van was found parked on the beach. Nobody knows who drove it there, but several people were on board. ${names} each did one strange thing in the van, each borrowed a different book, and each kept it for a different number of weeks.`,
+      ask: q => `The van driver has banned the borrower who ${q}. Who is it?`,
+      cats: [
+        { id: 'did', label: 'In the van', items: [
+          I('Took the wheel', 'took the wheel for a quick spin', 'did not take the wheel'),
+          I('Had a nap', 'had a nap on the beanbags', 'did not nap'),
+          I('Made toast', 'made toast in the van', 'did not make toast'),
+          I('Sang the horn', 'beeped the horn to a song', 'did not beep the horn'),
+          I('Sorted wrong', 'sorted the books by colour', 'did not sort by colour'),
+          I('Opened the roof', 'opened the roof hatch', 'did not open the roof') ] },
+        { id: 'book', label: 'Borrowed', items: [
+          I('Sea monsters', 'borrowed a book about sea monsters', 'did not borrow sea monsters'),
+          I('Knitting', 'borrowed a knitting book', 'did not borrow knitting'),
+          I('Car repair', 'borrowed a car repair book', 'did not borrow car repair'),
+          I('Ghost stories', 'borrowed ghost stories', 'did not borrow ghost stories'),
+          I('Baking', 'borrowed a baking book', 'did not borrow baking'),
+          I('Beach guide', 'borrowed a beach guide', 'did not borrow the beach guide') ] },
+        { id: 'state', label: 'Returned it', items: [
+          I('Sandy', 'returned it full of sand', 'did not return it sandy'),
+          I('Damp', 'returned it damp', 'did not return it damp'),
+          I('With a bookmark ham', 'used a slice of ham as a bookmark', 'did not use ham'),
+          I('Coloured in', 'coloured in the pictures', 'did not colour it in'),
+          I('Upside down', 'returned it in the wrong cover', 'did not swap covers'),
+          I('Perfect', 'returned it perfect', 'did not return it perfect') ] },
+        numC('weeks', 'Kept it', [2, 4, 6, 8, 10, 12], v => v + ' weeks', 'kept it for', 'did not keep it for', 'less time', 'longer', d => d + ' weeks', 'kept their book for less time than', 'kept their book for longer than')
+      ]
+    },
+    {
+      id: 'photobomb', title: 'The Photography Club Photo-Bomb', noun: 'photographer', nounPl: 'photographers', primaryLabel: 'Photographer', emoji: '📷',
+      names: ['Lenny', 'Prue', 'Abdul', 'Cecily', 'Mungo', 'Tamsin', 'Ray'],
+      intro: names => `Every photo in this year's club contest has the same grinning man in the background. Nobody knows who he is. ${names} each took one photo, each made one big mistake, and each scored a different mark from the judges.`,
+      ask: q => `The club has taken away the camera of the photographer who ${q}. Who is it?`,
+      cats: [
+        { id: 'subject', label: 'Photo of', items: [
+          I('A sunset', 'took a photo of a sunset', 'did not shoot the sunset'),
+          I('A puddle', 'took a photo of a puddle', 'did not shoot the puddle'),
+          I('A pigeon', 'took a photo of a pigeon', 'did not shoot the pigeon'),
+          I('A lighthouse', 'took a photo of a lighthouse', 'did not shoot the lighthouse'),
+          I('A wedding', 'took a photo at a wedding', 'did not shoot the wedding'),
+          I('Their dinner', 'took a photo of their dinner', 'did not shoot their dinner') ] },
+        { id: 'mistake', label: 'Mistake', items: [
+          I('Thumb in shot', 'got their thumb in the shot', 'kept their thumb out'),
+          I('Lens cap on', 'left the lens cap on', 'did not leave the cap on'),
+          I('Wrong way up', 'entered it upside down', 'did not enter it upside down'),
+          I('Too much filter', 'used seven filters at once', 'did not use seven filters'),
+          I('Blurry', 'sneezed as they clicked', 'did not sneeze'),
+          I('Selfie', 'accidentally took a selfie', 'did not take a selfie') ] },
+        { id: 'camera', label: 'Camera', items: [
+          I('Old film camera', 'used an old film camera', 'did not use a film camera'),
+          I('Phone', 'used a phone', 'did not use a phone'),
+          I('Huge zoom lens', 'used a huge zoom lens', 'did not use a zoom lens'),
+          I('Instant camera', 'used an instant camera', 'did not use an instant camera'),
+          I('Toy camera', 'used a toy camera', 'did not use a toy camera'),
+          I('Borrowed camera', 'used a borrowed camera', 'did not borrow a camera') ] },
+        numC('marks', 'Score', [3, 4, 5, 6, 7, 8], v => v + ' out of 10', 'scored', 'did not score', 'lower', 'higher', d => d === 1 ? 'one mark' : d + ' marks', 'scored lower than', 'scored higher than')
+      ]
+    }
+  );
+  T.push(
+    {
+      id: 'vikings', title: 'The Viking Helmet Debate', noun: 'Viking', nounPl: 'Vikings', primaryLabel: 'Viking', emoji: '⛵',
+      names: ['Bjorn the Loud', 'Sigrid', 'Olaf the Damp', 'Astrid', 'Harald Halfsock', 'Freya', 'Ulf'],
+      intro: names => `Before the big voyage, the longship crew had a very serious meeting about helmets. ${names} each insisted on a silly helmet, each packed one useless thing, and each rowed a different number of hours before giving up.`,
+      ask: q => `The crew has left the Viking who ${q} on the beach. Who is it?`,
+      cats: [
+        { id: 'helmet', label: 'Helmet', items: [
+          I('Horns', 'wore a helmet with horns', 'did not wear horns'),
+          I('Wings', 'wore a helmet with wings', 'did not wear wings'),
+          I('A saucepan', 'wore a saucepan', 'did not wear a saucepan'),
+          I('Feathers', 'wore a helmet full of feathers', 'did not wear feathers'),
+          I('Bucket', 'wore a bucket with eye holes', 'did not wear a bucket'),
+          I('Bobble hat', 'wore a woolly bobble hat', 'did not wear a bobble hat') ] },
+        { id: 'packed', label: 'Packed', items: [
+          I('A rocking chair', 'packed a rocking chair', 'did not pack a rocking chair'),
+          I('Sunscreen', 'packed only sunscreen', 'did not pack sunscreen'),
+          I('A goat', 'packed a goat', 'did not pack a goat'),
+          I('A harp', 'packed a harp', 'did not pack a harp'),
+          I('Ten cheeses', 'packed ten cheeses', 'did not pack the cheeses'),
+          I('A map of the wrong sea', 'packed a map of the wrong sea', 'did not pack the wrong map') ] },
+        { id: 'fear', label: 'Secretly fears', items: [
+          I('Seagulls', 'is secretly scared of seagulls', 'is not scared of seagulls'),
+          I('Getting wet', 'is secretly scared of getting wet', 'is not scared of getting wet'),
+          I('Crabs', 'is secretly scared of crabs', 'is not scared of crabs'),
+          I('The dark', 'is secretly scared of the dark', 'is not scared of the dark'),
+          I('Their mum', 'is secretly scared of their mum', 'is not scared of their mum'),
+          I('Sheep', 'is secretly scared of sheep', 'is not scared of sheep') ] },
+        numC('rowed', 'Rowed', [1, 2, 3, 4, 5, 6], hrs, 'rowed for', 'did not row for', 'less time', 'longer', hrs, 'rowed for less time than', 'rowed for longer than')
+      ]
+    },
+    {
+      id: 'safari', title: 'The Desert Safari Sand Fight', noun: 'tourist', nounPl: 'tourists', primaryLabel: 'Tourist', emoji: '🐪',
+      names: ['Penny', 'Joaquin', 'Ursula', 'Mitch', 'Leila', 'Gordon', 'Saoirse'],
+      intro: names => `The desert safari tour ended in a full sand fight. ${names} each started trouble in one way, each rode a different camel, and each got a different amount of sand in their shoes.`,
+      ask: q => `The camels have refused to carry the tourist who ${q} ever again. Who is it?`,
+      cats: [
+        { id: 'trouble', label: 'Started it by', items: [
+          I('Threw sand', 'threw the first handful of sand', 'did not throw first'),
+          I('Took the shade', 'stole the only umbrella', 'did not steal the umbrella'),
+          I('Ate the dates', 'ate everyone\'s dates', 'did not eat the dates'),
+          I('Sang badly', 'sang the same song for two hours', 'did not sing for two hours'),
+          I('Complained', 'complained the desert was too sandy', 'did not complain about sand'),
+          I('Sandboarded into tent', 'sandboarded into the tent', 'did not sandboard into the tent') ] },
+        { id: 'camel', label: 'Camel', items: [
+          I('Humphrey', 'rode Humphrey', 'did not ride Humphrey'),
+          I('Grumpus', 'rode Grumpus', 'did not ride Grumpus'),
+          I('Lady Spit', 'rode Lady Spit', 'did not ride Lady Spit'),
+          I('Sir Lumpy', 'rode Sir Lumpy', 'did not ride Sir Lumpy'),
+          I('Dozy', 'rode Dozy', 'did not ride Dozy'),
+          I('Biscuit', 'rode Biscuit', 'did not ride Biscuit') ] },
+        { id: 'hat', label: 'Hat', items: [
+          I('Straw hat', 'wore a straw hat', 'did not wear straw'),
+          I('Baseball cap', 'wore a baseball cap', 'did not wear a cap'),
+          I('Towel', 'wore a hotel towel on their head', 'did not wear a towel'),
+          I('Cowboy hat', 'wore a cowboy hat', 'did not wear a cowboy hat'),
+          I('Pith helmet', 'wore a pith helmet', 'did not wear a pith helmet'),
+          I('No hat', 'wore no hat at all', 'wore a hat') ] },
+        numC('sand', 'Sand in shoes', [100, 200, 300, 400, 500, 600], v => v + ' g', 'had', 'did not have', 'less sand', 'more sand', d => d + ' g', 'had less sand in their shoes than', 'had more sand in their shoes than')
+      ]
+    },
+    {
+      id: 'goblinmarket', title: 'The Goblin Market Fraud', noun: 'goblin', nounPl: 'goblins', primaryLabel: 'Goblin', emoji: '🫘',
+      names: ['Snaggle', 'Grubwort', 'Nettle', 'Old Fusk', 'Pimm', 'Bogwen', 'Krinkle'],
+      intro: names => `The midnight Goblin Market is famous for magic beans. This year, the beans were just beans. ${names} each sold one fake magic item, each charged in a strange coin, and each ran a stall in a different spot.`,
+      ask: q => `The Goblin Council has turned the goblin who ${q} into a toad for a week. Who is it?`,
+      cats: [
+        { id: 'fake', label: 'Fake item', items: [
+          I('Magic beans', 'sold ordinary beans as magic', 'did not sell beans'),
+          I('Wishing pebble', 'sold a pebble from the car park', 'did not sell a pebble'),
+          I('Flying broom', 'sold a broom that only sweeps', 'did not sell a broom'),
+          I('Love potion', 'sold pond water as a love potion', 'did not sell a potion'),
+          I('Invisible hat', 'sold an invisible hat (just air)', 'did not sell the invisible hat'),
+          I('Dragon egg', 'sold a painted potato as a dragon egg', 'did not sell a dragon egg') ] },
+        { id: 'coin', label: 'Charged in', items: [
+          I('Buttons', 'charged in buttons', 'did not charge buttons'),
+          I('Toenails', 'charged in toenail clippings', 'did not charge toenails'),
+          I('Secrets', 'charged in secrets', 'did not charge secrets'),
+          I('Socks', 'charged in odd socks', 'did not charge socks'),
+          I('Bottle tops', 'charged in bottle tops', 'did not charge bottle tops'),
+          I('Compliments', 'charged in compliments', 'did not charge compliments') ] },
+        { id: 'stall', label: 'Stall', items: [
+          I('Under the bridge', 'had a stall under the bridge', 'was not under the bridge'),
+          I('By the well', 'had a stall by the well', 'was not by the well'),
+          I('In a tree', 'had a stall up a tree', 'was not up a tree'),
+          I('On a toadstool', 'had a stall on a toadstool', 'was not on a toadstool'),
+          I('In a cart', 'sold from a leaky cart', 'was not in the cart'),
+          I('In a boot', 'sold from inside a giant boot', 'was not in the boot') ] },
+        numC('sold', 'Sold', [3, 6, 9, 12, 15, 18], v => v + ' fakes', 'sold', 'did not sell', 'fewer', 'more', d => d + ' fakes', 'sold fewer fakes than', 'sold more fakes than')
+      ]
+    },
+    {
+      id: 'coffeecoup', title: 'The Coffee Machine Coup', noun: 'colleague', nounPl: 'colleagues', primaryLabel: 'Colleague', emoji: '☕',
+      names: ['Sandra', 'Phil', 'Aisha', 'Dominic', 'Kerry', 'Luca', 'Margot'],
+      intro: names => `On Monday the office coffee was secretly swapped for decaf. By Tuesday nobody could stay awake. ${names} each did one sneaky thing to the coffee machine, each fell asleep somewhere embarrassing, and each drank a different number of cups.`,
+      ask: q => `The boss has banned the colleague who ${q} from the kitchen. Who is it?`,
+      cats: [
+        { id: 'sneaky', label: 'Did', items: [
+          I('Swapped the beans', 'swapped the beans for decaf', 'did not swap the beans'),
+          I('Hid the milk', 'hid all the milk', 'did not hide the milk'),
+          I('Changed the settings', 'set every drink to extra hot', 'did not change the settings'),
+          I('Put a sign up', 'put up a fake Out Of Order sign', 'did not put up a sign'),
+          I('Took the mugs', 'took every mug to their desk', 'did not take the mugs'),
+          I('Used it for soup', 'made soup in the coffee machine', 'did not make soup') ] },
+        { id: 'slept', label: 'Fell asleep', items: [
+          I('In a meeting', 'fell asleep in a meeting', 'did not sleep in a meeting'),
+          I('On a call', 'fell asleep on a video call', 'did not sleep on a call'),
+          I('In the lift', 'fell asleep in the lift', 'did not sleep in the lift'),
+          I('At the printer', 'fell asleep standing at the printer', 'did not sleep at the printer'),
+          I('On the keyboard', 'fell asleep on the keyboard', 'did not sleep on the keyboard'),
+          I('In reception', 'fell asleep in reception', 'did not sleep in reception') ] },
+        { id: 'mug', label: 'Mug', items: [
+          I('Best Boss mug', 'uses a Best Boss mug (is not the boss)', 'does not use the Best Boss mug'),
+          I('Cat mug', 'uses a mug shaped like a cat', 'does not use the cat mug'),
+          I('Giant mug', 'uses a mug the size of a bucket', 'does not use the giant mug'),
+          I('Chipped mug', 'uses a badly chipped mug', 'does not use the chipped mug'),
+          I('Jam jar', 'drinks from a jam jar', 'does not use a jam jar'),
+          I('Travel cup', 'uses a leaky travel cup', 'does not use the travel cup') ] },
+        numC('cups', 'Cups', [2, 3, 4, 5, 6, 7], v => v + ' cups', 'drank', 'did not drink', 'fewer', 'more', d => d === 1 ? 'one cup' : d + ' cups', 'drank fewer cups than', 'drank more cups than')
+      ]
+    },
+    {
+      id: 'easterbunny', title: 'The Secret Easter Bunny', noun: 'neighbour', nounPl: 'neighbours', primaryLabel: 'Neighbour', emoji: '🐰',
+      names: ['Mr Pratt', 'Gloria', 'Desmond', 'Wanda', 'Kofi', 'Ruby', 'Sid'],
+      intro: names => `Someone in a bunny suit was seen on Maple Street at 3 a.m. It turns out there were several. ${names} each wore a bunny suit for a different secret reason, each left something on a doorstep, and each hopped a different distance.`,
+      ask: q => `The street has named the neighbour who ${q} as Bunny of the Year. Who is it?`,
+      cats: [
+        { id: 'why', label: 'Reason', items: [
+          I('Surprise for kids', 'wanted to surprise the kids', 'was not surprising the kids'),
+          I('Fancy dress party', 'was walking home from a party', 'was not walking home from a party'),
+          I('Hiding from in-laws', 'was hiding from the in-laws', 'was not hiding from in-laws'),
+          I('Lost a bet', 'had lost a bet', 'had not lost a bet'),
+          I('Looking for a cat', 'was looking for a lost cat', 'was not looking for a cat'),
+          I('Just felt like it', 'just felt like it', 'had a reason') ] },
+        { id: 'left', label: 'Left', items: [
+          I('Chocolate eggs', 'left chocolate eggs', 'did not leave eggs'),
+          I('Carrots', 'left a bunch of carrots', 'did not leave carrots'),
+          I('A poem', 'left a mysterious poem', 'did not leave a poem'),
+          I('Painted rocks', 'left painted rocks', 'did not leave rocks'),
+          I('A cabbage', 'left a whole cabbage', 'did not leave a cabbage'),
+          I('Fluffy tail', 'left their own fluffy tail', 'did not lose their tail') ] },
+        { id: 'colour', label: 'Suit colour', items: [
+          I('White', 'wore a white suit', 'did not wear white'),
+          I('Pink', 'wore a pink suit', 'did not wear pink'),
+          I('Brown', 'wore a brown suit', 'did not wear brown'),
+          I('Grey', 'wore a grey suit', 'did not wear grey'),
+          I('Yellow', 'wore a yellow suit', 'did not wear yellow'),
+          I('Spotty', 'wore a spotty suit', 'did not wear spots') ] },
+        numC('metres', 'Hopped', [100, 200, 300, 400, 500, 600], v => v + ' m', 'hopped', 'did not hop', 'less far', 'further', d => d + ' m', 'hopped a shorter way than', 'hopped further than')
+      ]
+    },
+    {
+      id: 'hologram', title: 'The Hologram Concert Glitch', noun: 'technician', nounPl: 'technicians', primaryLabel: 'Technician', emoji: '🎆',
+      names: ['Zed', 'Bryony', 'Quentin', 'Mei', 'Ollie', 'Tasha', 'Hendrik'],
+      intro: names => `The hologram pop star appeared upside down, then as a giant foot, then as a duck. ${names} each pressed one wrong button, each spilled one drink on the desk, and each was in charge of a different part of the show.`,
+      ask: q => `The concert company has sent the technician who ${q} on a long course. Who is it?`,
+      cats: [
+        { id: 'button', label: 'Pressed', items: [
+          I('Flip', 'pressed Flip', 'did not press Flip'),
+          I('Giant', 'pressed Make Giant', 'did not press Make Giant'),
+          I('Duck mode', 'pressed Duck Mode', 'did not press Duck Mode'),
+          I('Slow motion', 'pressed Slow Motion', 'did not press Slow Motion'),
+          I('Ten copies', 'pressed Clone x10', 'did not press Clone'),
+          I('Disco', 'pressed Disco Ball', 'did not press Disco Ball') ] },
+        { id: 'drink', label: 'Spilled', items: [
+          I('Cola', 'spilled cola on the desk', 'did not spill cola'),
+          I('Smoothie', 'spilled a smoothie', 'did not spill a smoothie'),
+          I('Tea', 'spilled tea', 'did not spill tea'),
+          I('Energy drink', 'spilled an energy drink', 'did not spill an energy drink'),
+          I('Soup', 'spilled soup', 'did not spill soup'),
+          I('Water', 'spilled only water', 'did not spill water') ] },
+        { id: 'job', label: 'In charge of', items: [
+          I('Lights', 'was in charge of lights', 'was not on lights'),
+          I('Sound', 'was in charge of sound', 'was not on sound'),
+          I('Smoke', 'was in charge of the smoke machine', 'was not on smoke'),
+          I('Lasers', 'was in charge of lasers', 'was not on lasers'),
+          I('Confetti', 'was in charge of confetti', 'was not on confetti'),
+          I('Snacks', 'was in charge of snacks', 'was not on snacks') ] },
+        timeC([18, 19, 20, 21, 22, 23], 'pressed it', 'did not press it')
+      ]
+    },
+    {
+      id: 'dogshow', title: 'The Dog Show Disqualification', noun: 'dog', nounPl: 'dogs', primaryLabel: 'Dog', emoji: '🐩',
+      names: ['Duchess', 'Rocket', 'Mr Wiggles', 'Peanut', 'Bramble', 'Sir Barksalot', 'Toffee'],
+      intro: names => `The village dog show ended with no winner and one very upset judge. ${names} each broke one rule, each wore a silly outfit chosen by their owner, and each got a different score before being disqualified.`,
+      ask: q => `The judge has banned the dog who ${q} from all future shows. Who is it?`,
+      cats: [
+        { id: 'rule', label: 'Broke rule', items: [
+          I('Ate the sandwich', 'ate the judge\'s sandwich', 'did not eat the sandwich'),
+          I('Chased a cat', 'chased the show cat', 'did not chase the cat'),
+          I('Rolled in mud', 'rolled in the mud', 'did not roll in mud'),
+          I('Stole a rosette', 'stole a rosette', 'did not steal a rosette'),
+          I('Howled', 'howled through the anthem', 'did not howl'),
+          I('Lay down', 'lay down and refused to move', 'did not lie down') ] },
+        { id: 'outfit', label: 'Wore', items: [
+          I('Tutu', 'wore a tutu', 'did not wear a tutu'),
+          I('Bow tie', 'wore a bow tie', 'did not wear a bow tie'),
+          I('Raincoat', 'wore a tiny raincoat', 'did not wear a raincoat'),
+          I('Sunglasses', 'wore sunglasses', 'did not wear sunglasses'),
+          I('Crown', 'wore a crown', 'did not wear a crown'),
+          I('Superhero cape', 'wore a cape', 'did not wear a cape') ] },
+        { id: 'trick', label: 'Trick', items: [
+          I('Sit', 'can only sit', 'cannot only sit'),
+          I('Play dead', 'plays dead', 'does not play dead'),
+          I('Spin', 'spins in circles', 'does not spin'),
+          I('High five', 'does a high five', 'does not do a high five'),
+          I('Sing', 'sings along to music', 'does not sing'),
+          I('Nothing', 'knows no tricks at all', 'knows a trick') ] },
+        numC('score', 'Score', [3, 4, 5, 6, 7, 8], v => v + ' out of 10', 'scored', 'did not score', 'lower', 'higher', d => d === 1 ? 'one point' : d + ' points', 'scored lower than', 'scored higher than')
+      ]
+    },
+    {
+      id: 'judgesfeud', title: 'The Talent Show Judges\' Feud', noun: 'judge', nounPl: 'judges', primaryLabel: 'Judge', emoji: '🔴',
+      names: ['Simone', 'Nigel', 'Dame Trixie', 'Big Al', 'Cressida', 'Marvin', 'Juno'],
+      intro: names => `The TV talent show judges were meant to judge the acts. Instead they judged each other. ${names} each threw something at another judge, each loved a different terrible act, and each pressed their buzzer a different number of times.`,
+      ask: q => `The TV company has fired the judge who ${q}. Who is it?`,
+      cats: [
+        { id: 'threw', label: 'Threw', items: [
+          I('Their buzzer', 'threw their buzzer', 'did not throw their buzzer'),
+          I('A shoe', 'threw a shoe', 'did not throw a shoe'),
+          I('Water', 'threw a glass of water', 'did not throw water'),
+          I('A wig', 'threw their own wig', 'did not throw a wig'),
+          I('Sweets', 'threw a bag of sweets', 'did not throw sweets'),
+          I('Glitter', 'threw a handful of glitter', 'did not throw glitter') ] },
+        { id: 'act', label: 'Loved act', items: [
+          I('Singing dog', 'loved the singing dog', 'did not love the singing dog'),
+          I('Spoon player', 'loved the spoon player', 'did not love the spoon player'),
+          I('Bad magician', 'loved the bad magician', 'did not love the magician'),
+          I('Granny rapper', 'loved the rapping granny', 'did not love the granny rapper'),
+          I('Juggler', 'loved the juggler who dropped everything', 'did not love the juggler'),
+          I('Yodeller', 'loved the yodeller', 'did not love the yodeller') ] },
+        { id: 'catch', label: 'Catchphrase', items: [
+          I('It\'s a no', 'always says It\'s a no from me', 'does not say It\'s a no'),
+          I('Goosebumps', 'always says I got goosebumps', 'does not say goosebumps'),
+          I('Darling', 'calls everyone darling', 'does not say darling'),
+          I('Unbelievable', 'shouts Unbelievable', 'does not shout Unbelievable'),
+          I('Pitchy', 'says it was a bit pitchy', 'does not say pitchy'),
+          I('Bravo', 'shouts Bravo at everything', 'does not shout Bravo') ] },
+        numC('buzz', 'Buzzed', [4, 8, 12, 16, 20, 24], v => v + ' times', 'buzzed', 'did not buzz', 'fewer times', 'more times', d => d + ' times', 'buzzed fewer times than', 'buzzed more times than')
+      ]
+    },
+    {
+      id: 'musicroom', title: 'The Music Room Mayhem', noun: 'pupil', nounPl: 'pupils', primaryLabel: 'Pupil', emoji: '🎺',
+      names: ['Archie', 'Lola', 'Benji', 'Matilda', 'Rafi', 'Eloise', 'Dougie'],
+      intro: names => `The school concert was tomorrow, and the music room was a mess. ${names} each sabotaged one instrument, each played a different instrument themselves, and each practised for a different number of minutes.`,
+      ask: q => `The music teacher has given the triangle to the pupil who ${q}. Forever. Who is it?`,
+      cats: [
+        { id: 'sabotage', label: 'Sabotage', items: [
+          I('Glued recorders', 'glued the recorders shut', 'did not glue recorders'),
+          I('Jelly in the tuba', 'filled the tuba with jelly', 'did not fill the tuba'),
+          I('Loose drum', 'loosened the big drum', 'did not loosen the drum'),
+          I('Swapped music', 'swapped the sheet music for a menu', 'did not swap the music'),
+          I('Hid the bows', 'hid the violin bows', 'did not hide the bows'),
+          I('Detuned piano', 'detuned the piano', 'did not detune the piano') ] },
+        { id: 'plays', label: 'Plays', items: [
+          I('Violin', 'plays the violin', 'does not play violin'),
+          I('Drums', 'plays the drums', 'does not play drums'),
+          I('Recorder', 'plays the recorder', 'does not play recorder'),
+          I('Trumpet', 'plays the trumpet', 'does not play trumpet'),
+          I('Piano', 'plays the piano', 'does not play piano'),
+          I('Bagpipes', 'plays the bagpipes', 'does not play bagpipes') ] },
+        { id: 'excuse', label: 'Excuse', items: [
+          I('Thought it was art', 'said it was modern art', 'did not say art'),
+          I('Sleepwalking', 'said they were sleepwalking', 'did not claim sleepwalking'),
+          I('Twin did it', 'blamed their twin (no twin)', 'did not blame a twin'),
+          I('For science', 'said it was for science', 'did not say science'),
+          I('Dog told me', 'said the dog told them to', 'did not blame the dog'),
+          I('Improving it', 'said they were improving it', 'did not claim to improve it') ] },
+        numC('practised', 'Practised', [5, 10, 15, 20, 25, 30], v => v + ' minutes', 'practised for', 'did not practise for', 'less time', 'longer', d => d + ' minutes', 'practised for less time than', 'practised for longer than')
+      ]
+    },
+    {
+      id: 'snowfort', title: 'The Snow Fort Battle', noun: 'kid', nounPl: 'kids', primaryLabel: 'Kid', emoji: '☃️',
+      names: ['Hector', 'Mabel', 'Ziggy', 'Florence', 'Otis', 'Nell', 'Arlo'],
+      intro: names => `It was the first snow day of the year and five snow forts went up in one street. Then the war began. ${names} each built a different fort, each used a secret weapon, and each threw a different number of snowballs before tea time.`,
+      ask: q => `The street has made the kid who ${q} shovel every driveway. Who is it?`,
+      cats: [
+        { id: 'fort', label: 'Fort', items: [
+          I('Igloo', 'built an igloo', 'did not build an igloo'),
+          I('Castle', 'built a snow castle with towers', 'did not build a castle'),
+          I('Wall', 'built one very long wall', 'did not build the wall'),
+          I('Tunnel', 'dug a snow tunnel', 'did not dig a tunnel'),
+          I('Tower', 'built a wobbly tower', 'did not build a tower'),
+          I('Car fort', 'built a fort around a parked car', 'did not use the car') ] },
+        { id: 'weapon', label: 'Secret weapon', items: [
+          I('Snow cannon', 'used a homemade snow cannon', 'did not use a cannon'),
+          I('Ice balls', 'used ice balls', 'did not use ice balls'),
+          I('Big brother', 'used their big brother', 'did not use a big brother'),
+          I('Dog', 'used the dog as a decoy', 'did not use the dog'),
+          I('Bin lid shield', 'used a bin lid shield', 'did not use a bin lid'),
+          I('Hot cocoa bribe', 'used hot cocoa as a bribe', 'did not use cocoa') ] },
+        { id: 'hat', label: 'Hat', items: [
+          I('Pompom', 'wore a pompom hat', 'did not wear a pompom'),
+          I('Ear flaps', 'wore a hat with ear flaps', 'did not wear ear flaps'),
+          I('Balaclava', 'wore a balaclava', 'did not wear a balaclava'),
+          I('Dad\'s hat', 'wore their dad\'s big hat', 'did not wear Dad\'s hat'),
+          I('Reindeer hat', 'wore a reindeer hat', 'did not wear antlers'),
+          I('Saucepan', 'wore a saucepan as a helmet', 'did not wear a saucepan') ] },
+        numC('balls', 'Snowballs', [10, 20, 30, 40, 50, 60], v => v + ' snowballs', 'threw', 'did not throw', 'fewer', 'more', d => d + ' snowballs', 'threw fewer snowballs than', 'threw more snowballs than')
+      ]
+    }
+  );
+  T.push(
+    {
+      id: 'icecream', title: 'The Ice Cream Flavour Scandal', noun: 'taster', nounPl: 'tasters', primaryLabel: 'Taster', emoji: '🍦',
+      names: ['Marjorie', 'Teodor', 'Bunty', 'Kwame', 'Lottie', 'Rasmus', 'Philippa'],
+      intro: names => `Someone swapped the labels at the ice cream parlour, and now the mint tastes of onion. ${names} each tried a different flavour, each used a different spoon, and each ate a different number of scoops.`,
+      ask: q => `The parlour owner suspects the taster who ${q}. Who is it?`,
+      cats: [
+        { id: 'flavour', label: 'Flavour', items: [
+          I('Pickle ripple', 'tried pickle ripple', 'did not try pickle ripple'),
+          I('Toast crunch', 'tried toast crunch', 'did not try toast crunch'),
+          I('Mystery green', 'tried mystery green', 'did not try mystery green'),
+          I('Bubblegum', 'tried bubblegum', 'did not try bubblegum'),
+          I('Cheese swirl', 'tried cheese swirl', 'did not try cheese swirl'),
+          I('Plain vanilla', 'tried plain vanilla', 'did not try plain vanilla') ] },
+        { id: 'spoon', label: 'Spoon', items: [
+          I('Tiny pink spoon', 'used a tiny pink spoon', 'did not use the pink spoon'),
+          I('Soup ladle', 'used a soup ladle', 'did not use a ladle'),
+          I('Wooden paddle', 'used a wooden paddle', 'did not use a paddle'),
+          I('Their finger', 'used their finger', 'did not use their finger'),
+          I('A fork', 'used a fork', 'did not use a fork'),
+          I('A wafer', 'used a wafer as a spoon', 'did not use a wafer') ] },
+        { id: 'verdict', label: 'Verdict', items: [
+          I('Too cold', 'said it was too cold', 'did not say too cold'),
+          I('Delicious', 'said it was delicious', 'did not say delicious'),
+          I('Suspicious', 'said it tasted suspicious', 'did not say suspicious'),
+          I('Like socks', 'said it tasted like socks', 'did not mention socks'),
+          I('Cried', 'cried with joy', 'did not cry'),
+          I('Said nothing', 'said nothing and kept eating', 'did not stay silent') ] },
+        numC('scoops', 'Scoops', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one scoop' : v + ' scoops', 'ate', 'did not eat', 'fewer', 'more', d => d === 1 ? 'one scoop' : d + ' scoops', 'ate fewer scoops than', 'ate more scoops than')
+      ]
+    },
+    {
+      id: 'kites', title: 'The Kite-Flying Contest', noun: 'flyer', nounPl: 'flyers', primaryLabel: 'Flyer', emoji: '🪁',
+      names: ['Hamish', 'Ingrid', 'Desmond', 'Yuki', 'Florence', 'Benedikt', 'Carmen'],
+      intro: names => `At the windy hill kite contest, one kite string was cut with nail scissors. ${names} each flew a different kite, each got tangled in something different, and each kept their kite up for a different time.`,
+      ask: q => `The judges want a word with the flyer who ${q}. Who is it?`,
+      cats: [
+        { id: 'kite', label: 'Kite', items: [
+          I('Dragon', 'flew a dragon kite', 'did not fly the dragon'),
+          I('Giant fish', 'flew a giant fish kite', 'did not fly the fish'),
+          I('Box kite', 'flew a box kite', 'did not fly the box kite'),
+          I('Flying pizza', 'flew a pizza-shaped kite', 'did not fly the pizza'),
+          I('Bin bag', 'flew a bin bag on a string', 'did not fly a bin bag'),
+          I('Rainbow diamond', 'flew a rainbow diamond', 'did not fly the rainbow diamond') ] },
+        { id: 'tangle', label: 'Tangled in', items: [
+          I('A tree', 'got tangled in a tree', 'did not get stuck in a tree'),
+          I('A sheep', 'got tangled round a sheep', 'did not tangle a sheep'),
+          I('Their own legs', 'got tangled in their own legs', 'did not tangle their legs'),
+          I('A flagpole', 'got tangled on a flagpole', 'did not hit the flagpole'),
+          I('Another kite', 'got tangled with another kite', 'did not tangle another kite'),
+          I('A picnic', 'landed in a picnic', 'did not land in a picnic') ] },
+        { id: 'snack', label: 'Snack', items: [
+          I('Scotch egg', 'brought a scotch egg', 'did not bring a scotch egg'),
+          I('Flapjack', 'brought flapjack', 'did not bring flapjack'),
+          I('Crisps', 'brought crisps', 'did not bring crisps'),
+          I('Banana', 'brought a banana', 'did not bring a banana'),
+          I('Cold pizza', 'brought cold pizza', 'did not bring cold pizza'),
+          I('Mint cake', 'brought mint cake', 'did not bring mint cake') ] },
+        numC('mins', 'Stayed up', [5, 10, 15, 20, 25, 30], v => v + ' minutes', 'kept it up for', 'did not keep it up for', 'less time', 'longer', d => d + ' minutes', 'kept their kite up for less time than', 'kept their kite up for longer than')
+      ]
+    },
+    {
+      id: 'presents', title: 'The Christmas Present Snoopers', noun: 'cousin', nounPl: 'cousins', primaryLabel: 'Cousin', emoji: '🎁',
+      names: ['Tilly', 'Gus', 'Wren', 'Arlo', 'Matilda', 'Fergus', 'Noor'],
+      intro: names => `On Christmas Eve, somebody peeled the tape off every present under the tree and stuck it back crooked. ${names} each had a hiding place, each guessed a different present, and each crept downstairs at a different time.`,
+      ask: q => `Grandma has put the cousin who ${q} on the naughty list. Who is it?`,
+      cats: [
+        { id: 'hide', label: 'Hid', items: [
+          I('Behind the sofa', 'hid behind the sofa', 'did not hide behind the sofa'),
+          I('In the curtains', 'hid in the curtains', 'did not hide in the curtains'),
+          I('Under the table', 'hid under the table', 'did not hide under the table'),
+          I('Inside a big box', 'hid inside a big empty box', 'did not hide in a box'),
+          I('In the coat pile', 'hid in the coat pile', 'did not hide in the coats'),
+          I('Did not hide', 'did not bother hiding', 'did hide somewhere') ] },
+        { id: 'guess', label: 'Guessed', items: [
+          I('A bike', 'guessed a bike', 'did not guess a bike'),
+          I('Socks', 'guessed socks again', 'did not guess socks'),
+          I('A puppy', 'guessed a puppy', 'did not guess a puppy'),
+          I('A drum kit', 'guessed a drum kit', 'did not guess a drum kit'),
+          I('A book', 'guessed a book', 'did not guess a book'),
+          I('A pony', 'guessed a pony', 'did not guess a pony') ] },
+        { id: 'pjs', label: 'Pyjamas', items: [
+          I('Reindeer', 'wore reindeer pyjamas', 'did not wear reindeer pyjamas'),
+          I('Dinosaur onesie', 'wore a dinosaur onesie', 'did not wear the dinosaur onesie'),
+          I('Stripes', 'wore stripy pyjamas', 'did not wear stripes'),
+          I('Penguins', 'wore penguin pyjamas', 'did not wear penguins'),
+          I('Superhero cape', 'wore a superhero cape', 'did not wear a cape'),
+          I('Dad\'s jumper', 'wore Dad\'s huge jumper', 'did not wear Dad\'s jumper') ] },
+        timeC([0, 1, 2, 3, 4, 5], 'crept down', 'did not creep down', 'Crept down at')
+      ]
+    },
+    {
+      id: 'nwatch', title: 'The Neighbourhood Watch Spy', noun: 'neighbour', nounPl: 'neighbours', primaryLabel: 'Neighbour', emoji: '🔭',
+      names: ['Mrs Pettigrew', 'Clive', 'Dorota', 'Barnaby', 'Nkechi', 'Reginald', 'Sunniva'],
+      intro: names => `The Neighbourhood Watch has a problem: one of its own members has been secretly spying on the others. ${names} each watched from a different spot, each wrote down something silly, and each filled a different number of notebook pages.`,
+      ask: q => `The street has voted to take the binoculars off the neighbour who ${q}. Who is it?`,
+      cats: [
+        { id: 'spot', label: 'Watched from', items: [
+          I('Behind a hedge', 'watched from behind a hedge', 'did not use the hedge'),
+          I('The attic window', 'watched from the attic window', 'did not use the attic'),
+          I('A wheelie bin', 'watched from inside a wheelie bin', 'did not hide in a bin'),
+          I('The bus stop', 'pretended to wait at the bus stop', 'did not use the bus stop'),
+          I('A tree', 'watched from up a tree', 'did not climb a tree'),
+          I('A parked car', 'watched from a parked car', 'did not sit in a car') ] },
+        { id: 'note', label: 'Wrote down', items: [
+          I('Cat crossed road', 'wrote down a cat crossing the road', 'did not note the cat'),
+          I('Suspicious hat', 'wrote down a suspicious hat', 'did not note the hat'),
+          I('Bins out early', 'wrote down bins out early', 'did not note the bins'),
+          I('Loud sneeze', 'wrote down a loud sneeze', 'did not note the sneeze'),
+          I('New gnome', 'wrote down a new garden gnome', 'did not note the gnome'),
+          I('Wrong parcel', 'wrote down a wrong parcel', 'did not note the parcel') ] },
+        { id: 'disguise', label: 'Disguise', items: [
+          I('Fake moustache', 'wore a fake moustache', 'did not wear a moustache'),
+          I('Sunglasses at night', 'wore sunglasses at night', 'did not wear sunglasses'),
+          I('A big hat', 'wore a very big hat', 'did not wear a big hat'),
+          I('Dressing gown', 'wore a dressing gown', 'did not wear a dressing gown'),
+          I('Bush costume', 'dressed as a bush', 'did not dress as a bush'),
+          I('No disguise', 'wore no disguise at all', 'did wear a disguise') ] },
+        numC('pages', 'Pages', [2, 4, 6, 8, 10, 12], v => v + ' pages', 'filled', 'did not fill', 'fewer', 'more', d => d + ' pages', 'filled fewer pages than', 'filled more pages than')
+      ]
+    },
+    {
+      id: 'snowglobe', title: 'The Airport Security Snow Globe', noun: 'traveller', nounPl: 'travellers', primaryLabel: 'Traveller', emoji: '🛄',
+      names: ['Archibald', 'Lena', 'Tobias', 'Precious', 'Wilbur', 'Hanne', 'Dario'],
+      intro: names => `A huge snow globe got through airport security, and nobody will admit it was theirs. ${names} each set off the alarm in a different way, each flew somewhere different, and each waited in the queue for a different time.`,
+      ask: q => `Security would like to talk to the traveller who ${q}. Who is it?`,
+      cats: [
+        { id: 'alarm', label: 'Set off alarm with', items: [
+          I('Belt buckle', 'beeped because of a belt buckle', 'did not beep for a belt'),
+          I('Spoons in pocket', 'had spoons in their pocket', 'did not have spoons'),
+          I('Metal hat', 'wore a metal hat', 'did not wear a metal hat'),
+          I('Cheese grater', 'packed a cheese grater', 'did not pack a grater'),
+          I('Keys', 'forgot about their keys', 'did not forget keys'),
+          I('Tap shoes', 'wore tap shoes', 'did not wear tap shoes') ] },
+        { id: 'dest', label: 'Flying to', items: [
+          I('Iceland', 'was flying to Iceland', 'was not flying to Iceland'),
+          I('Portugal', 'was flying to Portugal', 'was not flying to Portugal'),
+          I('Japan', 'was flying to Japan', 'was not flying to Japan'),
+          I('Canada', 'was flying to Canada', 'was not flying to Canada'),
+          I('Greece', 'was flying to Greece', 'was not flying to Greece'),
+          I('Their gran\'s', 'was flying to see their gran', 'was not visiting their gran') ] },
+        { id: 'liquid', label: 'Tried to bring', items: [
+          I('Jam', 'tried to bring a jar of jam', 'did not bring jam'),
+          I('Soup', 'tried to bring a flask of soup', 'did not bring soup'),
+          I('Shampoo', 'tried to bring giant shampoo', 'did not bring shampoo'),
+          I('Gravy', 'tried to bring gravy', 'did not bring gravy'),
+          I('Lemonade', 'tried to bring lemonade', 'did not bring lemonade'),
+          I('Pond water', 'tried to bring pond water', 'did not bring pond water') ] },
+        numC('queue', 'Queued', [10, 20, 30, 40, 50, 60], v => v + ' minutes', 'queued for', 'did not queue for', 'less time', 'longer', d => d + ' minutes', 'queued for less time than', 'queued for longer than')
+      ]
+    },
+    {
+      id: 'thunderbolt', title: 'Zeus\'s Missing Thunderbolt', noun: 'god', nounPl: 'gods', primaryLabel: 'God', emoji: '⚡',
+      names: ['Thundra', 'Mopsus', 'Glimmera', 'Bellowus', 'Sneezia', 'Grumbleon', 'Twinkla'],
+      intro: names => `Zeus woke up to find his thunderbolt gone. The suspects ${names} each rule over something very small, each had a different excuse, and each was seen at a different number of clouds away.`,
+      ask: q => `The thunderbolt was found with the god who ${q}. Who is it?`,
+      cats: [
+        { id: 'rules', label: 'God of', items: [
+          I('Lost socks', 'is the god of lost socks', 'is not the god of socks'),
+          I('Toast', 'is the god of toast', 'is not the god of toast'),
+          I('Puddles', 'is the god of puddles', 'is not the god of puddles'),
+          I('Hiccups', 'is the god of hiccups', 'is not the god of hiccups'),
+          I('Mild weather', 'is the god of mild weather', 'is not the god of mild weather'),
+          I('Queues', 'is the god of queues', 'is not the god of queues') ] },
+        { id: 'excuse', label: 'Excuse', items: [
+          I('Was napping', 'said they were napping', 'did not claim a nap'),
+          I('Was bathing', 'said they were in the bath', 'did not claim a bath'),
+          I('Was at a feast', 'said they were at a feast', 'did not claim a feast'),
+          I('Was a swan', 'said they had turned into a swan', 'did not claim to be a swan'),
+          I('Was polishing', 'said they were polishing a harp', 'did not claim to polish'),
+          I('Was lost', 'said they got lost on a cloud', 'did not claim to be lost') ] },
+        { id: 'pet', label: 'Sacred pet', items: [
+          I('An owl', 'has an owl', 'does not have an owl'),
+          I('A goat', 'has a goat', 'does not have a goat'),
+          I('A tortoise', 'has a tortoise', 'does not have a tortoise'),
+          I('A peacock', 'has a peacock', 'does not have a peacock'),
+          I('A snail', 'has a snail', 'does not have a snail'),
+          I('A dolphin', 'has a dolphin', 'does not have a dolphin') ] },
+        numC('clouds', 'Clouds away', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one cloud away' : v + ' clouds away', 'was seen', 'was not seen', 'closer', 'further away', d => d === 1 ? 'one cloud' : d + ' clouds', 'was seen closer than', 'was seen further away than')
+      ]
+    },
+    {
+      id: 'romandinner', title: 'The Roman Dinner Party Leftovers', noun: 'guest', nounPl: 'guests', primaryLabel: 'Guest', emoji: '🏛️',
+      names: ['Flavia', 'Gluttonus', 'Prunella', 'Snorius', 'Livia', 'Crumbius', 'Octavia'],
+      intro: names => `After a very long made-up Roman feast, all the leftovers disappeared before the host could keep them for lunch. ${names} each lay on a different couch, each wore a different toga, and each ate a different number of courses.`,
+      ask: q => `The host now blames the guest who ${q}. Who is it?`,
+      cats: [
+        { id: 'took', label: 'Took home', items: [
+          I('Stuffed dormouse', 'took home a stuffed dormouse', 'did not take the dormouse'),
+          I('Honey cakes', 'took home honey cakes', 'did not take honey cakes'),
+          I('Olives', 'took home a bag of olives', 'did not take olives'),
+          I('Fish sauce', 'took home a jar of fish sauce', 'did not take fish sauce'),
+          I('Grapes', 'took home all the grapes', 'did not take grapes'),
+          I('A whole peacock', 'took home a whole roast peacock', 'did not take the peacock') ] },
+        { id: 'toga', label: 'Toga', items: [
+          I('Purple', 'wore a purple toga', 'did not wear purple'),
+          I('Too short', 'wore a toga that was too short', 'did not wear a short toga'),
+          I('Bedsheet', 'wore a bedsheet', 'did not wear a bedsheet'),
+          I('Gold trim', 'wore a toga with gold trim', 'did not wear gold trim'),
+          I('Inside out', 'wore their toga inside out', 'did not wear it inside out'),
+          I('Spotty', 'wore a spotty toga', 'did not wear spots') ] },
+        { id: 'talent', label: 'Party trick', items: [
+          I('Juggled figs', 'juggled figs', 'did not juggle figs'),
+          I('Recited poems', 'recited long poems', 'did not recite poems'),
+          I('Played lyre', 'played the lyre badly', 'did not play the lyre'),
+          I('Fell asleep', 'fell asleep on the couch', 'did not fall asleep'),
+          I('Danced', 'danced on the table', 'did not dance on the table'),
+          I('Told jokes', 'told terrible jokes', 'did not tell jokes') ] },
+        numC('courses', 'Courses', [3, 4, 5, 6, 7, 8], v => v + ' courses', 'ate', 'did not eat', 'fewer', 'more', d => d === 1 ? 'one course' : d + ' courses', 'ate fewer courses than', 'ate more courses than')
+      ]
+    },
+    {
+      id: 'leavingcard', title: 'The Leaving Card Scandal', noun: 'colleague', nounPl: 'colleagues', primaryLabel: 'Colleague', emoji: '💌',
+      names: ['Derek', 'Shona', 'Priyanka', 'Malcolm', 'Gemma', 'Oskar', 'Beverley'],
+      intro: names => `The office leaving card for Sandra had one very rude drawing on it. ${names} each signed it with a different pen, each wrote a different message, and each put in a different amount for the present.`,
+      ask: q => `HR wants to see the colleague who ${q}. Who is it?`,
+      cats: [
+        { id: 'pen', label: 'Pen', items: [
+          I('Glitter gel pen', 'used a glitter gel pen', 'did not use glitter'),
+          I('Green marker', 'used a green marker', 'did not use green'),
+          I('Pencil', 'used a blunt pencil', 'did not use a pencil'),
+          I('Fountain pen', 'used a leaky fountain pen', 'did not use a fountain pen'),
+          I('Highlighter', 'used a highlighter', 'did not use a highlighter'),
+          I('Crayon', 'used a crayon', 'did not use a crayon') ] },
+        { id: 'msg', label: 'Message', items: [
+          I('Good luck!', 'wrote "Good luck!"', 'did not write good luck'),
+          I('Who are you?', 'wrote "Sorry, who are you?"', 'did not ask who she was'),
+          I('A long poem', 'wrote a long poem', 'did not write a poem'),
+          I('Take me with you', 'wrote "Take me with you"', 'did not beg to come'),
+          I('Just a name', 'only wrote their name', 'wrote more than a name'),
+          I('Stapler joke', 'wrote a joke about the stapler', 'did not mention the stapler') ] },
+        { id: 'snack', label: 'Brought to party', items: [
+          I('Cupcakes', 'brought cupcakes', 'did not bring cupcakes'),
+          I('Sausage rolls', 'brought sausage rolls', 'did not bring sausage rolls'),
+          I('Grapes', 'brought grapes', 'did not bring grapes'),
+          I('Nothing', 'brought nothing', 'brought something'),
+          I('Party poppers', 'brought party poppers', 'did not bring poppers'),
+          I('Hummus', 'brought hummus', 'did not bring hummus') ] },
+        numC('paid', 'Put in', [1, 2, 3, 4, 5, 6], eur, 'put in', 'did not put in', 'less', 'more', euros)
+      ]
+    },
+    {
+      id: 'railway', title: 'The Model Railway Derailment', noun: 'club member', nounPl: 'club members', primaryLabel: 'Member', emoji: '🚂',
+      names: ['Geoffrey', 'Agnieszka', 'Trevor', 'Ottilie', 'Neville', 'Imogen', 'Ravi'],
+      intro: names => `At the model railway club's open day, the little express train flew off the tracks and into the tiny duck pond. ${names} each built a different part of the layout, each wore a different hat, and each had been in the club a different number of years.`,
+      ask: q => `The club chairman has banned the member who ${q} from the control box. Who is it?`,
+      cats: [
+        { id: 'built', label: 'Built', items: [
+          I('The tunnel', 'built the tunnel', 'did not build the tunnel'),
+          I('The station', 'built the station', 'did not build the station'),
+          I('The tiny cows', 'painted the tiny cows', 'did not paint the cows'),
+          I('The bridge', 'built the bridge', 'did not build the bridge'),
+          I('The duck pond', 'built the duck pond', 'did not build the pond'),
+          I('The mountain', 'built the papier-mâché mountain', 'did not build the mountain') ] },
+        { id: 'hat', label: 'Hat', items: [
+          I('Driver\'s cap', 'wore a train driver\'s cap', 'did not wear a driver\'s cap'),
+          I('Flat cap', 'wore a flat cap', 'did not wear a flat cap'),
+          I('Bobble hat', 'wore a bobble hat', 'did not wear a bobble hat'),
+          I('Top hat', 'wore a top hat', 'did not wear a top hat'),
+          I('Headtorch', 'wore a headtorch', 'did not wear a headtorch'),
+          I('No hat', 'wore no hat', 'did wear a hat') ] },
+        { id: 'excuse', label: 'Blamed', items: [
+          I('The ducks', 'blamed the ducks', 'did not blame the ducks'),
+          I('A draught', 'blamed a draught', 'did not blame a draught'),
+          I('The cat', 'blamed the club cat', 'did not blame the cat'),
+          I('Leaves on the line', 'blamed leaves on the line', 'did not blame leaves'),
+          I('A ghost', 'blamed a ghost', 'did not blame a ghost'),
+          I('The timetable', 'blamed the timetable', 'did not blame the timetable') ] },
+        numC('years', 'In club', [2, 5, 8, 11, 14, 17], v => v + ' years', 'has been a member for', 'has not been a member for', 'less time', 'longer', d => d + ' years', 'has been a member for less time than', 'has been a member for longer than')
+      ]
+    },
+    {
+      id: 'countdown', title: 'New Year\'s Eve Countdown Chaos', noun: 'party guest', nounPl: 'party guests', primaryLabel: 'Guest', emoji: '🎆',
+      names: ['Jolene', 'Mustafa', 'Hettie', 'Callum', 'Signe', 'Barry', 'Anouk'],
+      intro: names => `Somebody started the New Year countdown four minutes early, and the whole party cheered at 23:56. ${names} each wore a different party hat, each made a different resolution, and each counted down from a different number.`,
+      ask: q => `The hosts will not invite back the guest who ${q}. Who is it?`,
+      cats: [
+        { id: 'hat', label: 'Party hat', items: [
+          I('Gold crown', 'wore a gold paper crown', 'did not wear a crown'),
+          I('Sparkly cone', 'wore a sparkly cone', 'did not wear a cone'),
+          I('Glasses with 2027', 'wore 2027 glasses', 'did not wear 2027 glasses'),
+          I('Tiara', 'wore a tiara', 'did not wear a tiara'),
+          I('Viking helmet', 'wore a Viking helmet', 'did not wear a Viking helmet'),
+          I('Lampshade', 'wore a lampshade', 'did not wear a lampshade') ] },
+        { id: 'resolution', label: 'Resolution', items: [
+          I('Learn the banjo', 'promised to learn the banjo', 'did not promise the banjo'),
+          I('Eat less cheese', 'promised to eat less cheese', 'did not give up cheese'),
+          I('Run a marathon', 'promised to run a marathon', 'did not promise a marathon'),
+          I('Be on time', 'promised to be on time', 'did not promise to be on time'),
+          I('Tidy the shed', 'promised to tidy the shed', 'did not promise the shed'),
+          I('No resolution', 'refused to make a resolution', 'did make a resolution') ] },
+        { id: 'drink', label: 'Drink', items: [
+          I('Fizzy apple', 'drank fizzy apple juice', 'did not drink apple juice'),
+          I('Hot chocolate', 'drank hot chocolate', 'did not drink hot chocolate'),
+          I('Lemonade', 'drank lemonade', 'did not drink lemonade'),
+          I('Tea', 'drank tea', 'did not drink tea'),
+          I('Elderflower', 'drank elderflower', 'did not drink elderflower'),
+          I('Tap water', 'drank tap water', 'did not drink tap water') ] },
+        { id: 'from', label: 'Counted from', ord: { vals: [5, 10, 15, 20, 25, 30], fmt: v => String(v),
+          p: t => `counted down from ${t}`, n: t => `did not count down from ${t}`,
+          less: 'counted down from a lower number than', more: 'counted down from a higher number than',
+          stepLess: d => `started counting exactly ${d} lower than`, stepMore: d => `started counting exactly ${d} higher than` } }
+      ]
+    }
+  );
+  T.push(
+    {
+      id: 'kraken', title: 'The Kraken Bath Toy', noun: 'housemate', nounPl: 'housemates', primaryLabel: 'Housemate', emoji: '🐙',
+      names: ['Rory', 'Mirela', 'Stanley', 'Ayesha', 'Hugo', 'Petra', 'Jarvis'],
+      intro: names => `The giant rubber squid that lives in the shared bathroom has gone missing, and the bath is now very lonely. ${names} each have a different bath habit, each own a different rubber duck, and each spend a different time in the bath.`,
+      ask: q => `The squid was found in the room of the housemate who ${q}. Who is it?`,
+      cats: [
+        { id: 'habit', label: 'Bath habit', items: [
+          I('Sings opera', 'sings opera in the bath', 'does not sing opera'),
+          I('Reads soggy books', 'reads soggy books in the bath', 'does not read in the bath'),
+          I('Too many bubbles', 'uses far too many bubbles', 'does not overdo bubbles'),
+          I('Eats toast', 'eats toast in the bath', 'does not eat toast in the bath'),
+          I('Plays sea battles', 'plays sea battles in the bath', 'does not play sea battles'),
+          I('Falls asleep', 'falls asleep in the bath', 'does not fall asleep in the bath') ] },
+        { id: 'duck', label: 'Rubber duck', items: [
+          I('Pirate duck', 'owns a pirate duck', 'does not own the pirate duck'),
+          I('Disco duck', 'owns a disco duck', 'does not own the disco duck'),
+          I('Wizard duck', 'owns a wizard duck', 'does not own the wizard duck'),
+          I('Nurse duck', 'owns a nurse duck', 'does not own the nurse duck'),
+          I('Golden duck', 'owns a golden duck', 'does not own the golden duck'),
+          I('Bald duck', 'owns a duck with no paint left', 'does not own the bald duck') ] },
+        { id: 'towel', label: 'Towel', items: [
+          I('Shark towel', 'uses a shark towel', 'does not use the shark towel'),
+          I('Tiny hand towel', 'uses a tiny hand towel', 'does not use a hand towel'),
+          I('Beach towel', 'uses a beach towel', 'does not use a beach towel'),
+          I('Dressing gown', 'just uses a dressing gown', 'does not use a dressing gown'),
+          I('Curtain', 'uses the curtain', 'does not use the curtain'),
+          I('Stripy towel', 'uses a stripy towel', 'does not use a stripy towel') ] },
+        numC('mins', 'Bath time', [15, 30, 45, 60, 75, 90], v => v + ' minutes', 'stays in for', 'does not stay in for', 'less time', 'longer', d => d + ' minutes', 'stays in the bath for less time than', 'stays in the bath for longer than')
+      ]
+    },
+    {
+      id: 'cheeseboard', title: 'The Cheese Board Thief', noun: 'guest', nounPl: 'guests', primaryLabel: 'Guest', emoji: '🧀',
+      names: ['Cordelia', 'Vikram', 'Edna', 'Paddy', 'Sabine', 'Horace', 'Ama'],
+      intro: names => `At the wine-and-cheese evening, the best cheese vanished from the board when everyone looked at the fireworks. ${names} each brought a different cheese, each used a different cracker, and each stood a different distance from the board.`,
+      ask: q => `The crumbs lead to the guest who ${q}. Who is it?`,
+      cats: [
+        { id: 'cheese', label: 'Brought', items: [
+          I('Smelly blue', 'brought a smelly blue cheese', 'did not bring the blue'),
+          I('Squeaky cheese', 'brought squeaky cheese', 'did not bring squeaky cheese'),
+          I('Goat cheese', 'brought goat cheese', 'did not bring goat cheese'),
+          I('Cheese string', 'brought only cheese strings', 'did not bring cheese strings'),
+          I('Smoked cheese', 'brought smoked cheese', 'did not bring smoked cheese'),
+          I('A giant wheel', 'brought a whole wheel of cheese', 'did not bring the wheel') ] },
+        { id: 'cracker', label: 'Cracker', items: [
+          I('Oatcake', 'used oatcakes', 'did not use oatcakes'),
+          I('Rice cake', 'used rice cakes', 'did not use rice cakes'),
+          I('Breadstick', 'used breadsticks', 'did not use breadsticks'),
+          I('Digestive', 'used a sweet biscuit', 'did not use a sweet biscuit'),
+          I('Rye crispbread', 'used rye crispbread', 'did not use crispbread'),
+          I('No cracker', 'ate cheese with no cracker', 'did use a cracker') ] },
+        { id: 'extra', label: 'Added', items: [
+          I('Grapes', 'added grapes', 'did not add grapes'),
+          I('Chutney', 'added chutney', 'did not add chutney'),
+          I('Honey', 'added honey', 'did not add honey'),
+          I('Pickled onion', 'added a pickled onion', 'did not add pickled onions'),
+          I('Jam', 'added strawberry jam', 'did not add jam'),
+          I('Chocolate', 'added chocolate', 'did not add chocolate') ] },
+        numC('metres', 'Stood from board', [1, 2, 3, 4, 5, 6], v => v + ' m', 'stood', 'did not stand', 'closer', 'further away', d => d + ' m', 'stood closer to the board than', 'stood further from the board than')
+      ]
+    },
+    {
+      id: 'vrprank', title: 'The Virtual Reality Prank', noun: 'gamer', nounPl: 'gamers', primaryLabel: 'Gamer', emoji: '🥽',
+      names: ['Zack', 'Ophelia', 'Dmitri', 'Bea', 'Kofi', 'Elsie', 'Marcus'],
+      intro: names => `At the virtual reality arcade, someone changed the game so that every dragon was a giant hamster. ${names} each played a different game, each bumped into something different, and each scored a different number of points.`,
+      ask: q => `The arcade has banned the gamer who ${q}. Who is it?`,
+      cats: [
+        { id: 'game', label: 'Played', items: [
+          I('Dragon Quest', 'played the dragon game', 'did not play the dragon game'),
+          I('Space Kitchen', 'played Space Kitchen', 'did not play Space Kitchen'),
+          I('Zombie Golf', 'played Zombie Golf', 'did not play Zombie Golf'),
+          I('Deep Sea Diver', 'played Deep Sea Diver', 'did not play Deep Sea Diver'),
+          I('Goat Simulator', 'played the goat game', 'did not play the goat game'),
+          I('Tightrope', 'played Tightrope', 'did not play Tightrope') ] },
+        { id: 'bumped', label: 'Bumped into', items: [
+          I('A wall', 'walked into a wall', 'did not hit a wall'),
+          I('A pot plant', 'knocked over a pot plant', 'did not hit the plant'),
+          I('The manager', 'punched the air near the manager', 'did not bump the manager'),
+          I('A sofa', 'fell onto a sofa', 'did not fall on the sofa'),
+          I('A drinks table', 'hit the drinks table', 'did not hit the drinks table'),
+          I('Nothing', 'did not bump into anything', 'did bump into something') ] },
+        { id: 'shout', label: 'Shouted', items: [
+          I('Mum!', 'shouted "Mum!"', 'did not shout for Mum'),
+          I('Not the face!', 'shouted "Not the face!"', 'did not shout about the face'),
+          I('I can fly!', 'shouted "I can fly!"', 'did not claim to fly'),
+          I('Hamster!', 'shouted "Hamster!"', 'did not shout hamster'),
+          I('Pause!', 'shouted "Pause!"', 'did not shout pause'),
+          I('Nothing', 'stayed totally silent', 'did shout something') ] },
+        numC('score', 'Score', [100, 200, 300, 400, 500, 600], v => v + ' points', 'scored', 'did not score', 'fewer', 'more', d => d + ' points', 'scored fewer points than', 'scored more points than')
+      ]
+    },
+    {
+      id: 'dinnerlady', title: 'The Dinner Lady\'s Secret Recipe', noun: 'pupil', nounPl: 'pupils', primaryLabel: 'Pupil', emoji: '🥧',
+      names: ['Alfie', 'Maisie', 'Ronan', 'Isla', 'Dev', 'Poppy', 'Lukas'],
+      intro: names => `The school dinner lady's famous secret recipe card for chocolate sponge has been stolen from her apron pocket. ${names} each sat at a different table, each had a different pudding, and each went up for seconds a different number of times.`,
+      ask: q => `The recipe card was found in the bag of the pupil who ${q}. Who is it?`,
+      cats: [
+        { id: 'table', label: 'Table', items: [
+          I('By the window', 'sat by the window', 'did not sit by the window'),
+          I('Near the bins', 'sat near the bins', 'did not sit near the bins'),
+          I('Teachers\' table', 'sat at the teachers\' table', 'did not sit with teachers'),
+          I('The wobbly one', 'sat at the wobbly table', 'did not sit at the wobbly table'),
+          I('By the door', 'sat by the door', 'did not sit by the door'),
+          I('On the stage', 'sat on the stage', 'did not sit on the stage') ] },
+        { id: 'pud', label: 'Pudding', items: [
+          I('Jelly', 'had jelly', 'did not have jelly'),
+          I('Rice pudding', 'had rice pudding', 'did not have rice pudding'),
+          I('Sponge and custard', 'had sponge and custard', 'did not have sponge'),
+          I('Apple crumble', 'had apple crumble', 'did not have crumble'),
+          I('Yoghurt', 'had a yoghurt', 'did not have yoghurt'),
+          I('Pink custard', 'had pink custard', 'did not have pink custard') ] },
+        { id: 'lunchbox', label: 'Lunchbox', items: [
+          I('Dinosaur', 'has a dinosaur lunchbox', 'does not have the dinosaur box'),
+          I('Unicorn', 'has a unicorn lunchbox', 'does not have the unicorn box'),
+          I('Football', 'has a football lunchbox', 'does not have the football box'),
+          I('Robot', 'has a robot lunchbox', 'does not have the robot box'),
+          I('Paper bag', 'brings a paper bag', 'does not bring a paper bag'),
+          I('Ice cream tub', 'uses an old ice cream tub', 'does not use an ice cream tub') ] },
+        numC('seconds', 'Went back', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'once' : v === 2 ? 'twice' : v + ' times', 'went back', 'did not go back', 'fewer times', 'more times', d => d === 1 ? 'one time' : d + ' times', 'went back fewer times than', 'went back more times than')
+      ]
+    },
+    {
+      id: 'treehouse', title: 'The Forest Treehouse Dispute', noun: 'kid', nounPl: 'kids', primaryLabel: 'Kid', emoji: '🌳',
+      names: ['Milo', 'Freja', 'Jasper', 'Leonie', 'Tariq', 'Clementine', 'Otto'],
+      intro: names => `The treehouse in the woods has a new sign saying "NO GIRLS, NO BOYS, NO ONE". ${names} each say they built a different part, each brought a different thing up the ladder, and each climbed up a different number of times.`,
+      ask: q => `The others have voted out the kid who ${q}. Who is it?`,
+      cats: [
+        { id: 'part', label: 'Built', items: [
+          I('The roof', 'built the roof', 'did not build the roof'),
+          I('The rope ladder', 'built the rope ladder', 'did not build the ladder'),
+          I('The window', 'built the window', 'did not build the window'),
+          I('The trapdoor', 'built the trapdoor', 'did not build the trapdoor'),
+          I('The flag', 'made the flag', 'did not make the flag'),
+          I('The bucket lift', 'built the bucket lift', 'did not build the bucket lift') ] },
+        { id: 'brought', label: 'Brought up', items: [
+          I('A beanbag', 'brought up a beanbag', 'did not bring a beanbag'),
+          I('Comics', 'brought up comics', 'did not bring comics'),
+          I('A torch', 'brought up a torch', 'did not bring a torch'),
+          I('A walkie-talkie', 'brought up a walkie-talkie', 'did not bring a walkie-talkie'),
+          I('Biscuits', 'brought up biscuits', 'did not bring biscuits'),
+          I('Their hamster', 'brought up their hamster', 'did not bring a hamster') ] },
+        { id: 'password', label: 'Password idea', items: [
+          I('Banana', 'wanted the password "banana"', 'did not pick banana'),
+          I('Owl hoot', 'wanted an owl hoot', 'did not pick an owl hoot'),
+          I('Secret handshake', 'wanted a secret handshake', 'did not pick a handshake'),
+          I('Squirrel', 'wanted the password "squirrel"', 'did not pick squirrel'),
+          I('No password', 'wanted no password', 'did want a password'),
+          I('A riddle', 'wanted a riddle', 'did not pick a riddle') ] },
+        numC('climbs', 'Climbed up', [2, 4, 6, 8, 10, 12], v => v + ' times', 'climbed up', 'did not climb up', 'fewer times', 'more times', d => d + ' times', 'climbed up fewer times than', 'climbed up more times than')
+      ]
+    },
+    {
+      id: 'springclean', title: 'The Spring Cleaning Sabotage', noun: 'cleaner', nounPl: 'cleaners', primaryLabel: 'Cleaner', emoji: '🧽',
+      names: ['Hilda', 'Rupert', 'Esme', 'Bogdan', 'Tamsin', 'Leroy', 'Ines'],
+      intro: names => `The big spring clean was going well until someone emptied the hoover bag back onto the carpet. ${names} each cleaned a different room, each used a different tool, and each worked for a different time.`,
+      ask: q => `The rest of the family blame the cleaner who ${q}. Who is it?`,
+      cats: [
+        { id: 'room', label: 'Room', items: [
+          I('Kitchen', 'cleaned the kitchen', 'did not clean the kitchen'),
+          I('Bathroom', 'cleaned the bathroom', 'did not clean the bathroom'),
+          I('Living room', 'cleaned the living room', 'did not clean the living room'),
+          I('Loft', 'cleaned the loft', 'did not clean the loft'),
+          I('Garage', 'cleaned the garage', 'did not clean the garage'),
+          I('Stairs', 'cleaned the stairs', 'did not clean the stairs') ] },
+        { id: 'tool', label: 'Tool', items: [
+          I('Feather duster', 'used a feather duster', 'did not use the duster'),
+          I('Mop', 'used a mop', 'did not use a mop'),
+          I('Toothbrush', 'used an old toothbrush', 'did not use a toothbrush'),
+          I('Hoover', 'used the hoover', 'did not use the hoover'),
+          I('Sponge', 'used a sponge', 'did not use a sponge'),
+          I('Leaf blower', 'used a leaf blower indoors', 'did not use the leaf blower') ] },
+        { id: 'found', label: 'Found', items: [
+          I('A lost sock', 'found a lost sock', 'did not find a sock'),
+          I('Old pizza', 'found old pizza', 'did not find pizza'),
+          I('A tenner', 'found a ten-euro note', 'did not find money'),
+          I('The remote', 'found the TV remote', 'did not find the remote'),
+          I('A spider', 'found a huge spider', 'did not find the spider'),
+          I('Lego', 'found Lego (with their foot)', 'did not find Lego') ] },
+        numC('mins', 'Cleaned for', [10, 20, 30, 40, 50, 60], v => v + ' minutes', 'cleaned for', 'did not clean for', 'less time', 'longer', d => d + ' minutes', 'cleaned for less time than', 'cleaned for longer than')
+      ]
+    },
+    {
+      id: 'foxbins', title: 'The Fox in the Bins', noun: 'neighbour', nounPl: 'neighbours', primaryLabel: 'Neighbour', emoji: '🦊',
+      names: ['Mr Finch', 'Lorraine', 'Abdul', 'Gwen', 'Toby', 'Mrs Okafor', 'Seamus'],
+      intro: names => `Every Tuesday the bins are knocked over, and everyone says it is the fox. But the fox has an alibi. ${names} each have a different bin, each threw out a different smelly thing, and each live a different number of houses from the corner.`,
+      ask: q => `The fox points a paw at the neighbour who ${q}. Who is it?`,
+      cats: [
+        { id: 'bin', label: 'Bin', items: [
+          I('Green bin', 'has the green bin', 'does not have the green bin'),
+          I('Bin with a face', 'has a bin with a painted face', 'does not have the painted bin'),
+          I('Wonky lid', 'has the bin with a wonky lid', 'does not have the wonky lid'),
+          I('Bungee-corded', 'has a bin tied with bungee cords', 'does not use bungee cords'),
+          I('Tiny bin', 'has a tiny bin', 'does not have the tiny bin'),
+          I('Bin on wheels', 'has a bin with three wheels', 'does not have the three-wheel bin') ] },
+        { id: 'rubbish', label: 'Threw out', items: [
+          I('Fish heads', 'threw out fish heads', 'did not throw out fish heads'),
+          I('Old curry', 'threw out old curry', 'did not throw out curry'),
+          I('Mouldy cheese', 'threw out mouldy cheese', 'did not throw out cheese'),
+          I('Prawn shells', 'threw out prawn shells', 'did not throw out prawn shells'),
+          I('Sardine tins', 'threw out sardine tins', 'did not throw out sardines'),
+          I('A whole trifle', 'threw out a whole trifle', 'did not throw out a trifle') ] },
+        { id: 'blamed', label: 'Blamed', items: [
+          I('The fox', 'blamed the fox', 'did not blame the fox'),
+          I('The wind', 'blamed the wind', 'did not blame the wind'),
+          I('The postman', 'blamed the postman', 'did not blame the postman'),
+          I('Seagulls', 'blamed seagulls', 'did not blame seagulls'),
+          I('Teenagers', 'blamed teenagers', 'did not blame teenagers'),
+          I('A badger', 'blamed a badger', 'did not blame a badger') ] },
+        numC('house', 'Houses from corner', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one house' : v + ' houses', 'lives', 'does not live', 'closer to the corner', 'further from the corner', d => d === 1 ? 'one house' : d + ' houses', 'lives closer to the corner than', 'lives further from the corner than')
+      ]
+    },
+    {
+      id: 'pumpkin', title: 'The Allotment Prize Pumpkin', noun: 'gardener', nounPl: 'gardeners', primaryLabel: 'Gardener', emoji: '🎃',
+      names: ['Walter', 'Daphne', 'Krzysztof', 'Moira', 'Lenny', 'Bettina', 'Ahmed'],
+      intro: names => `The night before the show, someone drew a face on the prize pumpkin in permanent marker. ${names} each grow something different, each have a different secret tip, and each have had their plot a different number of years.`,
+      ask: q => `The allotment committee suspects the gardener who ${q}. Who is it?`,
+      cats: [
+        { id: 'grows', label: 'Grows', items: [
+          I('Giant leeks', 'grows giant leeks', 'does not grow leeks'),
+          I('Purple carrots', 'grows purple carrots', 'does not grow carrots'),
+          I('Rhubarb', 'grows rhubarb', 'does not grow rhubarb'),
+          I('Sweet peas', 'grows sweet peas', 'does not grow sweet peas'),
+          I('Strawberries', 'grows strawberries', 'does not grow strawberries'),
+          I('Weeds mostly', 'mostly grows weeds', 'does not mostly grow weeds') ] },
+        { id: 'tip', label: 'Secret tip', items: [
+          I('Talks to plants', 'talks to their plants', 'does not talk to plants'),
+          I('Banana skins', 'buries banana skins', 'does not bury banana skins'),
+          I('Plays jazz', 'plays jazz to the soil', 'does not play jazz'),
+          I('Moon planting', 'plants by the moon', 'does not plant by the moon'),
+          I('Tea leaves', 'uses old tea leaves', 'does not use tea leaves'),
+          I('Sings lullabies', 'sings lullabies to seedlings', 'does not sing to seedlings') ] },
+        { id: 'shed', label: 'Shed', items: [
+          I('Blue shed', 'has the blue shed', 'does not have the blue shed'),
+          I('Shed with a sofa', 'has a sofa in their shed', 'does not have a sofa'),
+          I('No shed', 'has no shed', 'does have a shed'),
+          I('Leaning shed', 'has the leaning shed', 'does not have the leaning shed'),
+          I('Shed with a flag', 'has a flag on their shed', 'does not have a flag'),
+          I('Greenhouse', 'has a greenhouse', 'does not have a greenhouse') ] },
+        numC('years', 'Had plot', [3, 6, 9, 12, 15, 18], v => v + ' years', 'has had a plot for', 'has not had a plot for', 'less time', 'longer', d => d + ' years', 'has had a plot for less time than', 'has had a plot for longer than')
+      ]
+    },
+    {
+      id: 'tugofwar', title: 'The Village Tug-of-War', noun: 'villager', nounPl: 'villagers', primaryLabel: 'Villager', emoji: '🪢',
+      names: ['Big Sue', 'Norman', 'Kasia', 'Ted', 'Ifeoma', 'Wally', 'Rosalind'],
+      intro: names => `At the village fair, the tug-of-war rope was secretly greased with butter, and the whole team fell in the mud. ${names} each pulled in a different spot, each wore different shoes, and each weighed in a different number of kilos heavier than last year.`,
+      ask: q => `The team captain blames the villager who ${q}. Who is it?`,
+      cats: [
+        { id: 'spot', label: 'Pulled at', items: [
+          I('The front', 'pulled at the front', 'did not pull at the front'),
+          I('The back', 'was the anchor at the back', 'was not the anchor'),
+          I('The middle', 'pulled in the middle', 'did not pull in the middle'),
+          I('Just shouted', 'just shouted orders', 'did not just shout'),
+          I('Held the flag', 'held the flag', 'did not hold the flag'),
+          I('Wrong side', 'pulled for the wrong side', 'did not pull for the wrong side') ] },
+        { id: 'shoes', label: 'Shoes', items: [
+          I('Wellies', 'wore wellies', 'did not wear wellies'),
+          I('Flip-flops', 'wore flip-flops', 'did not wear flip-flops'),
+          I('Football boots', 'wore football boots', 'did not wear football boots'),
+          I('Slippers', 'wore slippers', 'did not wear slippers'),
+          I('Barefoot', 'was barefoot', 'was not barefoot'),
+          I('High heels', 'wore high heels', 'did not wear heels') ] },
+        { id: 'prize', label: 'Wanted prize', items: [
+          I('A ham', 'wanted the ham', 'did not want the ham'),
+          I('Glory', 'wanted only glory', 'did not want glory'),
+          I('A trophy', 'wanted the trophy', 'did not want the trophy'),
+          I('A fruit cake', 'wanted the fruit cake', 'did not want the fruit cake'),
+          I('A rosette', 'wanted a rosette', 'did not want a rosette'),
+          I('Revenge', 'wanted revenge on the next village', 'did not want revenge') ] },
+        numC('kilos', 'Extra kilos', [1, 2, 3, 4, 5, 6], v => v + ' kg', 'put on', 'did not put on', 'less', 'more', d => d + ' kg', 'put on less than', 'put on more than')
+      ]
+    },
+    {
+      id: 'museumtour', title: 'Lost in the Museum Tour', noun: 'tourist', nounPl: 'tourists', primaryLabel: 'Tourist', emoji: '🏺',
+      names: ['Gerald', 'Annika', 'Femi', 'Prue', 'Luca', 'Hyacinth', 'Viggo'],
+      intro: names => `The museum tour started with eight people and ended with seven. Somebody wandered off on purpose and hid in the gift shop. ${names} each liked a different exhibit, each touched something they should not have, and each asked a different number of questions.`,
+      ask: q => `The guide is sure the runaway was the tourist who ${q}. Who is it?`,
+      cats: [
+        { id: 'exhibit', label: 'Favourite', items: [
+          I('Mummy', 'loved the mummy', 'did not love the mummy'),
+          I('Dinosaur', 'loved the dinosaur', 'did not love the dinosaur'),
+          I('Old shoes', 'loved the old shoes', 'did not love the shoes'),
+          I('Knight armour', 'loved the armour', 'did not love the armour'),
+          I('Meteorite', 'loved the meteorite', 'did not love the meteorite'),
+          I('The café', 'loved the café most', 'did not love the café') ] },
+        { id: 'touched', label: 'Touched', items: [
+          I('A vase', 'touched a vase', 'did not touch a vase'),
+          I('A painting', 'touched a painting', 'did not touch a painting'),
+          I('The rope', 'unhooked the velvet rope', 'did not unhook the rope'),
+          I('A skeleton', 'shook a skeleton\'s hand', 'did not touch the skeleton'),
+          I('A button', 'pressed a red button', 'did not press the button'),
+          I('Nothing', 'touched nothing at all', 'did touch something') ] },
+        { id: 'bag', label: 'Bag', items: [
+          I('Bum bag', 'wore a bum bag', 'did not wear a bum bag'),
+          I('Huge rucksack', 'carried a huge rucksack', 'did not carry a rucksack'),
+          I('Tote bag', 'carried a tote bag', 'did not carry a tote bag'),
+          I('Picnic basket', 'carried a picnic basket', 'did not carry a basket'),
+          I('Carrier bag', 'carried a plastic carrier bag', 'did not carry a carrier bag'),
+          I('No bag', 'carried no bag', 'did carry a bag') ] },
+        numC('qs', 'Questions', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one question' : v + ' questions', 'asked', 'did not ask', 'fewer', 'more', d => d === 1 ? 'one question' : d + ' questions', 'asked fewer questions than', 'asked more questions than')
+      ]
+    }
+  );
+  T.push(
+    {
+      id: 'pearlgala', title: 'The Pearl Necklace at the Gala', noun: 'guest', nounPl: 'guests', primaryLabel: 'Guest', emoji: '📿',
+      names: ['Lady Fenwick', 'Count Bruno', 'Odette', 'Mr Plum', 'Vivienne', 'Sir Toby', 'Delphine'],
+      intro: names => `At the charity gala, the hostess's pearl necklace snapped, and one pearl rolled away and was never seen again. ${names} each wore something fancy, each danced a different dance, and each arrived at a different time.`,
+      ask: q => `The missing pearl is in the pocket of the guest who ${q}. Who is it?`,
+      cats: [
+        { id: 'outfit', label: 'Wore', items: [
+          I('Velvet cape', 'wore a velvet cape', 'did not wear a cape'),
+          I('Feather boa', 'wore a feather boa', 'did not wear a boa'),
+          I('Monocle', 'wore a monocle', 'did not wear a monocle'),
+          I('Sequin gloves', 'wore sequin gloves', 'did not wear sequin gloves'),
+          I('A tiara', 'wore a tiara', 'did not wear a tiara'),
+          I('Bow tie that lights up', 'wore a light-up bow tie', 'did not wear the light-up bow tie') ] },
+        { id: 'dance', label: 'Danced', items: [
+          I('Waltz', 'danced a waltz', 'did not waltz'),
+          I('Tango', 'danced the tango', 'did not tango'),
+          I('Robot', 'did the robot', 'did not do the robot'),
+          I('Conga', 'started a conga line', 'did not start the conga'),
+          I('Moonwalk', 'tried to moonwalk', 'did not moonwalk'),
+          I('Did not dance', 'refused to dance', 'did dance') ] },
+        { id: 'ate', label: 'Ate', items: [
+          I('Caviar', 'ate caviar', 'did not eat caviar'),
+          I('Tiny sandwiches', 'ate twenty tiny sandwiches', 'did not eat tiny sandwiches'),
+          I('Oysters', 'ate oysters', 'did not eat oysters'),
+          I('Profiteroles', 'ate profiteroles', 'did not eat profiteroles'),
+          I('Cheese straws', 'ate cheese straws', 'did not eat cheese straws'),
+          I('Nothing', 'ate nothing', 'did eat something') ] },
+        timeC([18, 19, 20, 21, 22, 23], 'arrived', 'did not arrive')
+      ]
+    },
+    {
+      id: 'stapler', title: 'The Stapler Thief', noun: 'office worker', nounPl: 'office workers', primaryLabel: 'Worker', emoji: '📎',
+      names: ['Gordon', 'Pam', 'Rashid', 'Kerry', 'Nigel', 'Fiona', 'Dariusz'],
+      intro: names => `The red stapler has gone missing from the office for the third time this month. ${names} each sit at a different desk, each have a different mug, and each print a different number of pages a day.`,
+      ask: q => `The red stapler was found in the drawer of the worker who ${q}. Who is it?`,
+      cats: [
+        { id: 'desk', label: 'Desk', items: [
+          I('By the printer', 'sits by the printer', 'does not sit by the printer'),
+          I('By the window', 'sits by the window', 'does not sit by the window'),
+          I('Next to the boss', 'sits next to the boss', 'does not sit next to the boss'),
+          I('By the fridge', 'sits by the fridge', 'does not sit by the fridge'),
+          I('In the corner', 'sits in the corner', 'does not sit in the corner'),
+          I('Standing desk', 'has a standing desk', 'does not have a standing desk') ] },
+        { id: 'mug', label: 'Mug', items: [
+          I('World\'s Best Boss', 'has a "World\'s Best Boss" mug', 'does not have the boss mug'),
+          I('Cat mug', 'has a cat mug', 'does not have a cat mug'),
+          I('Chipped mug', 'has a chipped mug', 'does not have the chipped mug'),
+          I('Giant mug', 'has a giant mug', 'does not have the giant mug'),
+          I('Football mug', 'has a football mug', 'does not have the football mug'),
+          I('Jam jar', 'drinks from a jam jar', 'does not use a jam jar') ] },
+        { id: 'habit', label: 'Annoying habit', items: [
+          I('Loud typing', 'types very loudly', 'does not type loudly'),
+          I('Smelly lunch', 'eats a smelly lunch at the desk', 'does not eat a smelly lunch'),
+          I('Humming', 'hums all day', 'does not hum'),
+          I('Reply all', 'always clicks "reply all"', 'does not reply all'),
+          I('Pen clicking', 'clicks pens', 'does not click pens'),
+          I('Speakerphone', 'uses speakerphone', 'does not use speakerphone') ] },
+        numC('pages', 'Prints a day', [10, 20, 30, 40, 50, 60], v => v + ' pages', 'prints', 'does not print', 'fewer pages', 'more pages', d => d + ' pages', 'prints fewer pages than', 'prints more pages than')
+      ]
+    },
+    {
+      id: 'clowncar', title: 'The Circus Clown Car', noun: 'clown', nounPl: 'clowns', primaryLabel: 'Clown', emoji: '🤡',
+      names: ['Bubbles', 'Mr Wobble', 'Squeaky', 'Lady Pong', 'Noodle', 'Captain Honk', 'Fizz'],
+      intro: names => `The tiny clown car was supposed to hold all the clowns, but someone hid a trombone in the boot and nobody could fit. ${names} each have a different nose, each do a different trick, and each have been clowning for a different number of years.`,
+      ask: q => `The ringmaster thinks the trombone belongs to the clown who ${q}. Who is it?`,
+      cats: [
+        { id: 'nose', label: 'Nose', items: [
+          I('Red nose', 'has a classic red nose', 'does not have the red nose'),
+          I('Honking nose', 'has a honking nose', 'does not have the honking nose'),
+          I('Glitter nose', 'has a glitter nose', 'does not have the glitter nose'),
+          I('Square nose', 'has a square nose', 'does not have the square nose'),
+          I('Light-up nose', 'has a light-up nose', 'does not have the light-up nose'),
+          I('No nose', 'forgot their nose', 'did not forget their nose') ] },
+        { id: 'trick', label: 'Trick', items: [
+          I('Squirting flower', 'does the squirting flower', 'does not do the flower'),
+          I('Custard pie', 'does the custard pie', 'does not do the pie'),
+          I('Balloon animals', 'makes balloon animals', 'does not make balloon animals'),
+          I('Unicycle', 'rides a unicycle', 'does not ride a unicycle'),
+          I('Falling over', 'falls over a lot', 'does not fall over'),
+          I('Endless hanky', 'pulls out an endless hanky', 'does not do the hanky') ] },
+        { id: 'shoes', label: 'Shoes', items: [
+          I('Giant yellow', 'wears giant yellow shoes', 'does not wear yellow shoes'),
+          I('Squeaky', 'wears squeaky shoes', 'does not wear squeaky shoes'),
+          I('Odd shoes', 'wears two odd shoes', 'does not wear odd shoes'),
+          I('Flippers', 'wears flippers', 'does not wear flippers'),
+          I('Roller skates', 'wears roller skates', 'does not wear roller skates'),
+          I('Tiny shoes', 'wears tiny shoes', 'does not wear tiny shoes') ] },
+        numC('years', 'Clowning', [1, 3, 5, 7, 9, 11], v => v === 1 ? 'one year' : v + ' years', 'has clowned for', 'has not clowned for', 'less time', 'longer', d => d + ' years', 'has been a clown for less time than', 'has been a clown for longer than')
+      ]
+    },
+    {
+      id: 'alienticket', title: 'The Alien Visitor\'s Parking Ticket', noun: 'alien', nounPl: 'aliens', primaryLabel: 'Alien', emoji: '🛸',
+      names: ['Zorp', 'Blixi', 'Grunthor', 'Mee-Mee', 'Quazz', 'Plib', 'Vorna'],
+      intro: names => `A flying saucer was left on the double yellow lines outside the town hall, and now someone has a parking ticket. ${names} each come from a different planet, each wanted to see something different on Earth, and each have a different number of eyes.`,
+      ask: q => `The traffic warden says the saucer belongs to the alien who ${q}. Who is it?`,
+      cats: [
+        { id: 'planet', label: 'Planet', items: [
+          I('Glorp', 'comes from planet Glorp', 'is not from Glorp'),
+          I('Zibbix', 'comes from planet Zibbix', 'is not from Zibbix'),
+          I('Moop', 'comes from planet Moop', 'is not from Moop'),
+          I('Spangle-9', 'comes from Spangle-9', 'is not from Spangle-9'),
+          I('Blurb', 'comes from planet Blurb', 'is not from Blurb'),
+          I('Wubwub', 'comes from planet Wubwub', 'is not from Wubwub') ] },
+        { id: 'see', label: 'Wanted to see', items: [
+          I('Cows', 'wanted to see cows', 'did not come for cows'),
+          I('Pizza', 'wanted to try pizza', 'did not come for pizza'),
+          I('The sea', 'wanted to see the sea', 'did not come for the sea'),
+          I('A disco', 'wanted to go to a disco', 'did not come for a disco'),
+          I('Rain', 'wanted to feel rain', 'did not come for rain'),
+          I('A library', 'wanted to visit a library', 'did not come for the library') ] },
+        { id: 'colour', label: 'Colour', items: [
+          I('Green', 'is green', 'is not green'),
+          I('Purple', 'is purple', 'is not purple'),
+          I('Silver', 'is silver', 'is not silver'),
+          I('Orange', 'is orange', 'is not orange'),
+          I('See-through', 'is see-through', 'is not see-through'),
+          I('Spotty', 'is spotty', 'is not spotty') ] },
+        numC('eyes', 'Eyes', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one eye' : v + ' eyes', 'has', 'does not have', 'fewer eyes', 'more eyes', d => d === 1 ? 'one eye' : d + ' eyes', 'has fewer eyes than', 'has more eyes than')
+      ]
+    },
+    {
+      id: 'sleepalarm', title: 'The Sleeping Beauty Alarm Clock', noun: 'actor', nounPl: 'actors', primaryLabel: 'Actor', emoji: '⏰',
+      names: ['Rosamund', 'Felix', 'Tallulah', 'Bertie', 'Zara', 'Montgomery', 'Ivy'],
+      intro: names => `In the school panto, the sleeping princess was supposed to wake up with a kiss. Instead, an alarm clock went off under her pillow and the whole hall laughed. ${names} each played a different part, each forgot a different thing, and each had a different number of lines.`,
+      ask: q => `The director is sure the alarm clock was planted by the actor who ${q}. Who is it?`,
+      cats: [
+        { id: 'role', label: 'Played', items: [
+          I('The prince', 'played the prince', 'did not play the prince'),
+          I('The wicked fairy', 'played the wicked fairy', 'did not play the wicked fairy'),
+          I('The back of the horse', 'played the back of the horse', 'was not the horse\'s back'),
+          I('A tree', 'played a tree', 'did not play a tree'),
+          I('The king', 'played the king', 'did not play the king'),
+          I('The good fairy', 'played the good fairy', 'did not play the good fairy') ] },
+        { id: 'forgot', label: 'Forgot', items: [
+          I('Their lines', 'forgot their lines', 'did not forget lines'),
+          I('Their wig', 'forgot their wig', 'did not forget the wig'),
+          I('Their cue', 'missed their cue', 'did not miss their cue'),
+          I('To bow', 'forgot to bow', 'did not forget to bow'),
+          I('Their sword', 'forgot their sword', 'did not forget the sword'),
+          I('Nothing', 'forgot nothing at all', 'did forget something') ] },
+        { id: 'family', label: 'Family brought', items: [
+          I('A banner', 'had family with a banner', 'had no banner'),
+          I('Flowers', 'had family with flowers', 'had no flowers'),
+          I('A camera', 'had family filming everything', 'had no one filming'),
+          I('A trumpet', 'had family with a trumpet', 'had no trumpet'),
+          I('Sweets', 'had family with noisy sweets', 'had no noisy sweets'),
+          I('A grandma', 'had a grandma who cried', 'had no crying grandma') ] },
+        numC('lines', 'Lines', [2, 4, 6, 8, 10, 12], v => v + ' lines', 'had', 'did not have', 'fewer lines', 'more lines', d => d + ' lines', 'had fewer lines than', 'had more lines than')
+      ]
+    },
+    {
+      id: 'pottery', title: 'The Pottery Class Mishap', noun: 'potter', nounPl: 'potters', primaryLabel: 'Potter', emoji: '🏺',
+      names: ['Felicity', 'Graham', 'Oona', 'Bilal', 'Margot', 'Desmond', 'Lin'],
+      intro: names => `In the evening pottery class, someone's lovely vase came out of the kiln squashed flat, with a thumbprint on top. ${names} each made something different, each picked a different glaze, and each spun the wheel for a different time.`,
+      ask: q => `The teacher matched the thumbprint to the potter who ${q}. Who is it?`,
+      cats: [
+        { id: 'made', label: 'Made', items: [
+          I('A teapot', 'made a teapot', 'did not make a teapot'),
+          I('A wonky bowl', 'made a very wonky bowl', 'did not make the wonky bowl'),
+          I('A mug', 'made a mug', 'did not make a mug'),
+          I('A cat statue', 'made a cat statue', 'did not make a cat'),
+          I('A plate', 'made a plate', 'did not make a plate'),
+          I('A blob', 'made a blob', 'did not make a blob') ] },
+        { id: 'glaze', label: 'Glaze', items: [
+          I('Sea blue', 'picked sea blue', 'did not pick blue'),
+          I('Mustard', 'picked mustard', 'did not pick mustard'),
+          I('Speckled', 'picked speckled', 'did not pick speckled'),
+          I('Pink', 'picked pink', 'did not pick pink'),
+          I('Gold', 'picked gold', 'did not pick gold'),
+          I('Plain', 'picked no glaze', 'did pick a glaze') ] },
+        { id: 'apron', label: 'Apron', items: [
+          I('Muddy apron', 'wore a muddy apron', 'did not wear the muddy apron'),
+          I('Bin bag', 'wore a bin bag', 'did not wear a bin bag'),
+          I('Chef\'s apron', 'wore a chef\'s apron', 'did not wear a chef\'s apron'),
+          I('Painting smock', 'wore a painting smock', 'did not wear a smock'),
+          I('Best shirt', 'wore their best shirt', 'did not wear their best shirt'),
+          I('Overalls', 'wore overalls', 'did not wear overalls') ] },
+        numC('mins', 'Spun for', [5, 10, 15, 20, 25, 30], v => v + ' minutes', 'spun the wheel for', 'did not spin for', 'less time', 'longer', d => d + ' minutes', 'spun the wheel for less time than', 'spun the wheel for longer than')
+      ]
+    },
+    {
+      id: 'marrow', title: 'The Harvest Festival Marrow', noun: 'grower', nounPl: 'growers', primaryLabel: 'Grower', emoji: '🥒',
+      names: ['Percy', 'Gladys', 'Joss', 'Ulla', 'Ezekiel', 'Bridget', 'Nikhil'],
+      intro: names => `At the harvest festival, the biggest marrow on the table turned out to be a cucumber stuck to a rolling pin. ${names} each brought something to the festival, each sang a different song, and each have a marrow of a different weight.`,
+      ask: q => `The vicar is sure the fake marrow came from the grower who ${q}. Who is it?`,
+      cats: [
+        { id: 'brought', label: 'Also brought', items: [
+          I('Tinned peaches', 'brought tinned peaches', 'did not bring peaches'),
+          I('A wheat sheaf', 'brought a wheat sheaf', 'did not bring wheat'),
+          I('Apples', 'brought apples', 'did not bring apples'),
+          I('A loaf', 'brought a plaited loaf', 'did not bring a loaf'),
+          I('Jam', 'brought homemade jam', 'did not bring jam'),
+          I('Potatoes', 'brought potatoes', 'did not bring potatoes') ] },
+        { id: 'song', label: 'Sang', items: [
+          I('Very loud', 'sang very loudly', 'did not sing loudly'),
+          I('Wrong words', 'sang the wrong words', 'did not sing wrong words'),
+          I('Mumbled', 'mumbled', 'did not mumble'),
+          I('High notes', 'tried the high notes', 'did not try high notes'),
+          I('Too slow', 'sang too slowly', 'did not sing slowly'),
+          I('Did not sing', 'did not sing at all', 'did sing') ] },
+        { id: 'trick', label: 'Growing trick', items: [
+          I('Milk', 'feeds marrows milk', 'does not use milk'),
+          I('Night light', 'gives them a night light', 'does not use a night light'),
+          I('Blanket', 'tucks them in with a blanket', 'does not use a blanket'),
+          I('Pep talk', 'gives them a pep talk', 'does not give pep talks'),
+          I('Horse manure', 'uses horse manure', 'does not use manure'),
+          I('Nothing', 'does nothing special', 'does use a trick') ] },
+        numC('kg', 'Marrow weight', [2, 4, 6, 8, 10, 12], v => v + ' kg', 'has a marrow of', 'does not have a marrow of', 'lighter', 'heavier', d => d + ' kg', 'has a lighter marrow than', 'has a heavier marrow than')
+      ]
+    },
+    {
+      id: 'bridgegoose', title: 'The Goose Who Guards the Bridge', noun: 'walker', nounPl: 'walkers', primaryLabel: 'Walker', emoji: '🪿',
+      names: ['Clifford', 'Ottoline', 'Mehmet', 'Fran', 'Ewan', 'Liesel', 'Bongani'],
+      intro: names => `A very bossy goose guards the old bridge and hisses at everyone. This morning someone got across without a single hiss. ${names} each tried a different trick, each offered the goose a different snack, and each crossed at a different time.`,
+      ask: q => `The goose has made friends with the walker who ${q}. Who is it?`,
+      cats: [
+        { id: 'trick', label: 'Trick', items: [
+          I('Tiptoed', 'tiptoed across', 'did not tiptoe'),
+          I('Ran', 'ran very fast', 'did not run'),
+          I('Bowed', 'bowed to the goose', 'did not bow'),
+          I('Honked back', 'honked back at the goose', 'did not honk back'),
+          I('Used an umbrella', 'hid behind an umbrella', 'did not use an umbrella'),
+          I('Walked backwards', 'walked backwards', 'did not walk backwards') ] },
+        { id: 'snack', label: 'Offered', items: [
+          I('Peas', 'offered peas', 'did not offer peas'),
+          I('Lettuce', 'offered lettuce', 'did not offer lettuce'),
+          I('Oats', 'offered oats', 'did not offer oats'),
+          I('Sweetcorn', 'offered sweetcorn', 'did not offer sweetcorn'),
+          I('A compliment', 'offered only a compliment', 'did not offer a compliment'),
+          I('Their shoelace', 'offered a shoelace', 'did not offer a shoelace') ] },
+        { id: 'carrying', label: 'Carrying', items: [
+          I('A baguette', 'carried a baguette', 'did not carry a baguette'),
+          I('A fishing rod', 'carried a fishing rod', 'did not carry a rod'),
+          I('A newspaper', 'carried a newspaper', 'did not carry a newspaper'),
+          I('A dog', 'carried a small dog', 'did not carry a dog'),
+          I('Shopping', 'carried shopping', 'did not carry shopping'),
+          I('Nothing', 'carried nothing', 'did carry something') ] },
+        timeC([6, 7, 8, 9, 10, 11], 'crossed', 'did not cross')
+      ]
+    },
+    {
+      id: 'teaparty', title: 'The Tea Party Sugar Swap', noun: 'guest', nounPl: 'guests', primaryLabel: 'Guest', emoji: '🫖',
+      names: ['Aunt Hester', 'Cecil', 'Mabel', 'Kenji', 'Winifred', 'Augustus', 'Saskia'],
+      intro: names => `At the garden tea party, someone swapped the sugar for salt, and the vicar spat out his tea. ${names} each brought a different cake, each wore a different hat, and each drank a different number of cups.`,
+      ask: q => `The salt shaker has fingerprints from the guest who ${q}. Who is it?`,
+      cats: [
+        { id: 'cake', label: 'Cake', items: [
+          I('Lemon drizzle', 'brought lemon drizzle', 'did not bring lemon drizzle'),
+          I('Victoria sponge', 'brought a sponge', 'did not bring the sponge'),
+          I('Scones', 'brought scones', 'did not bring scones'),
+          I('Fruit cake', 'brought a fruit cake', 'did not bring fruit cake'),
+          I('Eclairs', 'brought eclairs', 'did not bring eclairs'),
+          I('Shop-bought', 'brought a shop cake in a nice box', 'did not bring a shop cake') ] },
+        { id: 'hat', label: 'Hat', items: [
+          I('Flower hat', 'wore a hat with flowers', 'did not wear flowers'),
+          I('Straw boater', 'wore a straw boater', 'did not wear a boater'),
+          I('Fascinator', 'wore a fascinator', 'did not wear a fascinator'),
+          I('Sun hat', 'wore a floppy sun hat', 'did not wear a sun hat'),
+          I('Bowler', 'wore a bowler hat', 'did not wear a bowler'),
+          I('Tea cosy', 'wore a tea cosy', 'did not wear a tea cosy') ] },
+        { id: 'pinky', label: 'Manners', items: [
+          I('Pinky up', 'drank with pinky up', 'did not raise their pinky'),
+          I('Slurped', 'slurped loudly', 'did not slurp'),
+          I('Dunked', 'dunked everything', 'did not dunk'),
+          I('Spilled', 'spilled tea on the cloth', 'did not spill'),
+          I('Used saucer', 'drank from the saucer', 'did not drink from the saucer'),
+          I('Perfect', 'had perfect manners', 'did not have perfect manners') ] },
+        numC('cups', 'Cups', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one cup' : v + ' cups', 'drank', 'did not drink', 'fewer', 'more', d => d === 1 ? 'one cup' : d + ' cups', 'drank fewer cups than', 'drank more cups than')
+      ]
+    },
+    {
+      id: 'examwhisper', title: 'The Exam Room Whisper', noun: 'student', nounPl: 'students', primaryLabel: 'Student', emoji: '📝',
+      names: ['Harvey', 'Juno', 'Akash', 'Pippa', 'Stellan', 'Nadia', 'Cosmo'],
+      intro: names => `In the silent exam hall, someone whispered "Is it B?" so loudly that the whole room heard. ${names} each brought a different lucky thing, each is best at a different subject, and each finished a different number of minutes early.`,
+      ask: q => `The teacher is sure the whisper came from the student who ${q}. Who is it?`,
+      cats: [
+        { id: 'lucky', label: 'Lucky thing', items: [
+          I('Lucky pencil', 'brought a lucky pencil', 'did not bring a lucky pencil'),
+          I('Troll toy', 'brought a little troll toy', 'did not bring a troll'),
+          I('Odd socks', 'wore lucky odd socks', 'did not wear lucky socks'),
+          I('A banana', 'brought a lucky banana', 'did not bring a banana'),
+          I('A coin', 'brought a lucky coin', 'did not bring a coin'),
+          I('Nothing', 'did not believe in luck', 'did bring something lucky') ] },
+        { id: 'subject', label: 'Best subject', items: [
+          I('Maths', 'is best at maths', 'is not best at maths'),
+          I('History', 'is best at history', 'is not best at history'),
+          I('Art', 'is best at art', 'is not best at art'),
+          I('Science', 'is best at science', 'is not best at science'),
+          I('French', 'is best at French', 'is not best at French'),
+          I('Lunch', 'is best at lunch', 'is not best at lunch') ] },
+        { id: 'did', label: 'During exam', items: [
+          I('Chewed pen', 'chewed their pen', 'did not chew a pen'),
+          I('Sneezed', 'sneezed three times', 'did not sneeze'),
+          I('Drew a horse', 'drew a horse in the margin', 'did not draw a horse'),
+          I('Asked for paper', 'asked for more paper', 'did not ask for paper'),
+          I('Fell asleep', 'fell asleep', 'did not fall asleep'),
+          I('Stared at clock', 'stared at the clock', 'did not stare at the clock') ] },
+        numC('early', 'Finished early', [5, 10, 15, 20, 25, 30], v => v + ' minutes early', 'finished', 'did not finish', 'later', 'earlier', d => d + ' minutes', 'finished later than', 'finished earlier than')
+      ]
+    }
+  );
+  T.push(
+    {
+      id: 'balloonland', title: 'The Hot-Air Balloon Landing', noun: 'passenger', nounPl: 'passengers', primaryLabel: 'Passenger', emoji: '🎈',
+      names: ['Beatrix', 'Arnold', 'Solveig', 'Winston', 'Chiara', 'Duncan', 'Aiko'],
+      intro: names => `The hot-air balloon was meant to land in a field. It landed in a farmer's swimming pool instead, because someone let go of the wrong rope. ${names} each held a different rope, each brought a different thing on board, and each had flown a different number of times before.`,
+      ask: q => `The pilot blames the passenger who ${q}. Who is it?`,
+      cats: [
+        { id: 'rope', label: 'Held', items: [
+          I('The red rope', 'held the red rope', 'did not hold the red rope'),
+          I('The blue rope', 'held the blue rope', 'did not hold the blue rope'),
+          I('The burner', 'held the burner handle', 'did not hold the burner'),
+          I('The sandbag', 'held a sandbag', 'did not hold a sandbag'),
+          I('The basket edge', 'clung to the basket edge', 'did not cling to the basket'),
+          I('The map', 'held the map upside down', 'did not hold the map') ] },
+        { id: 'brought', label: 'Brought', items: [
+          I('Binoculars', 'brought binoculars', 'did not bring binoculars'),
+          I('A picnic', 'brought a picnic', 'did not bring a picnic'),
+          I('A kite', 'brought a kite', 'did not bring a kite'),
+          I('A parrot', 'brought a parrot', 'did not bring a parrot'),
+          I('An umbrella', 'brought an umbrella', 'did not bring an umbrella'),
+          I('A ukulele', 'brought a ukulele', 'did not bring a ukulele') ] },
+        { id: 'said', label: 'Said', items: [
+          I('Wheee!', 'shouted "Wheee!"', 'did not shout wheee'),
+          I('I feel sick', 'said they felt sick', 'did not feel sick'),
+          I('Look, cows!', 'pointed at cows', 'did not point at cows'),
+          I('Are we there?', 'kept asking if they were there yet', 'did not ask if they were there'),
+          I('Wrong way!', 'shouted "Wrong way!"', 'did not shout wrong way'),
+          I('Nothing', 'had their eyes shut the whole time', 'had their eyes open') ] },
+        numC('flights', 'Flown before', [0, 1, 2, 3, 4, 5], v => v === 0 ? 'never' : v === 1 ? 'once' : v === 2 ? 'twice' : v + ' times', 'had flown', 'had not flown', 'fewer times', 'more times', d => d === 1 ? 'one time' : d + ' times', 'had flown fewer times than', 'had flown more times than')
+      ]
+    },
+    {
+      id: 'darts', title: 'The Darts Tournament Dispute', noun: 'player', nounPl: 'players', primaryLabel: 'Player', emoji: '🎯',
+      names: ['Big Trev', 'Shirley', 'Lukasz', 'Dot', 'Vince', 'Marguerite', 'Kenny'],
+      intro: names => `In the pub darts final, someone moved the line on the floor a big step closer to the board. ${names} each have a lucky shirt, each have a different nickname, and each scored a different total.`,
+      ask: q => `The landlord has banned the player who ${q}. Who is it?`,
+      cats: [
+        { id: 'shirt', label: 'Shirt', items: [
+          I('Flames', 'wore a shirt with flames', 'did not wear flames'),
+          I('Hawaiian', 'wore a Hawaiian shirt', 'did not wear Hawaiian'),
+          I('Sparkly', 'wore a sparkly shirt', 'did not wear sparkles'),
+          I('Leopard print', 'wore leopard print', 'did not wear leopard print'),
+          I('Football top', 'wore a football top', 'did not wear a football top'),
+          I('Tuxedo', 'wore a tuxedo', 'did not wear a tuxedo') ] },
+        { id: 'nick', label: 'Nickname', items: [
+          I('The Hammer', 'is called "The Hammer"', 'is not The Hammer'),
+          I('The Owl', 'is called "The Owl"', 'is not The Owl'),
+          I('Sniper', 'is called "Sniper"', 'is not Sniper'),
+          I('Wobbles', 'is called "Wobbles"', 'is not Wobbles'),
+          I('The Professor', 'is called "The Professor"', 'is not The Professor'),
+          I('Lucky', 'is called "Lucky"', 'is not Lucky') ] },
+        { id: 'ritual', label: 'Before throwing', items: [
+          I('Kisses dart', 'kisses every dart', 'does not kiss the dart'),
+          I('Spins round', 'spins round once', 'does not spin round'),
+          I('Licks finger', 'licks a finger', 'does not lick a finger'),
+          I('Closes one eye', 'closes one eye', 'does not close an eye'),
+          I('Whispers', 'whispers to the board', 'does not whisper to the board'),
+          I('Eats a crisp', 'eats a crisp', 'does not eat a crisp') ] },
+        numC('score', 'Total', [60, 120, 180, 240, 300, 360], v => v + ' points', 'scored', 'did not score', 'fewer', 'more', d => d + ' points', 'scored fewer points than', 'scored more points than')
+      ]
+    },
+    {
+      id: 'phantomorder', title: 'The Phantom Online Order', noun: 'flatmate', nounPl: 'flatmates', primaryLabel: 'Flatmate', emoji: '📦',
+      names: ['Becca', 'Olu', 'Fintan', 'Mia', 'Sven', 'Harriet', 'Kai'],
+      intro: names => `A huge parcel arrived containing forty rubber chickens, and nobody in the flat will say who ordered them. ${names} each use a different device, each were doing something different that evening, and each get a different number of parcels a month.`,
+      ask: q => `The order came from the account of the flatmate who ${q}. Who is it?`,
+      cats: [
+        { id: 'device', label: 'Uses', items: [
+          I('Old laptop', 'uses an old laptop', 'does not use the old laptop'),
+          I('Cracked phone', 'uses a cracked phone', 'does not use a cracked phone'),
+          I('Tablet', 'uses a tablet', 'does not use a tablet'),
+          I('Smart speaker', 'shops by talking to a speaker', 'does not use the speaker'),
+          I('Smart watch', 'shops on a smart watch', 'does not use a watch'),
+          I('Library computer', 'uses the library computer', 'does not use the library') ] },
+        { id: 'evening', label: 'That evening', items: [
+          I('Asleep', 'was asleep on the sofa', 'was not asleep'),
+          I('Baking', 'was baking bread', 'was not baking'),
+          I('At the gym', 'was at the gym', 'was not at the gym'),
+          I('Watching TV', 'was watching a cooking show', 'was not watching TV'),
+          I('In the bath', 'was in the bath', 'was not in the bath'),
+          I('On a call', 'was on a long call', 'was not on a call') ] },
+        { id: 'wants', label: 'Secretly wants', items: [
+          I('A llama', 'secretly wants a llama', 'does not want a llama'),
+          I('A drum kit', 'secretly wants a drum kit', 'does not want drums'),
+          I('A hot tub', 'secretly wants a hot tub', 'does not want a hot tub'),
+          I('A rubber chicken', 'secretly wants a rubber chicken', 'does not want a rubber chicken'),
+          I('A sword', 'secretly wants a sword', 'does not want a sword'),
+          I('Silence', 'secretly wants silence', 'does not want silence') ] },
+        numC('parcels', 'Parcels a month', [1, 3, 5, 7, 9, 11], v => v === 1 ? 'one parcel' : v + ' parcels', 'gets', 'does not get', 'fewer', 'more', d => d === 1 ? 'one parcel' : d + ' parcels', 'gets fewer parcels than', 'gets more parcels than')
+      ]
+    },
+    {
+      id: 'scarecrow', title: 'The Village Scarecrow Festival', noun: 'maker', nounPl: 'makers', primaryLabel: 'Maker', emoji: '🌾',
+      names: ['Mabel', 'Jethro', 'Ilse', 'Roderick', 'Nell', 'Abioye', 'Cyril'],
+      intro: names => `At the scarecrow festival, the winning scarecrow was found wearing someone else's prize rosette. ${names} each made a different scarecrow, each used a different face, and each used a different number of straw bales.`,
+      ask: q => `The judges have taken the rosette back from the maker who ${q}. Who is it?`,
+      cats: [
+        { id: 'theme', label: 'Scarecrow', items: [
+          I('Astronaut', 'made an astronaut scarecrow', 'did not make the astronaut'),
+          I('Pirate', 'made a pirate scarecrow', 'did not make the pirate'),
+          I('Ballerina', 'made a ballerina scarecrow', 'did not make the ballerina'),
+          I('Postman', 'made a postman scarecrow', 'did not make the postman'),
+          I('Superhero', 'made a superhero scarecrow', 'did not make the superhero'),
+          I('Mermaid', 'made a mermaid scarecrow', 'did not make the mermaid') ] },
+        { id: 'face', label: 'Face', items: [
+          I('Painted sack', 'used a painted sack', 'did not use a sack'),
+          I('Pumpkin', 'used a pumpkin', 'did not use a pumpkin'),
+          I('Paper plate', 'used a paper plate', 'did not use a plate'),
+          I('Football', 'used a football', 'did not use a football'),
+          I('Bucket', 'used a bucket', 'did not use a bucket'),
+          I('Their own photo', 'used a photo of themselves', 'did not use their photo') ] },
+        { id: 'scared', label: 'Actually scared', items: [
+          I('Nothing', 'scared nothing at all', 'did scare something'),
+          I('The vicar', 'scared the vicar', 'did not scare the vicar'),
+          I('A horse', 'scared a horse', 'did not scare a horse'),
+          I('The postman', 'scared the real postman', 'did not scare the postman'),
+          I('Itself', 'fell over in the wind', 'did not fall over'),
+          I('Crows (yes!)', 'actually scared crows', 'did not scare crows') ] },
+        numC('bales', 'Straw bales', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one bale' : v + ' bales', 'used', 'did not use', 'fewer', 'more', d => d === 1 ? 'one bale' : d + ' bales', 'used fewer bales than', 'used more bales than')
+      ]
+    },
+    {
+      id: 'bigfoot', title: 'Bigfoot\'s Footprints', noun: 'camper', nounPl: 'campers', primaryLabel: 'Camper', emoji: '👣',
+      names: ['Dusty', 'Marguerite', 'Hank', 'Elodie', 'Bram', 'Tansy', 'Obi'],
+      intro: names => `Giant footprints appeared around the campsite overnight, and everyone screamed "Bigfoot!". But someone made them with cardboard feet. ${names} each slept in a different tent, each heard a different noise, and each woke up at a different time.`,
+      ask: q => `The cardboard feet were found under the sleeping bag of the camper who ${q}. Who is it?`,
+      cats: [
+        { id: 'tent', label: 'Tent', items: [
+          I('Orange dome', 'slept in an orange dome tent', 'did not sleep in the orange tent'),
+          I('Leaky tent', 'slept in a leaky tent', 'did not sleep in the leaky tent'),
+          I('Hammock', 'slept in a hammock', 'did not sleep in a hammock'),
+          I('Camper van', 'slept in a camper van', 'did not sleep in the van'),
+          I('Under the stars', 'slept under the stars', 'did not sleep outside'),
+          I('Car boot', 'slept in a car boot', 'did not sleep in a car boot') ] },
+        { id: 'noise', label: 'Heard', items: [
+          I('Howling', 'heard howling', 'did not hear howling'),
+          I('Snapping twigs', 'heard snapping twigs', 'did not hear twigs'),
+          I('Giggling', 'heard giggling', 'did not hear giggling'),
+          I('Owl', 'heard an owl', 'did not hear an owl'),
+          I('Crunching', 'heard crunching', 'did not hear crunching'),
+          I('Snoring', 'heard only snoring', 'did not hear snoring') ] },
+        { id: 'packed', label: 'Packed', items: [
+          I('Marshmallows', 'packed marshmallows', 'did not pack marshmallows'),
+          I('A camera', 'packed a camera', 'did not pack a camera'),
+          I('Glue', 'packed glue', 'did not pack glue'),
+          I('Big boots', 'packed big boots', 'did not pack big boots'),
+          I('A guitar', 'packed a guitar', 'did not pack a guitar'),
+          I('Bug spray', 'packed bug spray', 'did not pack bug spray') ] },
+        timeC([4, 5, 6, 7, 8, 9], 'woke up', 'did not wake up', 'Woke at')
+      ]
+    },
+    {
+      id: 'poetryslam', title: 'The Poetry Slam Plagiarist', noun: 'poet', nounPl: 'poets', primaryLabel: 'Poet', emoji: '🎤',
+      names: ['Lavender', 'Rufus', 'Ngozi', 'Barnaby', 'Sigrun', 'Montague', 'Ellis'],
+      intro: names => `At the café poetry slam, someone read out a poem that was really the back of a cereal box. ${names} each wrote about something different, each performed in a different style, and each got a different score from the judges.`,
+      ask: q => `The judges have taken points away from the poet who ${q}. Who is it?`,
+      cats: [
+        { id: 'topic', label: 'Poem about', items: [
+          I('A lost sock', 'wrote about a lost sock', 'did not write about a sock'),
+          I('Rain', 'wrote about rain', 'did not write about rain'),
+          I('Their cat', 'wrote about their cat', 'did not write about a cat'),
+          I('Toast', 'wrote about toast', 'did not write about toast'),
+          I('Mondays', 'wrote about Mondays', 'did not write about Mondays'),
+          I('The moon', 'wrote about the moon', 'did not write about the moon') ] },
+        { id: 'style', label: 'Style', items: [
+          I('Whispered', 'whispered the whole poem', 'did not whisper'),
+          I('Shouted', 'shouted the whole poem', 'did not shout'),
+          I('Rapped', 'rapped it', 'did not rap'),
+          I('Sang', 'sang it', 'did not sing'),
+          I('Interpretive dance', 'danced it', 'did not dance'),
+          I('Very slowly', 'read it very slowly', 'did not read slowly') ] },
+        { id: 'wore', label: 'Wore', items: [
+          I('Black polo neck', 'wore a black polo neck', 'did not wear a polo neck'),
+          I('Beret', 'wore a beret', 'did not wear a beret'),
+          I('Scarf indoors', 'wore a scarf indoors', 'did not wear a scarf'),
+          I('Sunglasses', 'wore sunglasses indoors', 'did not wear sunglasses'),
+          I('Cape', 'wore a cape', 'did not wear a cape'),
+          I('Pyjamas', 'wore pyjamas', 'did not wear pyjamas') ] },
+        numC('score', 'Score', [3, 4, 5, 6, 7, 8], v => v + ' out of 10', 'scored', 'did not score', 'lower', 'higher', d => d === 1 ? 'one point' : d + ' points', 'scored lower than', 'scored higher than')
+      ]
+    },
+    {
+      id: 'buffet', title: 'The Hotel Breakfast Buffet Raid', noun: 'guest', nounPl: 'guests', primaryLabel: 'Guest', emoji: '🥐',
+      names: ['Mr Grimsby', 'Paloma', 'Torsten', 'Mrs Adeyemi', 'Ollie', 'Genevieve', 'Raj'],
+      intro: names => `At the hotel breakfast buffet, every single croissant disappeared before eight o'clock. ${names} each stayed in a different room, each took something odd, and each came down at a different time.`,
+      ask: q => `The croissants were found in the suitcase of the guest who ${q}. Who is it?`,
+      cats: [
+        { id: 'room', label: 'Room', items: [
+          I('Room 101', 'stayed in room 101', 'did not stay in 101'),
+          I('Honeymoon suite', 'stayed in the honeymoon suite', 'did not stay in the honeymoon suite'),
+          I('Attic room', 'stayed in the attic room', 'did not stay in the attic'),
+          I('Room by the lift', 'stayed by the lift', 'did not stay by the lift'),
+          I('Sea view', 'had a sea view', 'did not have a sea view'),
+          I('Car park view', 'had a car park view', 'did not have a car park view') ] },
+        { id: 'took', label: 'Took', items: [
+          I('Twelve jams', 'took twelve tiny jams', 'did not take jams'),
+          I('A whole melon', 'took a whole melon', 'did not take the melon'),
+          I('All the bacon', 'took all the bacon', 'did not take the bacon'),
+          I('Boiled eggs', 'took six boiled eggs', 'did not take eggs'),
+          I('Cereal mix', 'mixed four cereals', 'did not mix cereals'),
+          I('Pancake tower', 'built a pancake tower', 'did not build a pancake tower') ] },
+        { id: 'wore', label: 'Came down in', items: [
+          I('Hotel robe', 'came down in a hotel robe', 'did not wear the robe'),
+          I('Slippers', 'came down in slippers', 'did not wear slippers'),
+          I('Full suit', 'came down in a full suit', 'did not wear a suit'),
+          I('Swimsuit', 'came down in a swimsuit', 'did not wear a swimsuit'),
+          I('Gym kit', 'came down in gym kit', 'did not wear gym kit'),
+          I('Yesterday\'s clothes', 'came down in yesterday\'s clothes', 'did not wear yesterday\'s clothes') ] },
+        numC('arrive', 'Came down', [6, 6.25, 6.5, 6.75, 7, 7.25], clock, 'came down at', 'did not come down at', 'earlier', 'later', d => (d * 60) + ' minutes', 'came down earlier than', 'came down later than')
+      ]
+    },
+    {
+      id: 'whiteboard', title: 'The Whiteboard Doodle', noun: 'colleague', nounPl: 'colleagues', primaryLabel: 'Colleague', emoji: '🖍️',
+      names: ['Brenda', 'Iqbal', 'Sophie', 'Lars', 'Yvonne', 'Conor', 'Mariam'],
+      intro: names => `Someone drew a moustache on the boss in the team photo on the whiteboard, in a marker that will not rub off. ${names} each sat somewhere different in the meeting, each brought a different marker, and each spoke for a different time.`,
+      ask: q => `The boss is sure the moustache came from the colleague who ${q}. Who is it?`,
+      cats: [
+        { id: 'seat', label: 'Sat', items: [
+          I('At the front', 'sat at the front', 'did not sit at the front'),
+          I('By the door', 'sat by the door', 'did not sit by the door'),
+          I('On a beanbag', 'sat on a beanbag', 'did not sit on the beanbag'),
+          I('On the windowsill', 'sat on the windowsill', 'did not sit on the windowsill'),
+          I('Joined by video', 'joined by video', 'did not join by video'),
+          I('Stood up', 'stood the whole time', 'did not stand') ] },
+        { id: 'marker', label: 'Marker', items: [
+          I('Red', 'brought a red marker', 'did not bring red'),
+          I('Green', 'brought a green marker', 'did not bring green'),
+          I('Blue', 'brought a blue marker', 'did not bring blue'),
+          I('Purple', 'brought a purple marker', 'did not bring purple'),
+          I('Permanent black', 'brought a permanent black marker', 'did not bring permanent black'),
+          I('Dried-up one', 'brought a dried-up marker', 'did not bring a dried-up marker') ] },
+        { id: 'snack', label: 'Snack', items: [
+          I('Doughnut', 'ate a doughnut', 'did not eat a doughnut'),
+          I('Apple', 'ate an apple loudly', 'did not eat an apple'),
+          I('Crisps', 'opened crisps very slowly', 'did not open crisps'),
+          I('Carrot sticks', 'ate carrot sticks', 'did not eat carrots'),
+          I('Biscuits', 'ate the meeting biscuits', 'did not eat biscuits'),
+          I('Nothing', 'ate nothing', 'did eat something') ] },
+        numC('mins', 'Spoke for', [2, 4, 6, 8, 10, 12], v => v + ' minutes', 'spoke for', 'did not speak for', 'less time', 'longer', d => d + ' minutes', 'spoke for less time than', 'spoke for longer than')
+      ]
+    },
+    {
+      id: 'packing', title: 'The Summer Holiday Packing Disaster', noun: 'family member', nounPl: 'family members', primaryLabel: 'Packer', emoji: '🧳',
+      names: ['Dad', 'Mum', 'Granny Rose', 'Uncle Mo', 'Cousin Effie', 'Big Sis Tara', 'Little Leo'],
+      intro: names => `The family arrived at the beach and opened the suitcase to find only winter coats. Someone swapped the bags. ${names} each packed a different bag, each forgot something different, and each brought a different number of pairs of shoes.`,
+      ask: q => `Everyone is cross with the family member who ${q}. Who is it?`,
+      cats: [
+        { id: 'bag', label: 'Packed', items: [
+          I('Blue suitcase', 'packed the blue suitcase', 'did not pack the blue suitcase'),
+          I('Rucksack', 'packed the rucksack', 'did not pack the rucksack'),
+          I('Beach bag', 'packed the beach bag', 'did not pack the beach bag'),
+          I('Cool box', 'packed the cool box', 'did not pack the cool box'),
+          I('Sports bag', 'packed the sports bag', 'did not pack the sports bag'),
+          I('Bin bag', 'packed a bin bag', 'did not pack a bin bag') ] },
+        { id: 'forgot', label: 'Forgot', items: [
+          I('Swimsuits', 'forgot the swimsuits', 'did not forget swimsuits'),
+          I('Sun cream', 'forgot the sun cream', 'did not forget sun cream'),
+          I('Passports', 'nearly forgot the passports', 'did not forget passports'),
+          I('Toothbrushes', 'forgot the toothbrushes', 'did not forget toothbrushes'),
+          I('Chargers', 'forgot the chargers', 'did not forget chargers'),
+          I('The dog\'s lead', 'forgot the dog\'s lead', 'did not forget the lead') ] },
+        { id: 'extra', label: 'Packed by mistake', items: [
+          I('A snow shovel', 'packed a snow shovel', 'did not pack a shovel'),
+          I('A toaster', 'packed a toaster', 'did not pack a toaster'),
+          I('Christmas lights', 'packed Christmas lights', 'did not pack Christmas lights'),
+          I('The TV remote', 'packed the TV remote', 'did not pack the remote'),
+          I('A wok', 'packed a wok', 'did not pack a wok'),
+          I('A bowling ball', 'packed a bowling ball', 'did not pack a bowling ball') ] },
+        numC('shoes', 'Pairs of shoes', [1, 2, 3, 4, 5, 6], v => v === 1 ? 'one pair' : v + ' pairs', 'brought', 'did not bring', 'fewer', 'more', d => d === 1 ? 'one pair' : d + ' pairs', 'brought fewer shoes than', 'brought more shoes than')
+      ]
+    },
+    {
+      id: 'foodtruck', title: 'The Food Truck Rivalry', noun: 'chef', nounPl: 'chefs', primaryLabel: 'Chef', emoji: '🚚',
+      names: ['Rocco', 'Jasmin', 'Tunde', 'Gerda', 'Pablo', 'Sinéad', 'Hiro'],
+      intro: names => `At the street food market, someone let down the tyres of the most popular food truck. ${names} each run a different truck, each have a different truck colour, and each sell their food at a different price.`,
+      ask: q => `The market manager blames the chef who ${q}. Who is it?`,
+      cats: [
+        { id: 'food', label: 'Sells', items: [
+          I('Tacos', 'sells tacos', 'does not sell tacos'),
+          I('Dumplings', 'sells dumplings', 'does not sell dumplings'),
+          I('Waffles', 'sells waffles', 'does not sell waffles'),
+          I('Curry', 'sells curry', 'does not sell curry'),
+          I('Burgers', 'sells burgers', 'does not sell burgers'),
+          I('Soup in bread', 'sells soup in a bread bowl', 'does not sell bread-bowl soup') ] },
+        { id: 'colour', label: 'Truck colour', items: [
+          I('Bright pink', 'has a bright pink truck', 'does not have the pink truck'),
+          I('Mint green', 'has a mint green truck', 'does not have the green truck'),
+          I('Rusty', 'has a rusty truck', 'does not have the rusty truck'),
+          I('Polka dot', 'has a polka dot truck', 'does not have the polka dot truck'),
+          I('Black', 'has a black truck', 'does not have the black truck'),
+          I('Tartan', 'has a tartan truck', 'does not have the tartan truck') ] },
+        { id: 'gimmick', label: 'Gimmick', items: [
+          I('Loud music', 'plays loud music', 'does not play music'),
+          I('Free samples', 'gives free samples', 'does not give samples'),
+          I('Chef sings', 'sings while cooking', 'does not sing'),
+          I('Giant menu', 'has a giant menu board', 'does not have a giant menu'),
+          I('A mascot', 'has someone in a costume', 'does not have a mascot'),
+          I('Bell', 'rings a bell every sale', 'does not ring a bell') ] },
+        numC('price', 'Price', [4, 5, 6, 7, 8, 9], eur, 'charges', 'does not charge', 'less', 'more', euros)
+      ]
+    }
+  );
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
 (function(){
 'use strict';
 const E = window.LogicEngine, THEMES = window.LOGIC_THEMES;
